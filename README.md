@@ -1,3 +1,7 @@
+#SafetyPy (PythonSDK)
+
+Python SDK for interacting with SafetyCulture Public API
+
 **NOTES**:
 SafetyPy is written in Python 2 (Python 3 *will* generate errors)
 
