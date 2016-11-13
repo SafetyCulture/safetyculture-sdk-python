@@ -11,4 +11,5 @@ SafetyPy is written in Python 2 (Python 3 *will* generate errors)
  * Install pip (Python package manager)
  * Execute the following commands from terminal:
      * pip install -r requirements.txt
+ * Edit config.ini - replace <api_key> with a valid api key
  * Place SafetyPy.py in the same directory of the script(s) that depend on it
