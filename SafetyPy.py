@@ -16,8 +16,8 @@ class sc_client:
 
     def __init__(self):
         self.current_dir = os.getcwd()
-        self.log_dir = self.current_dir + "/log/"
-        self.export_dir = self.current_dir + "/exports/"
+        self.log_dir = self.current_dir + '/log/'
+        self.export_dir = self.current_dir + '/exports/'
 
         self.validate_log_directory(self.log_dir)
         self.validate_export_directory(self.export_dir)
@@ -25,9 +25,9 @@ class sc_client:
         self.api_key = self.parse_api_key()
         if self.api_key:
 
-            self.auth_header = {"Authorization": "Bearer " + self.api_key }
-            self.api_url = "https://api.safetyculture.io/"
-            self.audit_url = self.api_url + "audits/"
+            self.auth_header = {'Authorization': 'Bearer ' + self.api_key }
+            self.api_url = 'https://api.safetyculture.io/'
+            self.audit_url = self.api_url + 'audits/'
             self.template_search_url = self.api_url + 'templates/search?field=template_id&field=name'
 
 
@@ -38,17 +38,17 @@ class sc_client:
 
 
     def parse_api_key(self):
-        logger = logging.getLogger("sp_logger")
+        logger = logging.getLogger('sp_logger')
         config = configparser.ConfigParser()
         config.read('config.ini')
         try:
             api_key = config['API']['key']
             key_is_valid = re.match('[a-z0-9]{64}', api_key)
             if key_is_valid:
-                logger.debug("API key matched pattern")
+                logger.debug('API key matched pattern')
                 return api_key
             else:
-                logger.error("API key: " + api_key + " failed pattern match")
+                logger.error('API key: ' + api_key + ' failed pattern match')
                 return None
         except Exception as ex:
                 logger.exception('')
@@ -56,10 +56,10 @@ class sc_client:
 
 
     def configure_logging(self):
-        log_filename = datetime.now().strftime('%Y-%m-%d') + ".log"
-        sp_logger = logging.getLogger("sp_logger")
+        log_filename = datetime.now().strftime('%Y-%m-%d') + '.log'
+        sp_logger = logging.getLogger('sp_logger')
         sp_logger.setLevel(logging.DEBUG)
-        formatter = logging.Formatter("%(asctime)s : %(levelname)s : %(message)s")
+        formatter = logging.Formatter('%(asctime)s : %(levelname)s : %(message)s')
 
         fh = logging.FileHandler(filename=self.log_dir + log_filename)
         fh.setLevel(logging.INFO)
@@ -68,7 +68,7 @@ class sc_client:
 
     def validate_log_directory(self, log_dir):
         '''
-        check for log subdirectory (current directory + "/log/")
+        check for log subdirectory (current directory + '/log/')
         create it if it doesn't exist
         '''
         if not os.path.isdir(log_dir):
@@ -76,7 +76,7 @@ class sc_client:
 
     def validate_export_directory(self, export_dir):
         '''
-        check for export subdirectory (current directory + "/exports/")
+        check for export subdirectory (current directory + '/exports/')
         create it if it doesn't exist
         '''
         if not os.path.isdir(export_dir):
@@ -91,36 +91,36 @@ class sc_client:
         Passing no parameters, it will return all audits with no restrictions
         '''
 
-        logger = logging.getLogger("sp_logger")
+        logger = logging.getLogger('sp_logger')
 
 
         if modified_after == None:
-            lastModified = "2000-01-01T00:00:00.000Z"
+            lastModified = '2000-01-01T00:00:00.000Z'
         else:
             lastModified = modified_after
 
-        search_url = self.audit_url + "search?field=audit_id&field=modified_at&modified_after="+lastModified
-        log_string = "\nInitiating audit_discovery with the parameters: " + "\n"
-        log_string += "template_id    = " + str(template_id) + "\n"
-        log_string += "modified_after = "+ str(lastModified) + "\n"
-        log_string += "completed      = " + str(completed) + "\n"
+        search_url = self.audit_url + 'search?field=audit_id&field=modified_at&modified_after='+lastModified
+        log_string = '\nInitiating audit_discovery with the parameters: ' + '\n'
+        log_string += 'template_id    = ' + str(template_id) + '\n'
+        log_string += 'modified_after = '+ str(lastModified) + '\n'
+        log_string += 'completed      = ' + str(completed) + '\n'
         logger.info(log_string)
 
         if template_id:
-            search_url += "&template=" + template_id
+            search_url += '&template=' + template_id
 
         if completed:
-            search_url += "&completed=true"
+            search_url += '&completed=true'
 
         results = requests.get(search_url, headers = self.auth_header)
         status_code = results.status_code
 
         if status_code / 100 == 2:
             response = results.json()
-            logger.info(str(status_code) + " status received on audit_discovery: " + str(response['total']) + " discovered")
+            logger.info(str(status_code) + ' status received on audit_discovery: ' + str(response['total']) + ' discovered')
             return response
         else:
-            logger.error(str(status_code) + " status received on audit_discovery using " + search_url)
+            logger.error(str(status_code) + ' status received on audit_discovery using ' + search_url)
             return None
 
     def discover_templates(self, modified_after = None, modified_before = None):
@@ -130,17 +130,17 @@ class sc_client:
 
         Passing no parameters, it will discover templates with no restrictions
         '''
-        logger = logging.getLogger("sp_logger")
+        logger = logging.getLogger('sp_logger')
 
         search_url = self.template_search_url
         if modified_before != None:
-            search_url += "&modified_before=" + modified_before
+            search_url += '&modified_before=' + modified_before
         if modified_after != None:
-            search_url += "&modified_after=" + modified_after
+            search_url += '&modified_after=' + modified_after
 
         template_ids = requests.get(search_url, headers = self.auth_header)
 
-        logger.info(str(template_ids.status_code) + " received on template discovery")
+        logger.info(str(template_ids.status_code) + ' received on template discovery')
 
         return template_ids.json()
 
@@ -154,10 +154,10 @@ class sc_client:
             with open (self.log_dir + 'lastSuccessful.txt', 'r+') as lastRun:
                 lastSuccessful = lastRun.readlines()[0]
         else:
-            lastSuccessful = "2000-01-01T00:00:00.000Z"
+            lastSuccessful = '2000-01-01T00:00:00.000Z'
             with open (self.log_dir + 'lastSuccessful.txt', 'w') as lastRun:
                 lastRun.write(lastSuccessful)
-            logger.warning("lastSuccessful.txt NOT FOUND, creating file with default date")
+            logger.warning('lastSuccessful.txt NOT FOUND, creating file with default date')
 
         return lastSuccessful
 
@@ -179,25 +179,25 @@ class sc_client:
         Return:      href for export download
         '''
         delay = .5
-        poll_url = self.audit_url + audit_id + "/exports/" + export_id
+        poll_url = self.audit_url + audit_id + '/exports/' + export_id
         poll_status = requests.get(poll_url, headers = self.auth_header)
         status = poll_status.json()
 
         if 'status' in status.keys():
-            if (status['status'] == "IN PROGRESS"):
-                print status['status'] + " : " + audit_id
+            if (status['status'] == 'IN PROGRESS'):
+                print status['status'] + ' : ' + audit_id
                 time.sleep(delay)
                 return self.poll_for_export(audit_id, export_id)
 
-            elif status['status'] == "SUCCESS":
-                print status['status'] + " : " + audit_id
+            elif status['status'] == 'SUCCESS':
+                print status['status'] + ' : ' + audit_id
                 return status['href']
 
         else:
             #TODO:
             #  Consider adding limitations to how many times it will retry a given audit
             #   That way, if for some reason an audit will *always* fail, it won't get stuck in a loop forever.
-            print "retrying export process for: " + audit_id
+            print 'retrying export process for: ' + audit_id
             retry_id = self.get_export_id(audit_id)
             return self.poll_for_export(audit_id, retry_id['id'])
 
@@ -216,7 +216,7 @@ class sc_client:
         return doc_file.content
 
     def write_json(self, doc_json, filename):
-        print "writing " + filename + " to file!"
+        print 'writing ' + filename + ' to file!'
         with open (self.export_dir + filename + '.json', 'w') as json_file:
             json.dump(doc_json, json_file, indent=4)
 
@@ -226,7 +226,7 @@ class sc_client:
                      filename: Desired name of file on disk
         Returns:     None
         '''
-        with open (self.export_dir + filename + ".pdf", 'w') as pdf_file:
+        with open (self.export_dir + filename + '.pdf', 'w') as pdf_file:
             pdf_file.write(pdf_doc.content)
 
     def get_pdf(self, audit_id):
@@ -245,13 +245,13 @@ class sc_client:
         Returns:    JSON audit object
         '''
 
-        logger = logging.getLogger("sp_logger")
+        logger = logging.getLogger('sp_logger')
 
         get_doc = requests.get(self.audit_url + audit_id, headers = self.auth_header)
 
         if get_doc.status_code == 200:
-            logger.info(str(get_doc.status_code) + " status received on GET for " + audit_id)
+            logger.info(str(get_doc.status_code) + ' status received on GET for ' + audit_id)
             doc_json = json.JSONDecoder(object_pairs_hook=collections.OrderedDict).decode(get_doc.content)
             return doc_json
         else:
-            logger.error(str(get_doc.status_code) + " status received on GET for " + audit_id)
+            logger.error(str(get_doc.status_code) + ' status received on GET for ' + audit_id)
