@@ -9,32 +9,56 @@ import dateutil.parser
 import time
 import logging
 import collections
+import configparser
+import re
 
 class sc_client:
 
-    def __init__(self, api_token):
-        self.auth_header = {"Authorization": "Bearer " + api_token }
-        self.api_url = "https://api.safetyculture.io/"
-        self.audit_url = self.api_url + "audits/"
-        self.template_search_url = self.api_url + 'templates/search?field=template_id&field=name'
-
-        self.pdf_dict = {}
-        self.error_list = []
-
+    def __init__(self):
         self.current_dir = os.getcwd()
         self.log_dir = self.current_dir + "/log/"
         self.export_dir = self.current_dir + "/exports/"
 
         self.validate_log_directory(self.log_dir)
         self.validate_export_directory(self.export_dir)
-
         self.configure_logging()
+        self.api_key = self.parse_api_key()
+        if self.api_key:
+
+            self.auth_header = {"Authorization": "Bearer " + self.api_key }
+            self.api_url = "https://api.safetyculture.io/"
+            self.audit_url = self.api_url + "audits/"
+            self.template_search_url = self.api_url + 'templates/search?field=template_id&field=name'
+
+
+
+
+
+
+
+
+    def parse_api_key(self):
+        logger = logging.getLogger("sp_logger")
+        config = configparser.ConfigParser()
+        config.read('config.ini')
+        try:
+            api_key = config['API']['key']
+            key_is_valid = re.match('[a-z0-9]{64}', api_key)
+            if key_is_valid:
+                logger.debug("API key matched pattern")
+                return api_key
+            else:
+                logger.error("API key: " + api_key + " failed pattern match")
+                return None
+        except Exception as ex:
+                logger.exception('')
+                return None
 
 
     def configure_logging(self):
         log_filename = datetime.now().strftime('%Y-%m-%d') + ".log"
         sp_logger = logging.getLogger("sp_logger")
-        sp_logger.setLevel(logging.INFO)
+        sp_logger.setLevel(logging.DEBUG)
         formatter = logging.Formatter("%(asctime)s : %(levelname)s : %(message)s")
 
         fh = logging.FileHandler(filename=self.log_dir + log_filename)
