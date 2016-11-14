@@ -9,7 +9,7 @@ import dateutil.parser
 import time
 import logging
 import collections
-import configparser
+import yaml
 import re
 
 class sc_client:
@@ -19,28 +19,25 @@ class sc_client:
         self.log_dir = self.current_dir + '/log/'
         self.export_dir = self.current_dir + '/exports/'
 
+        self.api_url = 'https://api.safetyculture.io/'
+        self.audit_url = self.api_url + 'audits/'
+        self.template_search_url = self.api_url + 'templates/search?field=template_id&field=name'
+
         self.validate_log_directory(self.log_dir)
         self.validate_export_directory(self.export_dir)
         self.configure_logging()
         self.api_key = self.parse_api_key()
+
         if self.api_key:
 
             self.auth_header = {'Authorization': 'Bearer ' + self.api_key }
-            self.api_url = 'https://api.safetyculture.io/'
-            self.audit_url = self.api_url + 'audits/'
-            self.template_search_url = self.api_url + 'templates/search?field=template_id&field=name'
-
-
-
-
-
-
 
 
     def parse_api_key(self):
         logger = logging.getLogger('sp_logger')
-        config = configparser.ConfigParser()
-        config.read('config.ini')
+        with open('config.yaml', 'r') as f:
+            config = yaml.load(f)
+        
         try:
             api_key = config['API']['key']
             key_is_valid = re.match('[a-z0-9]{64}', api_key)
