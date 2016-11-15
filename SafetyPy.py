@@ -11,33 +11,34 @@ import logging
 import collections
 import yaml
 import re
+import sys
 
 class sc_client:
 
     def __init__(self):
         self.current_dir = os.getcwd()
         self.log_dir = self.current_dir + '/log/'
-        self.export_dir = self.current_dir + '/exports/'
 
         self.api_url = 'https://api.safetyculture.io/'
         self.audit_url = self.api_url + 'audits/'
         self.template_search_url = self.api_url + 'templates/search?field=template_id&field=name'
 
         self.validate_log_directory(self.log_dir)
-        self.validate_export_directory(self.export_dir)
         self.configure_logging()
         self.api_key = self.parse_api_key()
 
         if self.api_key:
-
             self.auth_header = {'Authorization': 'Bearer ' + self.api_key }
-
+        else:
+            print "No valid API key parsed!"
+            print "Exiting!"
+            sys.exit()
 
     def parse_api_key(self):
         logger = logging.getLogger('sp_logger')
         with open('config.yaml', 'r') as f:
             config = yaml.load(f)
-        
+
         try:
             api_key = config['API']['key']
             key_is_valid = re.match('[a-z0-9]{64}', api_key)
@@ -70,14 +71,6 @@ class sc_client:
         '''
         if not os.path.isdir(log_dir):
             os.mkdir(log_dir)
-
-    def validate_export_directory(self, export_dir):
-        '''
-        check for export subdirectory (current directory + '/exports/')
-        create it if it doesn't exist
-        '''
-        if not os.path.isdir(export_dir):
-            os.mkdir(export_dir)
 
     #discover_audits takes no arguments, and returns a list of all audits visible to the API token used in auth_header
     def discover_audits(self, template_id = None, modified_after = None, completed = False):
@@ -141,24 +134,7 @@ class sc_client:
 
         return template_ids.json()
 
-    def set_last_successful(self, dateModified):
-        with open(self.log_dir + 'lastSuccessful.txt', 'w') as lastModifiedFile:
-            lastModifiedFile.write(dateModified)
-
-    def get_last_successful(self):
-        logger = logging.getLogger('sp_logger')
-        if os.path.exists(self.log_dir + 'lastSuccessful.txt'):
-            with open (self.log_dir + 'lastSuccessful.txt', 'r+') as lastRun:
-                lastSuccessful = lastRun.readlines()[0]
-        else:
-            lastSuccessful = '2000-01-01T00:00:00.000Z'
-            with open (self.log_dir + 'lastSuccessful.txt', 'w') as lastRun:
-                lastRun.write(lastSuccessful)
-            logger.warning('lastSuccessful.txt NOT FOUND, creating file with default date')
-
-        return lastSuccessful
-
-
+    
     def get_export_id(self, audit_id):
         '''
         Parameters : audit_id   Retrieves export_id for given audit_id
@@ -217,14 +193,6 @@ class sc_client:
         with open (self.export_dir + filename + '.json', 'w') as json_file:
             json.dump(doc_json, json_file, indent=4)
 
-    def write_pdf(self, pdf_doc, filename):
-        '''
-        Parameters:  pdf_doc:  String representation of pdf document
-                     filename: Desired name of file on disk
-        Returns:     None
-        '''
-        with open (self.export_dir + filename + '.pdf', 'w') as pdf_file:
-            pdf_file.write(pdf_doc.content)
 
     def get_pdf(self, audit_id):
         '''
