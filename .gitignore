@@ -1,0 +1,8 @@
+.DS_Store
+tools/exporter/.DS_Store
+*.pyc
+.idea/
+exports/
+log/
+tools/exporter/exports/
+tools/exporter/log/
