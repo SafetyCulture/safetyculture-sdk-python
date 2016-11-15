@@ -71,4 +71,3 @@ for audit in results['audits']:
     pdf_doc = scClient.get_pdf(audit_id)
     write_pdf(export_path, pdf_doc, audit_id)
     set_last_successful(audit['modified_at'])
-    break
