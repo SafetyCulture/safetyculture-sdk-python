@@ -134,12 +134,12 @@ class sc_client:
         return template_ids.json()
 
 
-    def get_export_id(self, audit_id):
+    def get_export_id(self, audit_id, timezone="Etc/UTC"):
         '''
         Parameters : audit_id   Retrieves export_id for given audit_id
         Returns:     export ID from API
         '''
-        export_url = self.audit_url + audit_id + '/export?format=pdf&timezone=Australia/Brisbane'
+        export_url = self.audit_url + audit_id + '/export?format=pdf&timezone=' + timezone
         export_response =  requests.post(export_url, headers = self.auth_header)
         return export_response.json()
 
