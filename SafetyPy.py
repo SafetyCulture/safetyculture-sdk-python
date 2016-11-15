@@ -5,7 +5,6 @@ import requests
 import json
 from datetime import datetime
 import os
-import dateutil.parser
 import time
 import logging
 import collections
@@ -134,7 +133,7 @@ class sc_client:
 
         return template_ids.json()
 
-    
+
     def get_export_id(self, audit_id):
         '''
         Parameters : audit_id   Retrieves export_id for given audit_id
