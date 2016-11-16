@@ -136,9 +136,9 @@ class sc_client:
         return template_ids.json()
 
 
-    def get_export_id(self, audit_id, timezone="Etc/UTC"):
+    def get_export_job_id(self, audit_id, timezone="Etc/UTC"):
         '''
-        Parameters : audit_id   Retrieves export_id for given audit_id
+        Parameters : audit_id   Retrieves export_job_id for given audit_id
         Returns:     export ID from API
         '''
         export_url = self.audit_url + audit_id + '/export?format=pdf&timezone=' + timezone
@@ -146,14 +146,14 @@ class sc_client:
         return export_response.json()
 
 
-    def poll_for_export(self, audit_id, export_id):
+    def poll_for_export(self, audit_id, export_job_id):
         '''
         Parameters:  audit_id  audit_id of the export to poll for
-                     export_id export_id of the export to poll for
+                      export_job_id of the export to poll for
         Return:      href for export download
         '''
         delay = .5
-        poll_url = self.audit_url + audit_id + '/exports/' + export_id
+        poll_url = self.audit_url + audit_id + '/exports/' + export_job_id
         poll_status = requests.get(poll_url, headers = self.auth_header)
         status = poll_status.json()
 
@@ -161,7 +161,7 @@ class sc_client:
             if (status['status'] == 'IN PROGRESS'):
                 print status['status'] + ' : ' + audit_id
                 time.sleep(delay)
-                return self.poll_for_export(audit_id, export_id)
+                return self.poll_for_export(audit_id, export_job_id)
 
             elif status['status'] == 'SUCCESS':
                 print status['status'] + ' : ' + audit_id
@@ -172,7 +172,7 @@ class sc_client:
             #  Consider adding limitations to how many times it will retry a given audit
             #   That way, if for some reason an audit will *always* fail, it won't get stuck in a loop forever.
             print 'retrying export process for: ' + audit_id
-            retry_id = self.get_export_id(audit_id)
+            retry_id = self.get_export_job_id(audit_id)
             return self.poll_for_export(audit_id, retry_id['id'])
 
     def download_pdf(self, pdf_href):
@@ -200,8 +200,8 @@ class sc_client:
         Parameters: audit_id of pdf to obtain
         Returns: string representation of pdf document
         '''
-        export_id = self.get_export_id(audit_id)['id']
-        pdf_href = self.poll_for_export(audit_id, export_id)
+        export_job_id = self.get_export_job_id(audit_id)['id']
+        pdf_href = self.poll_for_export(audit_id, export_job_id)
         pdf_doc = self.download_pdf(pdf_href)
         return pdf_doc
 
