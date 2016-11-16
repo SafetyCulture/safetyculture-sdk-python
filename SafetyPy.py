@@ -12,7 +12,7 @@ import yaml
 import re
 import sys
 
-class sc_client:
+class safetyculture:
 
     def __init__(self):
         self.current_dir = os.getcwd()

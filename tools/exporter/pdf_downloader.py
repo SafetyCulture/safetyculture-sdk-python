@@ -62,24 +62,24 @@ def write_pdf(export_dir, pdf_doc, filename):
         pdf_file.write(pdf_doc)
 
 def set_last_successful(dateModified):
-    with open(scClient.log_dir + 'last_successful.txt', 'w') as lastModifiedFile:
+    with open(sc_client.log_dir + 'last_successful.txt', 'w') as lastModifiedFile:
         lastModifiedFile.write(dateModified)
 
 def get_last_successful():
     logger = logging.getLogger('sp_logger')
-    if os.path.exists(scClient.log_dir + 'last_successful.txt'):
-        with open (scClient.log_dir + 'last_successful.txt', 'r+') as lastRun:
+    if os.path.exists(sc_client.log_dir + 'last_successful.txt'):
+        with open (sc_client.log_dir + 'last_successful.txt', 'r+') as lastRun:
             last_successful = lastRun.readlines()[0]
     else:
         beginning_of_time = '2000-01-01T00:00:00.000Z'
         last_successful = beginning_of_time
-        with open (scClient.log_dir + 'last_successful.txt', 'w') as lastRun:
+        with open (sc_client.log_dir + 'last_successful.txt', 'w') as lastRun:
             lastRun.write(last_successful)
         logger.warning('last_successful.txt NOT FOUND, creating file with default date')
 
     return last_successful
 
-scClient = sp.sc_client()
+sc_client = sp.safetyculture()
 logger = logging.getLogger('pdf_logger')
 
 export_path = get_export_path()
@@ -90,13 +90,13 @@ else:
     ensure_exports_folder_exists(os.getcwd() + '/exports')
 
 last_successful = get_last_successful()
-results = scClient.discover_audits(modified_after = last_successful)
+results = sc_client.discover_audits(modified_after = last_successful)
 
 logger.info(str(results['total']) + ' audits discovered')
 
 for audit in results['audits']:
     audit_id = audit['audit_id']
     logger.info('processing ' + audit_id)
-    pdf_doc = scClient.get_pdf(audit_id)
+    pdf_doc = sc_client.get_pdf(audit_id)
     write_pdf(export_path, pdf_doc, audit_id)
     set_last_successful(audit['modified_at'])
