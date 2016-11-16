@@ -24,6 +24,7 @@ class sc_client:
 
         self.validate_log_directory(self.log_dir)
         self.configure_logging()
+        logger = logging.getLogger('sp_logger')
 
         with open('config.yaml', 'r') as config_file:
             self.config_settings = yaml.load(config_file)
@@ -33,8 +34,7 @@ class sc_client:
         if self.api_token:
             self.auth_header = {'Authorization': 'Bearer ' + self.api_token }
         else:
-            print "No valid API token parsed!"
-            print "Exiting!"
+            logger.error("No valid API token parsed! Exiting!")
             sys.exit()
 
     def parse_api_token(self, config):
@@ -50,20 +50,31 @@ class sc_client:
                 logger.error('API token failed pattern match')
                 return None
         except Exception as ex:
-                logger.exception('')
+                self.log_exception(ex, 'Exception parsing API token from config.yaml')
                 return None
 
+    def log_exception(self, ex, message):
+        logger = logging.getLogger('sp_logger')
+        logger.critical(message)
+        logger.critical(ex)
 
     def configure_logging(self):
+        LOG_LEVEL = logging.DEBUG
+
         log_filename = datetime.now().strftime('%Y-%m-%d') + '.log'
         sp_logger = logging.getLogger('sp_logger')
-        sp_logger.setLevel(logging.DEBUG)
+        sp_logger.setLevel(LOG_LEVEL)
         formatter = logging.Formatter('%(asctime)s : %(levelname)s : %(message)s')
 
         fh = logging.FileHandler(filename=self.log_dir + log_filename)
-        fh.setLevel(logging.INFO)
+        fh.setLevel(LOG_LEVEL)
         fh.setFormatter(formatter)
         sp_logger.addHandler(fh)
+
+        sh = logging.StreamHandler(sys.stdout)
+        sh.setLevel(LOG_LEVEL)
+        sh.setFormatter(formatter)
+        sp_logger.addHandler(sh)
 
     def validate_log_directory(self, log_dir):
         '''
@@ -156,22 +167,22 @@ class sc_client:
         poll_url = self.audit_url + audit_id + '/exports/' + export_job_id
         poll_status = requests.get(poll_url, headers = self.auth_header)
         status = poll_status.json()
-
+        logger = logging.getLogger('sp_logger')
         if 'status' in status.keys():
             if (status['status'] == 'IN PROGRESS'):
-                print status['status'] + ' : ' + audit_id
+                logger.info(str(status['status']) + ' : ' + audit_id)
                 time.sleep(delay)
                 return self.poll_for_export(audit_id, export_job_id)
 
             elif status['status'] == 'SUCCESS':
-                print status['status'] + ' : ' + audit_id
+                logger.info(str(status['status']) + ' : ' + audit_id)
                 return status['href']
 
         else:
             #TODO:
             #  Consider adding limitations to how many times it will retry a given audit
             #   That way, if for some reason an audit will *always* fail, it won't get stuck in a loop forever.
-            print 'retrying export process for: ' + audit_id
+            logger.info('retrying export process for: ' + audit_id)
             retry_id = self.get_export_job_id(audit_id)
             return self.poll_for_export(audit_id, retry_id['id'])
 
