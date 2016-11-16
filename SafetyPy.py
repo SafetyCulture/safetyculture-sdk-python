@@ -24,28 +24,30 @@ class sc_client:
 
         self.validate_log_directory(self.log_dir)
         self.configure_logging()
-        self.api_key = self.parse_api_key()
 
-        if self.api_key:
-            self.auth_header = {'Authorization': 'Bearer ' + self.api_key }
+        with open('config.yaml', 'r') as config_file:
+            self.config_settings = yaml.load(config_file)
+
+        self.api_token = self.parse_api_token(self.config_settings)
+
+        if self.api_token:
+            self.auth_header = {'Authorization': 'Bearer ' + self.api_token }
         else:
-            print "No valid API key parsed!"
+            print "No valid API token parsed!"
             print "Exiting!"
             sys.exit()
 
-    def parse_api_key(self):
+    def parse_api_token(self, config):
         logger = logging.getLogger('sp_logger')
-        with open('config.yaml', 'r') as f:
-            config = yaml.load(f)
 
         try:
-            api_key = config['API']['key']
-            key_is_valid = re.match('[a-z0-9]{64}', api_key)
-            if key_is_valid:
-                logger.debug('API key matched pattern')
-                return api_key
+            api_token = config['API']['token']
+            token_is_valid = re.match('[a-z0-9]{64}', api_token)
+            if token_is_valid:
+                logger.debug('API token matched pattern')
+                return api_token
             else:
-                logger.error('API key: ' + api_key + ' failed pattern match')
+                logger.error('API token failed pattern match')
                 return None
         except Exception as ex:
                 logger.exception('')
