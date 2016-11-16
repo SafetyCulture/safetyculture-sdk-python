@@ -1,8 +1,8 @@
 import logging
 import os
-
+from datetime import datetime
 import yaml
-
+import sys
 import SafetyPy as sp
 
 
@@ -26,7 +26,15 @@ def get_export_path():
         return None
 
 
-def configure_logging(self):
+def ensure_log_folder_exists(log_dir):
+    '''
+    check for log subdirectory (current directory + '/log/')
+    create it if it doesn't exist
+    '''
+    if not os.path.isdir(log_dir):
+        os.mkdir(log_dir)
+
+def configure_logging(log_dir):
     LOG_LEVEL = logging.DEBUG
 
     log_filename = datetime.now().strftime('%Y-%m-%d') + '.log'
@@ -34,7 +42,7 @@ def configure_logging(self):
     pdf_logger.setLevel(LOG_LEVEL)
     formatter = logging.Formatter('%(asctime)s : %(levelname)s : %(message)s')
 
-    fh = logging.FileHandler(filename=self.log_dir + log_filename)
+    fh = logging.FileHandler(filename=log_dir + log_filename)
     fh.setLevel(LOG_LEVEL)
     fh.setFormatter(formatter)
     pdf_logger.addHandler(fh)
@@ -58,7 +66,12 @@ def write_pdf(export_dir, pdf_doc, filename):
                  filename: Desired name of file on disk
     Returns:     None
     '''
-    with open (export_dir + '/' + filename + '.pdf', 'w') as pdf_file:
+    logger = logging.getLogger('pdf_logger')
+    file_path = export_dir + '/' + filename + '.pdf'
+    if os.path.isfile(file_path):
+        logger.info('Overwriting existing PDF report at ' + file_path)
+
+    with open (file_path, 'w') as pdf_file:
         pdf_file.write(pdf_doc)
 
 def set_last_successful(dateModified):
@@ -80,14 +93,20 @@ def get_last_successful():
     return last_successful
 
 sc_client = sp.safetyculture()
+
+log_dir = os.getcwd() + '/log/'
+
+ensure_log_folder_exists(log_dir)
+configure_logging(log_dir)
 logger = logging.getLogger('pdf_logger')
 
 export_path = get_export_path()
-if export_path:
+if export_path is not None:
     ensure_exports_folder_exists(export_path)
 else:
     logger.info('No valid export path from config, defaulting to /exports')
-    ensure_exports_folder_exists(os.getcwd() + '/exports')
+    export_path = os.getcwd() + '/exports'
+    ensure_exports_folder_exists(export_path)
 
 last_successful = get_last_successful()
 results = sc_client.discover_audits(modified_after = last_successful)
@@ -96,7 +115,8 @@ logger.info(str(results['total']) + ' audits discovered')
 
 for audit in results['audits']:
     audit_id = audit['audit_id']
-    logger.info('processing ' + audit_id)
+    logger.info('downloading ' + audit_id)
     pdf_doc = sc_client.get_pdf(audit_id)
+
     write_pdf(export_path, pdf_doc, audit_id)
     set_last_successful(audit['modified_at'])
