@@ -17,7 +17,7 @@ def get_export_path():
         print ex
         return None
 
-def validate_export_path(export_dir):
+def ensure_exports_folder_exists(export_dir):
     '''
     check for export subdirectory
     create it if it doesn't exist
@@ -55,10 +55,10 @@ scClient = sp.sc_client()
 
 export_path = get_export_path()
 if export_path:
-    validate_export_path(export_path)
+    ensure_exports_folder_exists(export_path)
 else:
     print "No valid export path from config, defaulting to /exports"
-    validate_export_path(os.getcwd() + "/exports")
+    ensure_exports_folder_exists(os.getcwd() + "/exports")
 
 lastSuccessful = get_last_successful()
 results = scClient.discover_audits(modified_after = lastSuccessful)
