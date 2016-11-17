@@ -53,7 +53,7 @@ class safetyculture:
             self.log_exception(ex, 'Exception parsing API token from config.yaml')
             return None
 
-    def log_exception(ex, message):
+    def log_exception(self, ex, message):
         logger = logging.getLogger('sp_logger')
         logger.critical(message)
         logger.critical(ex)
@@ -187,7 +187,7 @@ class safetyculture:
     def download_pdf(self, pdf_href):
         '''
         Parameters:  pdf_href:  href obtained from poll_for_export for export doc to download
-        Returns:     String representation of pdf docuemnt
+        Returns:     String representation of pdf document
         '''
 
         logger = logging.getLogger('sp_logger')
