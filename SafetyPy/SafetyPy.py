@@ -1,5 +1,5 @@
-#Author: Larry Landon
-#Copyright: SafetyCulture, Ltd.
+# Author: Larry Landon
+# Copyright: SafetyCulture, Ltd.
 
 import requests
 import json
@@ -12,8 +12,8 @@ import yaml
 import re
 import sys
 
-class safetyculture:
 
+class safetyculture:
     def __init__(self):
         self.current_dir = os.getcwd()
         self.log_dir = self.current_dir + '/log/'
@@ -32,7 +32,7 @@ class safetyculture:
         self.api_token = self.parse_api_token(self.config_settings)
 
         if self.api_token:
-            self.auth_header = {'Authorization': 'Bearer ' + self.api_token }
+            self.auth_header = {'Authorization': 'Bearer ' + self.api_token}
         else:
             logger.error("No valid API token parsed! Exiting!")
             sys.exit()
@@ -50,10 +50,10 @@ class safetyculture:
                 logger.error('API token failed pattern match')
                 return None
         except Exception as ex:
-                self.log_exception(ex, 'Exception parsing API token from config.yaml')
-                return None
+            self.log_exception(ex, 'Exception parsing API token from config.yaml')
+            return None
 
-    def log_exception(self, ex, message):
+    def log_exception(ex, message):
         logger = logging.getLogger('sp_logger')
         logger.critical(message)
         logger.critical(ex)
@@ -84,8 +84,8 @@ class safetyculture:
         if not os.path.isdir(log_dir):
             os.mkdir(log_dir)
 
-    #discover_audits takes no arguments, and returns a list of all audits visible to the API token used in auth_header
-    def discover_audits(self, template_id = None, modified_after = None, completed = False):
+    # discover_audits takes no arguments, and returns a list of all audits visible to the API token used in auth_header
+    def discover_audits(self, template_id=None, modified_after=None, completed=False):
         '''
         Parameters: (optional) template_id     Restrict discovery to this template_id
                     (optional) modified_after  Restrict discovery to audits modified after this value
@@ -95,16 +95,15 @@ class safetyculture:
 
         logger = logging.getLogger('sp_logger')
 
-
         if modified_after is None:
-            lastModified = '2000-01-01T00:00:00.000Z'
+            last_modified = '2000-01-01T00:00:00.000Z'
         else:
-            lastModified = modified_after
+            last_modified = modified_after
 
-        search_url = self.audit_url + 'search?field=audit_id&field=modified_at&modified_after='+lastModified
+        search_url = self.audit_url + 'search?field=audit_id&field=modified_at&modified_after=' + lastModified
         log_string = '\nInitiating audit_discovery with the parameters: ' + '\n'
         log_string += 'template_id    = ' + str(template_id) + '\n'
-        log_string += 'modified_after = '+ str(lastModified) + '\n'
+        log_string += 'modified_after = ' + str(lastModified) + '\n'
         log_string += 'completed      = ' + str(completed) + '\n'
         logger.info(log_string)
 
@@ -114,18 +113,19 @@ class safetyculture:
         if completed:
             search_url += '&completed=true'
 
-        results = requests.get(search_url, headers = self.auth_header)
+        results = requests.get(search_url, headers=self.auth_header)
         status_code = results.status_code
 
         if status_code / 100 == 2:
             response = results.json()
-            logger.info(str(status_code) + ' status received on audit_discovery: ' + str(response['total']) + ' discovered')
+            logger.info(
+                str(status_code) + ' status received on audit_discovery: ' + str(response['total']) + ' discovered')
             return response
         else:
             logger.error(str(status_code) + ' status received on audit_discovery using ' + search_url)
             return None
 
-    def discover_templates(self, modified_after = None, modified_before = None):
+    def discover_templates(self, modified_after=None, modified_before=None):
         '''
         Parameters: (optional) modified_after   Restrict discovery to templates modified after this value
                     (optional) modified_before  Restrict discovery to templates modified before this value
@@ -140,12 +140,11 @@ class safetyculture:
         if modified_after is not None:
             search_url += '&modified_after=' + modified_after
 
-        template_ids = requests.get(search_url, headers = self.auth_header)
+        template_ids = requests.get(search_url, headers=self.auth_header)
 
         logger.info(str(template_ids.status_code) + ' received on template discovery')
 
         return template_ids.json()
-
 
     def get_export_job_id(self, audit_id, timezone="Etc/UTC"):
         '''
@@ -153,9 +152,8 @@ class safetyculture:
         Returns:     export ID from API
         '''
         export_url = self.audit_url + audit_id + '/export?format=pdf&timezone=' + timezone
-        export_response =  requests.post(export_url, headers = self.auth_header)
+        export_response = requests.post(export_url, headers=self.auth_header)
         return export_response.json()
-
 
     def poll_for_export(self, audit_id, export_job_id):
         '''
@@ -165,11 +163,11 @@ class safetyculture:
         '''
         delay = .5
         poll_url = self.audit_url + audit_id + '/exports/' + export_job_id
-        poll_status = requests.get(poll_url, headers = self.auth_header)
+        poll_status = requests.get(poll_url, headers=self.auth_header)
         status = poll_status.json()
         logger = logging.getLogger('sp_logger')
         if 'status' in status.keys():
-            if (status['status'] == 'IN PROGRESS'):
+            if status['status'] == 'IN PROGRESS':
                 logger.info(str(status['status']) + ' : ' + audit_id)
                 time.sleep(delay)
                 return self.poll_for_export(audit_id, export_job_id)
@@ -179,7 +177,7 @@ class safetyculture:
                 return status['href']
 
         else:
-            #TODO:
+            # TODO:
             #  Consider adding limitations to how many times it will retry a given audit
             #   That way, if for some reason an audit will *always* fail, it won't get stuck in a loop forever.
             logger.info('retrying export process for: ' + audit_id)
@@ -194,7 +192,7 @@ class safetyculture:
 
         logger = logging.getLogger('sp_logger')
 
-        doc_file = requests.get(pdf_href, headers = self.auth_header)
+        doc_file = requests.get(pdf_href, headers=self.auth_header)
 
         logger.info(str(doc_file.status_code) + ' status received on GET for href: ' + pdf_href)
 
@@ -202,9 +200,8 @@ class safetyculture:
 
     def write_json(self, doc_json, filename):
         print 'writing ' + filename + ' to file!'
-        with open (self.export_dir + filename + '.json', 'w') as json_file:
+        with open(self.export_dir + filename + '.json', 'w') as json_file:
             json.dump(doc_json, json_file, indent=4)
-
 
     def get_pdf(self, audit_id):
         '''
@@ -224,7 +221,7 @@ class safetyculture:
 
         logger = logging.getLogger('sp_logger')
 
-        get_doc = requests.get(self.audit_url + audit_id, headers = self.auth_header)
+        get_doc = requests.get(self.audit_url + audit_id, headers=self.auth_header)
 
         if get_doc.status_code == 200:
             logger.info(str(get_doc.status_code) + ' status received on GET for ' + audit_id)

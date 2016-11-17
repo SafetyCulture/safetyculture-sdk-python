@@ -14,8 +14,8 @@ def log_exception(ex, message):
     logger.critical(message)
     logger.critical(ex)
 
-def get_export_path():
 
+def get_export_path():
     with open('pdf_config.yaml', 'r') as config_file:
         config = yaml.load(config_file)
     try:
@@ -37,6 +37,7 @@ def ensure_log_folder_exists(log_dir):
     if not os.path.isdir(log_dir):
         os.mkdir(log_dir)
 
+
 def configure_logging(log_dir):
     LOG_LEVEL = logging.DEBUG
 
@@ -55,6 +56,7 @@ def configure_logging(log_dir):
     sh.setFormatter(formatter)
     pdf_logger.addHandler(sh)
 
+
 def ensure_exports_folder_exists(export_dir):
     '''
     check for export subdirectory
@@ -62,6 +64,7 @@ def ensure_exports_folder_exists(export_dir):
     '''
     if not os.path.isdir(export_dir):
         os.mkdir(export_dir)
+
 
 def write_pdf(export_dir, pdf_doc, filename):
     '''
@@ -74,29 +77,30 @@ def write_pdf(export_dir, pdf_doc, filename):
     if os.path.isfile(file_path):
         logger.info('Overwriting existing PDF report at ' + file_path)
     try:
-        with open (file_path, 'w') as pdf_file:
+        with open(file_path, 'w') as pdf_file:
             pdf_file.write(pdf_doc)
     except Exception as ex:
         log_exception(ex, "Exception while writing" + file_path + " to file")
 
-def set_last_successful(dateModified):
+
+def set_last_successful(date_modified):
     with open(os.path.join(sc_client.log_dir, 'last_successful.txt'), 'w') as last_modified_file:
-        last_modified_file.write(dateModified)
+        last_modified_file.write(date_modified)
+
 
 def get_last_successful():
     logger = logging.getLogger('sp_logger')
     if os.path.exists(os.path.join(sc_client.log_dir, 'last_successful.txt')):
-        with open (os.path.join(sc_client.log_dir, 'last_successful.txt'), 'r+') as last_run:
+        with open(os.path.join(sc_client.log_dir, 'last_successful.txt'), 'r+') as last_run:
             last_successful = last_run.readlines()[0]
     else:
         beginning_of_time = '2000-01-01T00:00:00.000Z'
         last_successful = beginning_of_time
-        with open (os.path.join(sc_client.log_dir, 'last_successful.txt'), 'w') as last_run:
+        with open(os.path.join(sc_client.log_dir, 'last_successful.txt'), 'w') as last_run:
             last_run.write(last_successful)
         logger.info('Searching for audits since beginning of time')
 
     return last_successful
-
 
 
 sc_client = sp.safetyculture()
@@ -116,7 +120,7 @@ else:
     ensure_exports_folder_exists(export_path)
 
 last_successful = get_last_successful()
-results = sc_client.discover_audits(modified_after = last_successful)
+results = sc_client.discover_audits(modified_after=last_successful)
 
 logger.info(str(results['total']) + ' audits discovered')
 
