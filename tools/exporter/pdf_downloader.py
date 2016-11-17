@@ -3,7 +3,7 @@ import os
 from datetime import datetime
 import yaml
 import sys
-from ..SafetyPy import SafetyPy as sp
+import SafetyPy as sp
 
 
 def log_exception(ex, message):
@@ -75,22 +75,24 @@ def write_pdf(export_dir, pdf_doc, filename):
         pdf_file.write(pdf_doc)
 
 def set_last_successful(dateModified):
-    with open(sc_client.log_dir + 'last_successful.txt', 'w') as lastModifiedFile:
-        lastModifiedFile.write(dateModified)
+    with open(sc_client.log_dir + 'last_successful.txt', 'w') as last_modified_file:
+        last_modified_file.write(dateModified)
 
 def get_last_successful():
     logger = logging.getLogger('sp_logger')
     if os.path.exists(sc_client.log_dir + 'last_successful.txt'):
-        with open (sc_client.log_dir + 'last_successful.txt', 'r+') as lastRun:
+        with open (sc_client.log_dir + 'last_successful.txt', 'r+') as last_run:
             last_successful = lastRun.readlines()[0]
     else:
         beginning_of_time = '2000-01-01T00:00:00.000Z'
         last_successful = beginning_of_time
-        with open (sc_client.log_dir + 'last_successful.txt', 'w') as lastRun:
-            lastRun.write(last_successful)
+        with open (sc_client.log_dir + 'last_successful.txt', 'w') as last_run:
+            last_run.write(last_successful)
         logger.info('Searching for audits since beginning of time')
 
     return last_successful
+
+
 
 sc_client = sp.safetyculture()
 
