@@ -1,2 +1,2 @@
 export_options:
-    export_path: /exports
+    export_path: exports
