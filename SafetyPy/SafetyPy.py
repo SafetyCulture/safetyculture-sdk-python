@@ -198,7 +198,6 @@ class safetyculture:
 
         return doc_file.content
 
- 
 
     def get_pdf(self, audit_id):
         """
