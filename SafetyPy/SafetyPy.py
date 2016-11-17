@@ -77,21 +77,21 @@ class safetyculture:
         sp_logger.addHandler(sh)
 
     def validate_log_directory(self, log_dir):
-        '''
+        """
         check for log subdirectory (current directory + '/log/')
         create it if it doesn't exist
-        '''
+        """
         if not os.path.isdir(log_dir):
             os.mkdir(log_dir)
 
     # discover_audits takes no arguments, and returns a list of all audits visible to the API token used in auth_header
     def discover_audits(self, template_id=None, modified_after=None, completed=False):
-        '''
+        """
         Parameters: (optional) template_id     Restrict discovery to this template_id
                     (optional) modified_after  Restrict discovery to audits modified after this value
 
         Passing no parameters, it will return all audits with no restrictions
-        '''
+        """
 
         logger = logging.getLogger('sp_logger')
 
@@ -126,12 +126,12 @@ class safetyculture:
             return None
 
     def discover_templates(self, modified_after=None, modified_before=None):
-        '''
+        """
         Parameters: (optional) modified_after   Restrict discovery to templates modified after this value
                     (optional) modified_before  Restrict discovery to templates modified before this value
 
         Passing no parameters, it will discover templates with no restrictions
-        '''
+        """
         logger = logging.getLogger('sp_logger')
 
         search_url = self.template_search_url
@@ -147,20 +147,20 @@ class safetyculture:
         return template_ids.json()
 
     def get_export_job_id(self, audit_id, timezone="Etc/UTC"):
-        '''
+        """
         Parameters : audit_id   Retrieves export_job_id for given audit_id
         Returns:     export ID from API
-        '''
+        """
         export_url = self.audit_url + audit_id + '/export?format=pdf&timezone=' + timezone
         export_response = requests.post(export_url, headers=self.auth_header)
         return export_response.json()
 
     def poll_for_export(self, audit_id, export_job_id):
-        '''
+        """
         Parameters:  audit_id  audit_id of the export to poll for
                       export_job_id of the export to poll for
         Return:      href for export download
-        '''
+        """
         delay = .5
         poll_url = self.audit_url + audit_id + '/exports/' + export_job_id
         poll_status = requests.get(poll_url, headers=self.auth_header)
@@ -185,10 +185,10 @@ class safetyculture:
             return self.poll_for_export(audit_id, retry_id['id'])
 
     def download_pdf(self, pdf_href):
-        '''
+        """
         Parameters:  pdf_href:  href obtained from poll_for_export for export doc to download
         Returns:     String representation of pdf document
-        '''
+        """
 
         logger = logging.getLogger('sp_logger')
 
@@ -204,20 +204,20 @@ class safetyculture:
             json.dump(doc_json, json_file, indent=4)
 
     def get_pdf(self, audit_id):
-        '''
+        """
         Parameters: audit_id of pdf to obtain
         Returns: string representation of pdf document
-        '''
+        """
         export_job_id = self.get_export_job_id(audit_id)['id']
         pdf_href = self.poll_for_export(audit_id, export_job_id)
         pdf_doc = self.download_pdf(pdf_href)
         return pdf_doc
 
     def get_audit(self, audit_id):
-        '''
+        """
         Parameters: audit_id of document to fetch
         Returns:    JSON audit object
-        '''
+        """
 
         logger = logging.getLogger('sp_logger')
 

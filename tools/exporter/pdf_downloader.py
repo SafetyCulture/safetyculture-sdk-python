@@ -30,10 +30,10 @@ def get_export_path():
 
 
 def ensure_log_folder_exists(log_dir):
-    '''
+    """
     check for log subdirectory (current directory + '/log/')
     create it if it doesn't exist
-    '''
+    """
     if not os.path.isdir(log_dir):
         os.mkdir(log_dir)
 
@@ -58,20 +58,20 @@ def configure_logging(log_dir):
 
 
 def ensure_exports_folder_exists(export_dir):
-    '''
+    """
     check for export subdirectory
     create it if it doesn't exist
-    '''
+    """
     if not os.path.isdir(export_dir):
         os.mkdir(export_dir)
 
 
 def write_pdf(export_dir, pdf_doc, filename):
-    '''
+    """
     Parameters:  pdf_doc:  String representation of pdf document
                  filename: Desired name of file on disk
     Returns:     None
-    '''
+    """
     logger = logging.getLogger('pdf_logger')
     file_path = os.path.join(export_dir, filename + '.pdf')
     if os.path.isfile(file_path):
