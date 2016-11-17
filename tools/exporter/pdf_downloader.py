@@ -3,7 +3,7 @@ import os
 from datetime import datetime
 import yaml
 import sys
-import SafetyPy as sp
+from ..SafetyPy import SafetyPy as sp
 
 
 def log_exception(ex, message):
@@ -88,7 +88,7 @@ def get_last_successful():
         last_successful = beginning_of_time
         with open (sc_client.log_dir + 'last_successful.txt', 'w') as lastRun:
             lastRun.write(last_successful)
-        logger.warning('last_successful.txt NOT FOUND, creating file with default date')
+        logger.info('Searching for audits since beginning of time')
 
     return last_successful
 
