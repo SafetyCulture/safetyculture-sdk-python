@@ -1,9 +1,12 @@
 import logging
 import os
-from datetime import datetime
-import yaml
 import sys
-import SafetyPy as sp
+from datetime import datetime
+
+import yaml
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+from SafetyPy import SafetyPy as sp
 
 
 def log_exception(ex, message):

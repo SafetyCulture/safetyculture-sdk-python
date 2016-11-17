@@ -26,8 +26,8 @@ class safetyculture:
         self.configure_logging()
         logger = logging.getLogger('sp_logger')
 
-        with open('config.yaml', 'r') as config_file:
-            self.config_settings = yaml.load(config_file)
+        module_dir = os.path.dirname(__file__)
+        self.config_settings = yaml.safe_load(open(os.path.join(module_dir, "config.yaml")))
 
         self.api_token = self.parse_api_token(self.config_settings)
 
