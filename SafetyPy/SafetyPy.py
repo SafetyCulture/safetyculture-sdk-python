@@ -198,10 +198,7 @@ class safetyculture:
 
         return doc_file.content
 
-    def write_json(self, doc_json, filename):
-        print 'writing ' + filename + ' to file!'
-        with open(self.export_dir + filename + '.json', 'w') as json_file:
-            json.dump(doc_json, json_file, indent=4)
+ 
 
     def get_pdf(self, audit_id):
         """
