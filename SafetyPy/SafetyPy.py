@@ -100,10 +100,10 @@ class safetyculture:
         else:
             last_modified = modified_after
 
-        search_url = self.audit_url + 'search?field=audit_id&field=modified_at&modified_after=' + lastModified
+        search_url = self.audit_url + 'search?field=audit_id&field=modified_at&modified_after=' + last_modified
         log_string = '\nInitiating audit_discovery with the parameters: ' + '\n'
         log_string += 'template_id    = ' + str(template_id) + '\n'
-        log_string += 'modified_after = ' + str(lastModified) + '\n'
+        log_string += 'modified_after = ' + str(last_modified) + '\n'
         log_string += 'completed      = ' + str(completed) + '\n'
         logger.info(log_string)
 
