@@ -96,7 +96,7 @@ class safetyculture:
         logger = logging.getLogger('sp_logger')
 
 
-        if modified_after == None:
+        if modified_after is None:
             lastModified = '2000-01-01T00:00:00.000Z'
         else:
             lastModified = modified_after
@@ -135,9 +135,9 @@ class safetyculture:
         logger = logging.getLogger('sp_logger')
 
         search_url = self.template_search_url
-        if modified_before != None:
+        if modified_before is not None:
             search_url += '&modified_before=' + modified_before
-        if modified_after != None:
+        if modified_after is not None:
             search_url += '&modified_after=' + modified_after
 
         template_ids = requests.get(search_url, headers = self.auth_header)
