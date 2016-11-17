@@ -70,9 +70,11 @@ def write_pdf(export_dir, pdf_doc, filename):
     file_path = export_dir + '/' + filename + '.pdf'
     if os.path.isfile(file_path):
         logger.info('Overwriting existing PDF report at ' + file_path)
-
-    with open (file_path, 'w') as pdf_file:
-        pdf_file.write(pdf_doc)
+    try:
+        with open (file_path, 'w') as pdf_file:
+            pdf_file.write(pdf_doc)
+    except Exception as ex:
+        log_exception(ex, "Exception while writing" + file_path + " to file")
 
 def set_last_successful(dateModified):
     with open(sc_client.log_dir + 'last_successful.txt', 'w') as last_modified_file:
