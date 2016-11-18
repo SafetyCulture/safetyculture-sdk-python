@@ -84,19 +84,19 @@ def write_pdf(export_dir, pdf_doc, filename):
 
 
 def set_last_successful(date_modified):
-    with open(os.path.join(sc_client.log_dir, 'last_successful.txt'), 'w') as last_modified_file:
+    with open('last_successful.txt', 'w') as last_modified_file:
         last_modified_file.write(date_modified)
 
 
 def get_last_successful():
     logger = logging.getLogger('sp_logger')
-    if os.path.exists(os.path.join(sc_client.log_dir, 'last_successful.txt')):
-        with open(os.path.join(sc_client.log_dir, 'last_successful.txt'), 'r+') as last_run:
+    if os.path.isfile('last_successful.txt'):
+        with open('last_successful.txt', 'r+') as last_run:
             last_successful = last_run.readlines()[0]
     else:
         beginning_of_time = '2000-01-01T00:00:00.000Z'
         last_successful = beginning_of_time
-        with open(os.path.join(sc_client.log_dir, 'last_successful.txt'), 'w') as last_run:
+        with open('last_successful.txt', 'w') as last_run:
             last_run.write(last_successful)
         logger.info('Searching for audits since beginning of time')
 
