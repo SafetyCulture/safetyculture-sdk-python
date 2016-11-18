@@ -1,10 +1,10 @@
 import logging
 import os
 import sys
-from datetime import datetime
-
 import yaml
-
+import pytz
+from datetime import datetime
+from tzlocal import get_localzone
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 from SafetyPy import SafetyPy as sp
 
@@ -15,11 +15,9 @@ def log_exception(ex, message):
     logger.critical(ex)
 
 
-def get_export_path():
-    with open('pdf_config.yaml', 'r') as config_file:
-        config = yaml.load(config_file)
+def get_export_path(config_settings):
     try:
-        export_path = config['export_options']['export_path']
+        export_path = config_settings['export_options']['export_path']
         if export_path:
             return os.path.join(os.path.dirname(__file__), export_path)
         else:
@@ -27,6 +25,21 @@ def get_export_path():
     except Exception as ex:
         log_exception(ex, 'Exception getting export path from pdf_config.yaml')
         return None
+
+
+def get_timezone(config_settings):
+    try:
+        timezone = config_settings['export_options']['timezone']
+
+        if timezone is None or timezone not in pytz.all_timezones:
+            timezone = get_localzone()
+            logger = logging.getLogger('pdf_logger')
+            logger.info('no valid timezone in config file, defaulting to local timezone')
+        return str(timezone)
+    except Exception as ex:
+        log_exception(ex, 'Exception parsing timezone from config')
+        timezone = get_localzone()
+        return str(timezone)
 
 
 def ensure_log_folder_exists(log_dir):
@@ -111,7 +124,11 @@ ensure_log_folder_exists(log_dir)
 configure_logging(log_dir)
 logger = logging.getLogger('pdf_logger')
 
-export_path = get_export_path()
+config_settings = yaml.safe_load(open('pdf_config.yaml'))
+
+export_path = get_export_path(config_settings)
+timezone = get_timezone(config_settings)
+
 if export_path is not None:
     ensure_exports_folder_exists(export_path)
 else:
@@ -127,7 +144,7 @@ logger.info(str(results['total']) + ' audits discovered')
 for audit in results['audits']:
     audit_id = audit['audit_id']
     logger.info('downloading ' + audit_id)
-    pdf_doc = sc_client.get_pdf(audit_id)
+    pdf_doc = sc_client.get_pdf(audit_id, timezone)
 
     write_pdf(export_path, pdf_doc, audit_id)
     set_last_successful(audit['modified_at'])

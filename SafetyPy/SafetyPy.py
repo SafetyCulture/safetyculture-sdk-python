@@ -146,7 +146,7 @@ class safetyculture:
 
         return template_ids.json()
 
-    def get_export_job_id(self, audit_id, timezone="Etc/UTC"):
+    def get_export_job_id(self, audit_id, timezone='Etc/UTC'):
         """
         Parameters : audit_id   Retrieves export_job_id for given audit_id
         Returns:     export ID from API
@@ -199,12 +199,12 @@ class safetyculture:
         return doc_file.content
 
 
-    def get_pdf(self, audit_id):
+    def get_pdf(self, audit_id, timezone='Etc/UTC'):
         """
         Parameters: audit_id of pdf to obtain
         Returns: string representation of pdf document
         """
-        export_job_id = self.get_export_job_id(audit_id)['id']
+        export_job_id = self.get_export_job_id(audit_id, timezone)['id']
         pdf_href = self.poll_for_export(audit_id, export_job_id)
         pdf_doc = self.download_pdf(pdf_href)
         return pdf_doc
