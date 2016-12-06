@@ -19,7 +19,7 @@ def get_export_path(config_settings):
     try:
         export_path = config_settings['export_options']['export_path']
         if export_path:
-            return os.path.join(os.path.dirname(__file__), export_path)
+            return export_path
         else:
             return None
     except Exception as ex:
@@ -135,6 +135,7 @@ else:
     logger.info('No valid export path from config, defaulting to /exports')
     export_path = os.path.join(os.getcwd(), 'exports')
     ensure_exports_folder_exists(export_path)
+
 
 last_successful = get_last_successful()
 results = sc_client.discover_audits(modified_after=last_successful)
