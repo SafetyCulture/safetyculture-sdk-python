@@ -10,7 +10,6 @@ from SafetyPy import SafetyPy as sp
 
 
 def log_exception(ex, message):
-    logger = logging.getLogger('pdf_logger')
     logger.critical(message)
     logger.critical(ex)
 
@@ -30,10 +29,8 @@ def get_export_path(config_settings):
 def get_timezone(config_settings):
     try:
         timezone = config_settings['export_options']['timezone']
-
         if timezone is None or timezone not in pytz.all_timezones:
             timezone = get_localzone()
-            logger = logging.getLogger('pdf_logger')
             logger.info('no valid timezone in config file, defaulting to local timezone')
         return str(timezone)
     except Exception as ex:
@@ -85,7 +82,6 @@ def write_pdf(export_dir, pdf_doc, filename):
                  filename: Desired name of file on disk
     Returns:     None
     """
-    logger = logging.getLogger('pdf_logger')
     file_path = os.path.join(export_dir, filename + '.pdf')
     if os.path.isfile(file_path):
         logger.info('Overwriting existing PDF report at ' + file_path)
@@ -102,7 +98,6 @@ def set_last_successful(date_modified):
 
 
 def get_last_successful():
-    logger = logging.getLogger('sp_logger')
     if os.path.isfile('last_successful.txt'):
         with open('last_successful.txt', 'r+') as last_run:
             last_successful = last_run.readlines()[0]
