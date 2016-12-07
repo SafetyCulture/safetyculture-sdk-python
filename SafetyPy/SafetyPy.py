@@ -12,9 +12,11 @@ import yaml
 import re
 import sys
 
+DEFAULT_EXPORT_TIMEZONE = 'Etc/UTC'
 
 class safetyculture:
     def __init__(self):
+
         self.current_dir = os.getcwd()
         self.log_dir = self.current_dir + '/log/'
 
@@ -146,7 +148,7 @@ class safetyculture:
 
         return template_ids.json()
 
-    def get_export_job_id(self, audit_id, timezone='Etc/UTC'):
+    def get_export_job_id(self, audit_id, timezone=DEFAULT_EXPORT_TIMEZONE):
         """
         Parameters : audit_id   Retrieves export_job_id for given audit_id
         Returns:     export ID from API
@@ -199,7 +201,7 @@ class safetyculture:
         return doc_file.content
 
 
-    def get_pdf(self, audit_id, timezone='Etc/UTC'):
+    def get_pdf(self, audit_id, timezone=DEFAULT_EXPORT_TIMEZONE):
         """
         Parameters: audit_id of pdf to obtain
         Returns: string representation of pdf document
