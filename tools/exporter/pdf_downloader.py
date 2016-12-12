@@ -13,6 +13,24 @@ def log_exception(ex, message):
     logger.critical(message)
     logger.critical(ex)
 
+def get_export_profile_mapping(config_settings):
+    try:
+        profile_mapping = {}
+        export_profiles = config_settings['export_profiles']
+        if export_profiles is not None:
+            profile_lines = export_profiles.split(" ")
+
+            for profile in profile_lines:
+                template_id = profile[:profile.index(':')]
+                if template_id not in profile_mapping.keys():
+                    profile_mapping[template_id] = profile
+        return profile_mapping
+    except KeyError as ex:
+        logger.debug('No export profile key in config')
+        return None
+    except Exception as ex:
+        log_exception(ex, 'Exception getting export profiles from pdf_config.yaml')
+        return None
 
 def get_export_path(config_settings):
     try:
@@ -123,6 +141,7 @@ config_settings = yaml.safe_load(open('pdf_config.yaml'))
 
 export_path = get_export_path(config_settings)
 timezone = get_timezone(config_settings)
+export_profiles = get_export_profile_mapping(config_settings)
 
 if export_path is not None:
     ensure_exports_folder_exists(export_path)
@@ -140,7 +159,13 @@ logger.info(str(results['total']) + ' audits discovered')
 for audit in results['audits']:
     audit_id = audit['audit_id']
     logger.info('downloading ' + audit_id)
-    pdf_doc = sc_client.get_pdf(audit_id, timezone)
+    audit_json = sc_client.get_audit(audit_id)
+    template_id = audit_json['template_id']
+    if template_id in export_profiles.keys():
+        export_profile_id = export_profiles[template_id]
+    else:
+        export_profile_id = None
+    pdf_doc = sc_client.get_pdf(audit_id, timezone, export_profile_id)
 
     write_pdf(export_path, pdf_doc, audit_id)
     set_last_successful(audit['modified_at'])

@@ -120,7 +120,7 @@ class safetyculture:
         results = requests.get(search_url, headers=self.auth_header)
         status_code = results.status_code
 
-        if status_code / 100 == 2:
+        if status_code == 200:
             response = results.json()
             logger.info(
                 str(status_code) + ' status received on audit_discovery: ' + str(response['total']) + ' discovered')
@@ -152,12 +152,14 @@ class safetyculture:
 
         return template_ids.json()
 
-    def get_export_job_id(self, audit_id, timezone=DEFAULT_EXPORT_TIMEZONE):
+    def get_export_job_id(self, audit_id, timezone=DEFAULT_EXPORT_TIMEZONE, export_profile_id=None):
         """
         Parameters : audit_id   Retrieves export_job_id for given audit_id
         Returns:     export ID from API
         """
         export_url = self.audit_url + audit_id + '/export?format=pdf&timezone=' + timezone
+        if export_profile_id is not None:
+            export_url += '&export_profile=' + export_profile_id
         export_response = requests.post(export_url, headers=self.auth_header)
         return export_response.json()
 
@@ -206,12 +208,12 @@ class safetyculture:
         return doc_file.content
 
 
-    def get_pdf(self, audit_id, timezone=DEFAULT_EXPORT_TIMEZONE):
+    def get_pdf(self, audit_id, timezone=DEFAULT_EXPORT_TIMEZONE, export_profile_id=None):
         """
         Parameters: audit_id of pdf to obtain
         Returns: string representation of pdf document
         """
-        export_job_id = self.get_export_job_id(audit_id, timezone)['id']
+        export_job_id = self.get_export_job_id(audit_id, timezone, export_profile_id)['id']
         pdf_href = self.poll_for_export(audit_id, export_job_id)
         pdf_doc = self.download_pdf(pdf_href)
         return pdf_doc
