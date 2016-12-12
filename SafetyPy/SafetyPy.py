@@ -1,16 +1,16 @@
 # Author: Larry Landon
 # Copyright: SafetyCulture, Ltd.
 
-import requests
-import json
-from datetime import datetime
-import os
-import time
-import logging
 import collections
-import yaml
+import json
+import logging
+import os
 import re
 import sys
+import time
+from datetime import datetime
+import requests
+import yaml
 
 DEFAULT_EXPORT_TIMEZONE = 'Etc/UTC'
 
@@ -55,28 +55,30 @@ class safetyculture:
             self.log_exception(ex, 'Exception parsing API token from config.yaml')
             return None
 
+
     def log_exception(self, ex, message):
         logger = logging.getLogger('sp_logger')
         logger.critical(message)
         logger.critical(ex)
 
     def configure_logging(self):
-        LOG_LEVEL = logging.DEBUG
+        log_level = logging.DEBUG
 
         log_filename = datetime.now().strftime('%Y-%m-%d') + '.log'
         sp_logger = logging.getLogger('sp_logger')
-        sp_logger.setLevel(LOG_LEVEL)
+        sp_logger.setLevel(log_level)
         formatter = logging.Formatter('%(asctime)s : %(levelname)s : %(message)s')
 
         fh = logging.FileHandler(filename=self.log_dir + log_filename)
-        fh.setLevel(LOG_LEVEL)
+        fh.setLevel(log_level)
         fh.setFormatter(formatter)
         sp_logger.addHandler(fh)
 
         sh = logging.StreamHandler(sys.stdout)
-        sh.setLevel(LOG_LEVEL)
+        sh.setLevel(log_level)
         sh.setFormatter(formatter)
         sp_logger.addHandler(sh)
+
 
     def validate_log_directory(self, log_dir):
         """
@@ -86,11 +88,11 @@ class safetyculture:
         if not os.path.isdir(log_dir):
             os.mkdir(log_dir)
 
-    # discover_audits takes no arguments, and returns a list of all audits visible to the API token used in auth_header
     def discover_audits(self, template_id=None, modified_after=None, completed=False):
         """
         Parameters: (optional) template_id     Restrict discovery to this template_id
-                    (optional) modified_after  Restrict discovery to audits modified after this value
+                    (optional) modified_after  Restrict discovery to audits modified
+                                               after this value
 
         Passing no parameters, it will return all audits with no restrictions
         """
@@ -129,8 +131,10 @@ class safetyculture:
 
     def discover_templates(self, modified_after=None, modified_before=None):
         """
-        Parameters: (optional) modified_after   Restrict discovery to templates modified after this value
-                    (optional) modified_before  Restrict discovery to templates modified before this value
+        Parameters: (optional) modified_after   Restrict discovery to templates modified
+                                                after this value
+                    (optional) modified_before  Restrict discovery to templates modified
+                                                before this value
 
         Passing no parameters, it will discover templates with no restrictions
         """
@@ -181,7 +185,8 @@ class safetyculture:
         else:
             # TODO:
             #  Consider adding limitations to how many times it will retry a given audit
-            #   That way, if for some reason an audit will *always* fail, it won't get stuck in a loop forever.
+            #   That way, if for some reason an audit will *always* fail, it won't get
+            #   stuck in a loop forever.
             logger.info('retrying export process for: ' + audit_id)
             retry_id = self.get_export_job_id(audit_id)
             return self.poll_for_export(audit_id, retry_id['id'])
