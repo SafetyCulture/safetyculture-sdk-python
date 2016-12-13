@@ -153,6 +153,20 @@ class safetyculture:
 
         return template_ids.json()
 
+    def get_export_profile(self, export_profile_id):
+        """
+        :param export_profile_id:  Export profile id of the profile to retrieve
+        :return:                   Export profile in JSON format
+        """
+        logger = logging.getLogger('sp_logger')
+        export_profile_url = self.api_url + "/export_profiles/" + export_profile_id
+        response = requests.get(export_profile_url, headers=self.auth_header)
+        logger.info(str(response.status_code) + ' status received on export profile retrieval')
+        if response.status_code == requests.codes.ok:
+            export_profile = json.JSONDecoder(object_pairs_hook=collections.OrderedDict).decode(response.content)
+            return export_profile
+
+
     def get_export_job_id(self, audit_id, timezone=DEFAULT_EXPORT_TIMEZONE, export_profile_id=None):
         """
         Parameters : audit_id           Retrieves export_job_id for given audit_id
@@ -174,6 +188,7 @@ class safetyculture:
         """
         delay = .5
         poll_url = self.audit_url + audit_id + '/exports/' + export_job_id
+        export_attempts = 1
         poll_status = requests.get(poll_url, headers=self.auth_header)
         status = poll_status.json()
         logger = logging.getLogger('sp_logger')
@@ -188,13 +203,13 @@ class safetyculture:
                 return status['href']
 
         else:
-            # TODO:
-            #  Consider adding limitations to how many times it will retry a given audit
-            #   That way, if for some reason an audit will *always* fail, it won't get
-            #   stuck in a loop forever.
-            logger.info('retrying export process for: ' + audit_id)
-            retry_id = self.get_export_job_id(audit_id)
-            return self.poll_for_export(audit_id, retry_id['id'])
+            if export_attempts < 2:
+                export_attempts += 1
+                logger.info('retrying export process for: ' + audit_id)
+                retry_id = self.get_export_job_id(audit_id)
+                return self.poll_for_export(audit_id, retry_id['id'])
+            else:
+                logger.error("export for " + audit_id + " failed more than once - skipping it and moving on")
 
     def download_pdf(self, pdf_href):
         """
