@@ -28,10 +28,11 @@ export_profiles:
 
 Definition of config parameters:
 
-export_path:     absolute or relative path to export directory
-timezone   :     must be a valid Olson timezone, if invalid or missing, will default to local timezone
+*export_path*:     absolute or relative path to export directory
 
-export_profiles: For every template which should have an export profile applied, an export profile id must be supplied
+*timezone*   :     must be a valid Olson timezone, if invalid or missing, will default to local timezone
+
+*export_profiles*: For every template which should have an export profile applied, an export profile id must be supplied
                    This id can be obtained via the Public API
                    Templates for which there is no export profile id listed will be exported without a profile applied
 
