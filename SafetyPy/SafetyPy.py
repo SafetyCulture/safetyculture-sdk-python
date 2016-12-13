@@ -92,8 +92,9 @@ class safetyculture:
         """
         Parameters: (optional) template_id     Restrict discovery to this template_id
                     (optional) modified_after  Restrict discovery to audits modified
-                                               after this value
-
+                                               after this UTC timestamp
+                    (optional) completed       Restrict discovery to audits marked
+                                               as completed, default to False
         Passing no parameters, it will return all audits with no restrictions
         """
 
@@ -132,9 +133,9 @@ class safetyculture:
     def discover_templates(self, modified_after=None, modified_before=None):
         """
         Parameters: (optional) modified_after   Restrict discovery to templates modified
-                                                after this value
+                                                after this UTC timestamp
                     (optional) modified_before  Restrict discovery to templates modified
-                                                before this value
+                                                before this UTC timestamp
 
         Passing no parameters, it will discover templates with no restrictions
         """
@@ -154,7 +155,9 @@ class safetyculture:
 
     def get_export_job_id(self, audit_id, timezone=DEFAULT_EXPORT_TIMEZONE, export_profile_id=None):
         """
-        Parameters : audit_id   Retrieves export_job_id for given audit_id
+        Parameters : audit_id           Retrieves export_job_id for given audit_id
+                     timezone           Timezone to apply to exports
+                     export_profile_id  Export Profile to apply to exports
         Returns:     export ID from API
         """
         export_url = self.audit_url + audit_id + '/export?format=pdf&timezone=' + timezone
@@ -210,7 +213,9 @@ class safetyculture:
 
     def get_pdf(self, audit_id, timezone=DEFAULT_EXPORT_TIMEZONE, export_profile_id=None):
         """
-        Parameters: audit_id of pdf to obtain
+        Parameters: audit_id                        audit_id of pdf to obtain
+                    (optional) timezone             timezone to apply to exports
+                    (optional) export_profile_id    export profile to apply to exports
         Returns: string representation of pdf document
         """
         export_job_id = self.get_export_job_id(audit_id, timezone, export_profile_id)['id']
