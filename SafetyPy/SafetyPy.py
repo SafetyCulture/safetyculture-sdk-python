@@ -120,7 +120,7 @@ class safetyculture:
         results = requests.get(search_url, headers=self.auth_header)
         status_code = results.status_code
 
-        if status_code == 200:
+        if status_code == requests.codes.ok:
             response = results.json()
             logger.info(
                 str(status_code) + ' status received on audit_discovery: ' + str(response['total']) + ' discovered')
@@ -228,7 +228,7 @@ class safetyculture:
 
         get_doc = requests.get(self.audit_url + audit_id, headers=self.auth_header)
 
-        if get_doc.status_code == 200:
+        if get_doc.status_code == requests.codes.ok:
             logger.info(str(get_doc.status_code) + ' status received on GET for ' + audit_id)
             doc_json = json.JSONDecoder(object_pairs_hook=collections.OrderedDict).decode(get_doc.content)
             return doc_json
