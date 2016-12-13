@@ -151,6 +151,7 @@ def get_last_successful():
 
     return last_successful
 
+
 def main(config_filename):
     sc_client = sp.safetyculture()
 
@@ -170,7 +171,12 @@ def main(config_filename):
     results = sc_client.discover_audits(modified_after=last_successful)
     logger.info(str(results['total']) + ' audits discovered')
 
+    export_count = 1
+    export_total = results['total']
+
     for audit in results['audits']:
+        logger.info('Processing audit (' + str(export_count) + '/' + str(export_total) + ')')
+        export_count += 1
         audit_id = audit['audit_id']
         logger.info('downloading ' + audit_id)
         audit_json = sc_client.get_audit(audit_id)
