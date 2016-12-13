@@ -1,9 +1,9 @@
 import logging
 import os
 import sys
+from datetime import datetime
 import yaml
 import pytz
-from datetime import datetime
 from tzlocal import get_localzone
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 from SafetyPy import SafetyPy as sp
@@ -14,12 +14,20 @@ def log_exception(ex, message):
     logger.critical(ex)
 
 def get_export_profile_mapping(config_settings):
+    """
+    Attempt to extract export profile id's from config file
+    If valid id's are found, return a dict mapping templates to
+      export profiles
+    Otherwise return None
+
+    :param config_settings:
+    :return: dict of valid export_profile_id's, or None
+    """
     try:
         profile_mapping = {}
-        export_profiles = config_settings['export_profiles']
-        if export_profiles is not None:
-            profile_lines = export_profiles.split(" ")
-
+        export_profile_settings = config_settings['export_profiles']
+        if export_profile_settings is not None:
+            profile_lines = export_profile_settings.split(" ")
             for profile in profile_lines:
                 template_id = profile[:profile.index(':')]
                 if template_id not in profile_mapping.keys():
@@ -33,6 +41,10 @@ def get_export_profile_mapping(config_settings):
         return None
 
 def get_export_path(config_settings):
+    """
+    Attempt to extract export path from config settings
+    :return: export path, None if path is invalid or missing
+    """
     try:
         export_path = config_settings['export_options']['export_path']
         if export_path:
@@ -45,6 +57,10 @@ def get_export_path(config_settings):
 
 
 def get_timezone(config_settings):
+    """
+    Attempt to extract Olson timezone from config settings
+    :return: extracted timezone, default to local timezone on exception
+    """
     try:
         timezone = config_settings['export_options']['timezone']
         if timezone is None or timezone not in pytz.all_timezones:
@@ -116,6 +132,10 @@ def set_last_successful(date_modified):
 
 
 def get_last_successful():
+    """
+    :return: timestamp stored in last_successful.txt or timestamp
+             old enough to effectively be the beginning of time
+    """
     if os.path.isfile('last_successful.txt'):
         with open('last_successful.txt', 'r+') as last_run:
             last_successful = last_run.readlines()[0]
@@ -128,44 +148,43 @@ def get_last_successful():
 
     return last_successful
 
+def main():
+    sc_client = sp.safetyculture()
 
-sc_client = sp.safetyculture()
+    log_dir = os.path.join(os.getcwd(), 'log')
+    ensure_log_folder_exists(log_dir)
+    configure_logging(log_dir)
+    global logger
+    logger = logging.getLogger('pdf_logger')
 
-log_dir = os.path.join(os.getcwd(), 'log')
+    config_settings = yaml.safe_load(open('pdf_config.yaml'))
+    export_path = get_export_path(config_settings)
+    timezone = get_timezone(config_settings)
+    export_profiles = get_export_profile_mapping(config_settings)
 
-ensure_log_folder_exists(log_dir)
-configure_logging(log_dir)
-logger = logging.getLogger('pdf_logger')
-
-config_settings = yaml.safe_load(open('pdf_config.yaml'))
-
-export_path = get_export_path(config_settings)
-timezone = get_timezone(config_settings)
-export_profiles = get_export_profile_mapping(config_settings)
-
-if export_path is not None:
-    ensure_exports_folder_exists(export_path)
-else:
-    logger.info('No valid export path from config, defaulting to /exports')
-    export_path = os.path.join(os.getcwd(), 'exports')
-    ensure_exports_folder_exists(export_path)
-
-
-last_successful = get_last_successful()
-results = sc_client.discover_audits(modified_after=last_successful)
-
-logger.info(str(results['total']) + ' audits discovered')
-
-for audit in results['audits']:
-    audit_id = audit['audit_id']
-    logger.info('downloading ' + audit_id)
-    audit_json = sc_client.get_audit(audit_id)
-    template_id = audit_json['template_id']
-    if template_id in export_profiles.keys():
-        export_profile_id = export_profiles[template_id]
+    if export_path is not None:
+        ensure_exports_folder_exists(export_path)
     else:
-        export_profile_id = None
-    pdf_doc = sc_client.get_pdf(audit_id, timezone, export_profile_id)
+        logger.info('No valid export path from config, defaulting to /exports')
+        export_path = os.path.join(os.getcwd(), 'exports')
+        ensure_exports_folder_exists(export_path)
 
-    write_pdf(export_path, pdf_doc, audit_id)
-    set_last_successful(audit['modified_at'])
+    last_successful = get_last_successful()
+    results = sc_client.discover_audits(modified_after=last_successful)
+    logger.info(str(results['total']) + ' audits discovered')
+
+    for audit in results['audits']:
+        audit_id = audit['audit_id']
+        logger.info('downloading ' + audit_id)
+        audit_json = sc_client.get_audit(audit_id)
+        template_id = audit_json['template_id']
+        if template_id in export_profiles.keys():
+            export_profile_id = export_profiles[template_id]
+        else:
+            export_profile_id = None
+        pdf_doc = sc_client.get_pdf(audit_id, timezone, export_profile_id)
+
+        write_pdf(export_path, pdf_doc, audit_id)
+        set_last_successful(audit['modified_at'])
+
+main()
