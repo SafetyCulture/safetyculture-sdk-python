@@ -1,3 +1,4 @@
+import argparse
 import logging
 import os
 import sys
@@ -7,6 +8,10 @@ import pytz
 from tzlocal import get_localzone
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 from SafetyPy import SafetyPy as sp
+
+
+DEFAULT_CONFIG_FILE = 'pdf_config.yaml'
+LOG_LEVEL = logging.DEBUG
 
 
 def log_exception(ex, message):
@@ -34,10 +39,10 @@ def get_export_profile_mapping(config_settings):
                     profile_mapping[template_id] = profile
         return profile_mapping
     except KeyError as ex:
-        logger.debug('No export profile key in config')
+        logger.debug('No export profile key in ' + config_filename)
         return None
     except Exception as ex:
-        log_exception(ex, 'Exception getting export profiles from pdf_config.yaml')
+        log_exception(ex, 'Exception getting export profiles from ' + config_filename)
         return None
 
 def get_export_path(config_settings):
@@ -52,7 +57,7 @@ def get_export_path(config_settings):
         else:
             return None
     except Exception as ex:
-        log_exception(ex, 'Exception getting export path from pdf_config.yaml')
+        log_exception(ex, 'Exception getting export path from ' + config_filename)
         return None
 
 
@@ -65,10 +70,10 @@ def get_timezone(config_settings):
         timezone = config_settings['export_options']['timezone']
         if timezone is None or timezone not in pytz.all_timezones:
             timezone = get_localzone()
-            logger.info('no valid timezone in config file, defaulting to local timezone')
+            logger.info('no valid timezone in ' + config_filename + ', defaulting to local timezone')
         return str(timezone)
     except Exception as ex:
-        log_exception(ex, 'Exception parsing timezone from config')
+        log_exception(ex, 'Exception parsing timezone from ' + config_filename)
         timezone = get_localzone()
         return str(timezone)
 
@@ -83,8 +88,6 @@ def ensure_log_folder_exists(log_dir):
 
 
 def configure_logging(log_dir):
-    LOG_LEVEL = logging.DEBUG
-
     log_filename = datetime.now().strftime('%Y-%m-%d') + '.log'
     pdf_logger = logging.getLogger('pdf_logger')
     pdf_logger.setLevel(LOG_LEVEL)
@@ -148,16 +151,10 @@ def get_last_successful():
 
     return last_successful
 
-def main():
+def main(config_filename):
     sc_client = sp.safetyculture()
 
-    log_dir = os.path.join(os.getcwd(), 'log')
-    ensure_log_folder_exists(log_dir)
-    configure_logging(log_dir)
-    global logger
-    logger = logging.getLogger('pdf_logger')
-
-    config_settings = yaml.safe_load(open('pdf_config.yaml'))
+    config_settings = yaml.safe_load(open(config_filename))
     export_path = get_export_path(config_settings)
     timezone = get_timezone(config_settings)
     export_profiles = get_export_profile_mapping(config_settings)
@@ -165,7 +162,7 @@ def main():
     if export_path is not None:
         ensure_exports_folder_exists(export_path)
     else:
-        logger.info('No valid export path from config, defaulting to /exports')
+        logger.info('No valid export path from ' + config_filename + ', defaulting to /exports')
         export_path = os.path.join(os.getcwd(), 'exports')
         ensure_exports_folder_exists(export_path)
 
@@ -187,4 +184,23 @@ def main():
         write_pdf(export_path, pdf_doc, audit_id)
         set_last_successful(audit['modified_at'])
 
-main()
+
+log_dir = os.path.join(os.getcwd(), 'log')
+ensure_log_folder_exists(log_dir)
+configure_logging(log_dir)
+logger = logging.getLogger('pdf_logger')
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--config', help='config file to use, defaults to pdf_config.yaml')
+args = parser.parse_args()
+if args.config is not None:
+    config_filename = args.config
+    if os.path.isfile(config_filename):
+        logger.debug(config_filename + ' passed as config argument')
+    else:
+        config_filename = DEFAULT_CONFIG_FILE
+        logger.info('config filename invalid, defaulting to' + DEFAULT_CONFIG_FILE)
+else:
+    config_filename = DEFAULT_CONFIG_FILE
+
+main(config_filename)
