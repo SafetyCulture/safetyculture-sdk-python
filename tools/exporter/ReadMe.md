@@ -36,5 +36,8 @@ Definition of config parameters:
 To run the export, either double-click pdf_exporter.py or execute `python pdf_exporter.py` from terminal
 
 Supported command-line arguments:
+```
   Argument    Example
-  `config`    `python pdf_exporter.py --config=alternate_config.yaml`
+
+  config      python pdf_exporter.py --config=alternate_config.yaml
+```
