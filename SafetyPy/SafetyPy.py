@@ -1,5 +1,6 @@
-# Author: Larry Landon
-# Copyright: SafetyCulture, Ltd.
+# coding=utf-8
+# Author: SafetyCulture
+# Copyright: © SafetyCulture 2016
 
 import collections
 import json

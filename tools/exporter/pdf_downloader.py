@@ -1,3 +1,7 @@
+# coding=utf-8
+# Author: SafetyCulture
+# Copyright: © SafetyCulture 2016
+
 import argparse
 import logging
 import os
