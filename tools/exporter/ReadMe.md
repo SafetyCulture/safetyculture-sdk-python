@@ -36,7 +36,8 @@ Definition of config parameters:
 *filename*   :     must be a valid item_id of a header item with a 'text' response.  Currently supported fields are Audit Title, Document No., Client / Site, Prepared By, Personnel, or any custom header item which has a 'text' type response
 
 *export_profiles*: For every template which should have an export profile applied, an export profile id must be supplied
-                   This id can be obtained via the Public API
+                   This id can be obtained via the Public API.
+                   
                    Templates for which there is no export profile id listed will be exported without a profile applied
 
 
