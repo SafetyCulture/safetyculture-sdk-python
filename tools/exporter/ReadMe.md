@@ -19,6 +19,7 @@ Example configuration of pdf_config.yaml:
 export_options:
     export_path: /Users/Monty/Dropbox
     timezone: America/Chicago
+    filename: f3245d40-ea77-11e1-aff1-0800200c9a66
 export_profiles:
     template_3E631E46F466411B9C09AD804886A8B4:E15A6525-EFA5-4835-92F0-D11CA9F364F3
     template_3E631E46F466411B9C09AD804886A8B4:E50645A1-2851-4E92-B4EA-60C5CE7981BE
@@ -32,9 +33,13 @@ Definition of config parameters:
 
 *timezone*   :     must be a valid Olson timezone, if invalid or missing, will default to local timezone
 
+*filename*   :     must be a valid item_id of a header item with a 'text' response.  Currently supported fields are Audit Title, Document No., Client / Site, Prepared By, Personnel, or any custom header item which has a 'text' type response
+
 *export_profiles*: For every template which should have an export profile applied, an export profile id must be supplied
                    This id can be obtained via the Public API
                    Templates for which there is no export profile id listed will be exported without a profile applied
+
+
 
 To run the export, either double-click pdf_exporter.py or execute `python pdf_exporter.py` from terminal
 
