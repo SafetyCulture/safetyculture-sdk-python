@@ -22,6 +22,7 @@ def log_exception(ex, message):
     logger.critical(message)
     logger.critical(ex)
 
+
 def get_export_profile_mapping(config_settings):
     """
     Attempt to extract export profile id's from config file
@@ -155,6 +156,7 @@ def get_last_successful():
 
     return last_successful
 
+
 def parse_export_filename(header_items, filename_item_id):
     for item in header_items:
         if item['item_id'] == filename_item_id:
@@ -174,6 +176,7 @@ def get_filename_item_id(config_settings):
         log_exception(ex, "Exception retrieving filename_item_id from " + config_filename)
         return None
 
+
 def main(config_filename):
     sc_client = sp.safetyculture()
 
@@ -192,36 +195,34 @@ def main(config_filename):
 
     last_successful = get_last_successful()
     results = sc_client.discover_audits(modified_after=last_successful)
-    logger.info(str(results['total']) + ' audits discovered')
 
-    export_count = 1
-    export_total = results['total']
+    if results is not None:
+        logger.info(str(results['total']) + ' audits discovered')
+        export_count = 1
+        export_total = results['total']
 
+        for audit in results['audits']:
+            logger.info('Processing audit (' + str(export_count) + '/' + str(export_total) + ')')
+            export_count += 1
+            audit_id = audit['audit_id']
+            logger.info('downloading ' + audit_id)
+            audit_json = sc_client.get_audit(audit_id)
+            template_id = audit_json['template_id']
+            if template_id in export_profiles.keys():
+                export_profile_id = export_profiles[template_id]
+            else:
+                export_profile_id = None
 
-
-    for audit in results['audits']:
-        logger.info('Processing audit (' + str(export_count) + '/' + str(export_total) + ')')
-        export_count += 1
-        audit_id = audit['audit_id']
-        logger.info('downloading ' + audit_id)
-        audit_json = sc_client.get_audit(audit_id)
-        template_id = audit_json['template_id']
-        if template_id in export_profiles.keys():
-            export_profile_id = export_profiles[template_id]
-        else:
-            export_profile_id = None
-
-        if filename_item_id is not None:
-            export_filename = parse_export_filename(audit_json['header_items'], filename_item_id)
-            if export_filename is None:
+            if filename_item_id is not None:
+                export_filename = parse_export_filename(audit_json['header_items'], filename_item_id)
+                if export_filename is None:
+                    export_filename = audit_id
+            else:
                 export_filename = audit_id
-        else:
-            export_filename = audit_id
 
-        pdf_doc = sc_client.get_pdf(audit_id, timezone, export_profile_id)
-
-        write_pdf(export_path, pdf_doc, export_filename)
-        set_last_successful(audit['modified_at'])
+            pdf_doc = sc_client.get_pdf(audit_id, timezone, export_profile_id)
+            write_pdf(export_path, pdf_doc, export_filename)
+            set_last_successful(audit['modified_at'])
 
 
 log_dir = os.path.join(os.getcwd(), 'log')
