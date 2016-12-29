@@ -14,6 +14,7 @@ import requests
 import yaml
 
 DEFAULT_EXPORT_TIMEZONE = 'Etc/UTC'
+DEFAULT_EXPORT_FORMAT = 'pdf'
 
 class safetyculture:
     def __init__(self):
@@ -185,14 +186,14 @@ class safetyculture:
             self.log_exception(ValueError, 'export_profile_id %s does not match pattern' % export_profile_id)
             return None
 
-    def get_export_job_id(self, audit_id, timezone=DEFAULT_EXPORT_TIMEZONE, export_profile_id=None):
+    def get_export_job_id(self, audit_id, timezone=DEFAULT_EXPORT_TIMEZONE, export_profile_id=None, export_format=DEFAULT_EXPORT_FORMAT):
         """
         Parameters : audit_id           Retrieves export_job_id for given audit_id
                      timezone           Timezone to apply to exports
                      export_profile_id  Export Profile to apply to exports
         Returns:     export ID from API
         """
-        export_url = self.audit_url + audit_id + '/export?format=pdf&timezone=' + timezone
+        export_url = self.audit_url + audit_id + '/export?format=' + export_format + '&timezone=' + timezone
         if export_profile_id is not None:
             profile_id_pattern = '^template_[a-fA-F0-9]{32}:[A-F0-9]{8}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{12}$'
             profile_id_is_valid = re.match(profile_id_pattern, export_profile_id)
@@ -246,13 +247,13 @@ class safetyculture:
         else:
             self.log_exception(ValueError, 'export_job_id %s does not match expected pattern' % export_job_id)
 
-    def download_pdf(self, pdf_href):
+    def download_export(self, export_href):
         """
         Parameters:  pdf_href:  href obtained from poll_for_export for export doc to download
         Returns:     String representation of pdf document
         """
-        response = requests.get(pdf_href, headers=self.auth_header)
-        log_message = ' status received on GET for href: ' + pdf_href
+        response = requests.get(export_href, headers=self.auth_header)
+        log_message = ' status received on GET for href: ' + export_href
         if response.status_code == requests.codes.ok:
             results = response.content
         else:
@@ -261,17 +262,17 @@ class safetyculture:
         self.log_http_status(response.status_code, log_message)
         return results
 
-    def get_pdf(self, audit_id, timezone=DEFAULT_EXPORT_TIMEZONE, export_profile_id=None):
+    def get_export(self, audit_id, timezone=DEFAULT_EXPORT_TIMEZONE, export_profile_id=None, export_format=DEFAULT_EXPORT_FORMAT):
         """
         Parameters: audit_id                        audit_id of pdf to obtain
                     (optional) timezone             timezone to apply to exports
                     (optional) export_profile_id    export profile to apply to exports
         Returns: string representation of pdf document
         """
-        export_job_id = self.get_export_job_id(audit_id, timezone, export_profile_id)['id']
-        pdf_href = self.poll_for_export(audit_id, export_job_id)
-        pdf_doc = self.download_pdf(pdf_href)
-        return pdf_doc
+        export_job_id = self.get_export_job_id(audit_id, timezone, export_profile_id, export_format)['id']
+        export_href = self.poll_for_export(audit_id, export_job_id)
+        export_doc = self.download_export(export_href)
+        return export_doc
 
     def get_audit(self, audit_id):
         """

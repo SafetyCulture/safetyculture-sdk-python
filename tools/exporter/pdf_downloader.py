@@ -3,6 +3,8 @@
 # Copyright: © SafetyCulture 2016
 
 import argparse
+import collections
+import json
 import logging
 import os
 import sys
@@ -118,18 +120,18 @@ def ensure_exports_folder_exists(export_dir):
         os.mkdir(export_dir)
 
 
-def write_pdf(export_dir, pdf_doc, filename):
+def write_export_doc(export_dir, export_doc, filename, extension):
     """
     Parameters:  pdf_doc:  String representation of pdf document
                  filename: Desired name of file on disk
     Returns:     None
     """
-    file_path = os.path.join(export_dir, filename + '.pdf')
+    file_path = os.path.join(export_dir, filename + '.' + extension)
     if os.path.isfile(file_path):
         logger.info('Overwriting existing PDF report at ' + file_path)
     try:
         with open(file_path, 'w') as pdf_file:
-            pdf_file.write(pdf_doc)
+            pdf_file.write(export_doc)
     except Exception as ex:
         log_exception(ex, "Exception while writing" + file_path + " to file")
 
@@ -208,6 +210,7 @@ def main(config_filename):
             logger.info('downloading ' + audit_id)
             audit_json = sc_client.get_audit(audit_id)
             template_id = audit_json['template_id']
+
             if template_id in export_profiles.keys():
                 export_profile_id = export_profiles[template_id]
             else:
@@ -220,8 +223,13 @@ def main(config_filename):
             else:
                 export_filename = audit_id
 
-            pdf_doc = sc_client.get_pdf(audit_id, timezone, export_profile_id)
-            write_pdf(export_path, pdf_doc, export_filename)
+            for export_format in export_formats:
+                if export_format in ['pdf', 'docx']:
+                    export_doc = sc_client.get_export(audit_id, timezone, export_profile_id, export_format)
+                elif export_format == 'json':
+                    export_doc = json.dumps(audit_json, indent=4)
+                write_export_doc(export_path, export_doc, export_filename, export_format)
+
             set_last_successful(audit['modified_at'])
 
 
@@ -232,7 +240,9 @@ logger = logging.getLogger('pdf_logger')
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--config', help='config file to use, defaults to pdf_config.yaml')
+parser.add_argument('--format', nargs = '*', help='formats to download, valid options are pdf, json, docx')
 args = parser.parse_args()
+
 if args.config is not None:
     config_filename = args.config
     if os.path.isfile(config_filename):
@@ -242,5 +252,19 @@ if args.config is not None:
         logger.info('config filename invalid, defaulting to' + DEFAULT_CONFIG_FILE)
 else:
     config_filename = DEFAULT_CONFIG_FILE
+
+if args.format is not None and len(args.format) > 0:
+    valid_export_formats = ['json', 'docx', 'pdf']
+    export_formats = []
+    for option in args.format:
+        if option not in valid_export_formats:
+            print option + " is not a valid export format.  Valid options are pdf, json, or docx"
+            logger.info('invalid export format argument: ' + option)
+        else:
+            export_formats.append(option)
+else:
+    export_formats = ['pdf']
+
+
 
 main(config_filename)
