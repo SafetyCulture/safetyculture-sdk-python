@@ -3,7 +3,6 @@
 # Copyright: © SafetyCulture 2016
 
 import argparse
-import collections
 import json
 import logging
 import os
@@ -133,7 +132,7 @@ def write_export_doc(export_dir, export_doc, filename, extension):
         with open(file_path, 'w') as export_file:
             export_file.write(export_doc)
     except Exception as ex:
-        log_exception(ex, "Exception while writing" + file_path + " to file")
+        log_exception(ex, 'Exception while writing' + file_path + ' to file')
 
 
 def set_last_successful(date_modified):
@@ -163,7 +162,7 @@ def parse_export_filename(header_items, filename_item_id):
     for item in header_items:
         if item['item_id'] == filename_item_id:
             if 'responses'in item.keys():
-                if 'text' in item['responses'].keys() and item['responses']['text'].strip() != "":
+                if 'text' in item['responses'].keys() and item['responses']['text'].strip() != '':
                     return item['responses']['text']
 
 
@@ -175,7 +174,7 @@ def get_filename_item_id(config_settings):
         else:
             return None
     except Exception as ex:
-        log_exception(ex, "Exception retrieving filename_item_id from " + config_filename)
+        log_exception(ex, 'Exception retrieving filename_item_id from ' + config_filename)
         return None
 
 
@@ -258,7 +257,7 @@ if args.format is not None and len(args.format) > 0:
     export_formats = []
     for option in args.format:
         if option not in valid_export_formats:
-            print option + " is not a valid export format.  Valid options are pdf, json, or docx"
+            print option + ' is not a valid export format.  Valid options are pdf, json, or docx'
             logger.info('invalid export format argument: ' + option)
         else:
             export_formats.append(option)
