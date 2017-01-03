@@ -150,7 +150,7 @@ class safetyculture:
 
     def get_export_profile(self, export_profile_id):
         """
-        :param export_profile_id:  Export profile id of the profile to retrieve
+        :param export_profile_id:  Export profile ID of the profile to retrieve
         :return:                   Export profile in JSON format
         """
         profile_id_pattern = '^template_[a-fA-F0-9]{32}:[A-F0-9]{8}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{12}$'
@@ -199,7 +199,7 @@ class safetyculture:
     def poll_for_export(self, audit_id, export_job_id):
         """
         Parameters:  audit_id  audit_id of the export to poll for
-                      export_job_id of the export to poll for
+                     export_job_id of the export to poll for
         Return:      href for export download
         """
         job_id_pattern = '^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$'
@@ -234,8 +234,8 @@ class safetyculture:
 
     def download_export(self, export_href):
         """
-        Parameters:  pdf_href:  href obtained from poll_for_export for export doc to download
-        Returns:     String representation of pdf document
+        Parameters:  export_href:  href obtained from poll_for_export for export doc to download
+        Returns:     String representation of document
         """
         response = requests.get(export_href, headers=self.auth_header)
         log_message = 'status received on GET for href: ' + export_href
@@ -246,15 +246,15 @@ class safetyculture:
 
     def get_export(self, audit_id, timezone=DEFAULT_EXPORT_TIMEZONE, export_profile_id=None, export_format=DEFAULT_EXPORT_FORMAT):
         """
-        Parameters: audit_id                        audit_id of pdf to obtain
+        Parameters: audit_id                        audit_id of export to obtain
                     (optional) timezone             timezone to apply to exports
                     (optional) export_profile_id    export profile to apply to exports
-        Returns: string representation of pdf document
+        Returns: string representation of export document
         """
         export_job_id = self.get_export_job_id(audit_id, timezone, export_profile_id, export_format)['id']
         export_href = self.poll_for_export(audit_id, export_job_id)
-        export_doc = self.download_export(export_href)
-        return export_doc
+        export_content = self.download_export(export_href)
+        return export_content
 
     def get_audit(self, audit_id):
         """

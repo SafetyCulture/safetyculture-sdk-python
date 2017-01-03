@@ -16,7 +16,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 from SafetyPy import SafetyPy as sp
 
 
-DEFAULT_CONFIG_FILE = 'pdf_config.yaml'
+DEFAULT_CONFIG_FILE = 'config.yaml'
 LOG_LEVEL = logging.DEBUG
 
 
@@ -96,19 +96,19 @@ def ensure_log_folder_exists(log_dir):
 
 def configure_logging(log_dir):
     log_filename = datetime.now().strftime('%Y-%m-%d') + '.log'
-    pdf_logger = logging.getLogger('pdf_logger')
-    pdf_logger.setLevel(LOG_LEVEL)
+    exporter_logger = logging.getLogger('exporter_logger')
+    exporter_logger.setLevel(LOG_LEVEL)
     formatter = logging.Formatter('%(asctime)s : %(levelname)s : %(message)s')
 
     fh = logging.FileHandler(filename=os.path.join(log_dir, log_filename))
     fh.setLevel(LOG_LEVEL)
     fh.setFormatter(formatter)
-    pdf_logger.addHandler(fh)
+    exporter_logger.addHandler(fh)
 
     sh = logging.StreamHandler(sys.stdout)
     sh.setLevel(LOG_LEVEL)
     sh.setFormatter(formatter)
-    pdf_logger.addHandler(sh)
+    exporter_logger.addHandler(sh)
 
 
 def ensure_exports_folder_exists(export_dir):
@@ -122,16 +122,16 @@ def ensure_exports_folder_exists(export_dir):
 
 def write_export_doc(export_dir, export_doc, filename, extension):
     """
-    Parameters:  pdf_doc:  String representation of pdf document
-                 filename: Desired name of file on disk
+    Parameters:  export_doc:   String representation of document
+                 filename:     Desired name of file on disk
     Returns:     None
     """
     file_path = os.path.join(export_dir, filename + '.' + extension)
     if os.path.isfile(file_path):
-        logger.info('Overwriting existing PDF report at ' + file_path)
+        logger.info('Overwriting existing report at ' + file_path)
     try:
-        with open(file_path, 'w') as pdf_file:
-            pdf_file.write(export_doc)
+        with open(file_path, 'w') as export_file:
+            export_file.write(export_doc)
     except Exception as ex:
         log_exception(ex, "Exception while writing" + file_path + " to file")
 
@@ -229,17 +229,17 @@ def main(config_filename):
                 elif export_format == 'json':
                     export_doc = json.dumps(audit_json, indent=4)
                 write_export_doc(export_path, export_doc, export_filename, export_format)
-
+            logger.debug('setting last modified to ' + audit['modified_at'])
             set_last_successful(audit['modified_at'])
 
 
 log_dir = os.path.join(os.getcwd(), 'log')
 ensure_log_folder_exists(log_dir)
 configure_logging(log_dir)
-logger = logging.getLogger('pdf_logger')
+logger = logging.getLogger('exporter_logger')
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--config', help='config file to use, defaults to pdf_config.yaml')
+parser.add_argument('--config', help='config file to use, defaults to ' + DEFAULT_CONFIG_FILE)
 parser.add_argument('--format', nargs = '*', help='formats to download, valid options are pdf, json, docx')
 args = parser.parse_args()
 
