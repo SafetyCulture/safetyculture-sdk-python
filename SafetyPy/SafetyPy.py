@@ -65,10 +65,7 @@ class safetyculture:
         logger = logging.getLogger('sp_logger')
         status_description = requests.status_codes._codes[status_code][0]
         log_string = str(status_code) + ' [' + status_description + '] status received ' + message
-        if status_code == requests.codes.ok:
-            logger.info(log_string)
-        else:
-            logger.error(log_string)
+        logger.info(log_string) if status_code == requests.codes.ok else logger.error(log_string)
 
     def configure_logging(self):
         log_level = logging.DEBUG
@@ -107,12 +104,9 @@ class safetyculture:
         """
         logger = logging.getLogger('sp_logger')
 
-        if modified_after is not None:
-            last_modified = modified_after
-        else:
-            last_modified = '2000-01-01T00:00:00.000Z'
+        last_modified = modified_after if modified_after is not None else '2000-01-01T00:00:00.000Z'
 
-        search_url = self.audit_url + 'search?field=audit_id&field=modified_at&modified_after=' + last_modified
+        search_url = self.audit_url + 'search?field=audit_id&field=modified_at&order=asc&modified_after=' + last_modified
         log_string = '\nInitiating audit_discovery with the parameters: ' + '\n'
         log_string += 'template_id    = ' + str(template_id) + '\n'
         log_string += 'modified_after = ' + str(last_modified) + '\n'
@@ -125,12 +119,9 @@ class safetyculture:
             search_url += '&completed=true'
 
         response = requests.get(search_url, headers=self.auth_header)
-        if response.status_code == requests.codes.ok:
-            result = response.json()
-            log_message = 'on audit_discovery: ' + str(result['total']) + ' discovered'
-        else:
-            log_message = 'on audit_discovery using ' + search_url
-            result = None
+        result = response.json() if response.status_code == requests.codes.ok else None
+        number_discovered = str(result['total']) if result is not None else '0'
+        log_message = 'on audit_discovery: ' + number_discovered + ' discovered using ' + search_url
 
         self.log_http_status(response.status_code, log_message)
         return result
@@ -151,12 +142,8 @@ class safetyculture:
             search_url += '&modified_after=' + modified_after
 
         response = requests.get(search_url, headers=self.auth_header)
-        if response.status_code == requests.codes.ok:
-            result = response.json()
-            log_message = 'status received on template discovery'
-        else:
-            result = None
-            log_message = 'status received on template discovery using ' + search_url
+        result = response.json() if response.status_code == requests.codes.ok else None
+        log_message = 'status received on template discovery using ' + search_url
 
         self.log_http_status(response.status_code, log_message)
         return result
@@ -171,15 +158,14 @@ class safetyculture:
 
         if profile_id_is_valid:
             export_profile_url = self.api_url + '/export_profiles/' + export_profile_id
-
             response = requests.get(export_profile_url, headers=self.auth_header)
+
             if response.status_code == requests.codes.ok:
                 result = json.JSONDecoder(object_pairs_hook=collections.OrderedDict).decode(response.content)
-                log_message = 'status received on export profile retrieval of ' + export_profile_id
             else:
-                log_message = 'status received while attempting to retrieve ' + export_profile_id
                 result = None
 
+            log_message = 'status received on export profile retrieval of ' + export_profile_id
             self.log_http_status(response.status_code, log_message)
             return result
         else:
@@ -194,6 +180,7 @@ class safetyculture:
         Returns:     export ID from API
         """
         export_url = self.audit_url + audit_id + '/export?format=' + export_format + '&timezone=' + timezone
+
         if export_profile_id is not None:
             profile_id_pattern = '^template_[a-fA-F0-9]{32}:[A-F0-9]{8}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{12}$'
             profile_id_is_valid = re.match(profile_id_pattern, export_profile_id)
@@ -204,10 +191,7 @@ class safetyculture:
 
         response = requests.post(export_url, headers=self.auth_header)
         log_message = 'status received on request to ' + export_url
-        if response.status_code == requests.codes.ok:
-            result = response.json()
-        else:
-            result = None
+        result = response.json() if response.status_code == requests.codes.ok else None
 
         self.log_http_status(response.status_code, log_message)
         return result
@@ -220,8 +204,9 @@ class safetyculture:
         """
         job_id_pattern = '^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$'
         job_id_is_valid = re.match(job_id_pattern, export_job_id)
+
         if job_id_is_valid:
-            delay_in_seconds = .5
+            delay_in_seconds = 5
             poll_url = self.audit_url + audit_id + '/exports/' + export_job_id
             export_attempts = 1
             poll_status = requests.get(poll_url, headers=self.auth_header)
@@ -254,13 +239,10 @@ class safetyculture:
         """
         response = requests.get(export_href, headers=self.auth_header)
         log_message = 'status received on GET for href: ' + export_href
-        if response.status_code == requests.codes.ok:
-            results = response.content
-        else:
-            results = None
+        result = response.content if response.status_code == requests.codes.ok else None
 
         self.log_http_status(response.status_code, log_message)
-        return results
+        return result
 
     def get_export(self, audit_id, timezone=DEFAULT_EXPORT_TIMEZONE, export_profile_id=None, export_format=DEFAULT_EXPORT_FORMAT):
         """
