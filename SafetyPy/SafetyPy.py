@@ -38,7 +38,7 @@ class safetyculture:
         if self.api_token:
             self.auth_header = {'Authorization': 'Bearer ' + self.api_token}
         else:
-            logger.error("No valid API token parsed! Exiting!")
+            logger.error('No valid API token parsed! Exiting!')
             sys.exit()
 
     def parse_api_token(self, config):
@@ -47,10 +47,10 @@ class safetyculture:
             api_token = config['API']['token']
             token_is_valid = re.match('^[a-z0-9]{64}$', api_token)
             if token_is_valid:
-                logger.debug('API token matched pattern')
+                logger.debug('API token matched expected pattern')
                 return api_token
             else:
-                logger.error('API token failed pattern match')
+                logger.error('API token failed to match expected')
                 return None
         except Exception as ex:
             self.log_exception(ex, 'Exception parsing API token from config.yaml')
@@ -153,10 +153,10 @@ class safetyculture:
         response = requests.get(search_url, headers=self.auth_header)
         if response.status_code == requests.codes.ok:
             result = response.json()
-            log_message = ' received on template discovery'
+            log_message = 'status received on template discovery'
         else:
             result = None
-            log_message = ' received on template discovery using ' + search_url
+            log_message = 'status received on template discovery using ' + search_url
 
         self.log_http_status(response.status_code, log_message)
         return result
@@ -170,14 +170,14 @@ class safetyculture:
         profile_id_is_valid = re.match(profile_id_pattern, export_profile_id)
 
         if profile_id_is_valid:
-            export_profile_url = self.api_url + "/export_profiles/" + export_profile_id
+            export_profile_url = self.api_url + '/export_profiles/' + export_profile_id
 
             response = requests.get(export_profile_url, headers=self.auth_header)
             if response.status_code == requests.codes.ok:
                 result = json.JSONDecoder(object_pairs_hook=collections.OrderedDict).decode(response.content)
-                log_message = ' status received on export profile retrieval of ' + export_profile_id
+                log_message = 'status received on export profile retrieval of ' + export_profile_id
             else:
-                log_message = ' received while attempting to retrieve ' + export_profile_id
+                log_message = 'status received while attempting to retrieve ' + export_profile_id
                 result = None
 
             self.log_http_status(response.status_code, log_message)
@@ -203,7 +203,7 @@ class safetyculture:
                 self.log_exception(ValueError, 'export_profile_id %s does not match pattern' % export_profile_id)
 
         response = requests.post(export_url, headers=self.auth_header)
-        log_message = ' received on request to ' + export_url
+        log_message = 'status received on request to ' + export_url
         if response.status_code == requests.codes.ok:
             result = response.json()
         else:
@@ -221,7 +221,7 @@ class safetyculture:
         job_id_pattern = '^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$'
         job_id_is_valid = re.match(job_id_pattern, export_job_id)
         if job_id_is_valid:
-            delay = .5
+            delay_in_seconds = .5
             poll_url = self.audit_url + audit_id + '/exports/' + export_job_id
             export_attempts = 1
             poll_status = requests.get(poll_url, headers=self.auth_header)
@@ -230,7 +230,7 @@ class safetyculture:
             if 'status' in status.keys():
                 if status['status'] == 'IN PROGRESS':
                     logger.info(str(status['status']) + ' : ' + audit_id)
-                    time.sleep(delay)
+                    time.sleep(delay_in_seconds)
                     return self.poll_for_export(audit_id, export_job_id)
 
                 elif status['status'] == 'SUCCESS':
@@ -243,7 +243,7 @@ class safetyculture:
                     retry_id = self.get_export_job_id(audit_id)
                     return self.poll_for_export(audit_id, retry_id['id'])
                 else:
-                    logger.error("export for " + audit_id + " failed more than once - skipping")
+                    logger.error('export for ' + audit_id + ' failed more than once - skipping')
         else:
             self.log_exception(ValueError, 'export_job_id %s does not match expected pattern' % export_job_id)
 
@@ -253,7 +253,7 @@ class safetyculture:
         Returns:     String representation of pdf document
         """
         response = requests.get(export_href, headers=self.auth_header)
-        log_message = ' status received on GET for href: ' + export_href
+        log_message = 'status received on GET for href: ' + export_href
         if response.status_code == requests.codes.ok:
             results = response.content
         else:
@@ -280,7 +280,7 @@ class safetyculture:
         Returns:    JSON audit object
         """
         response = requests.get(self.audit_url + audit_id, headers=self.auth_header)
-        log_message = ' status received on GET for ' + audit_id
+        log_message = 'status received on GET for ' + audit_id
 
         if response.status_code == requests.codes.ok:
             result = json.JSONDecoder(object_pairs_hook=collections.OrderedDict).decode(response.content)
