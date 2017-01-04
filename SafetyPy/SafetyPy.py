@@ -15,6 +15,7 @@ import yaml
 
 DEFAULT_EXPORT_TIMEZONE = 'Etc/UTC'
 DEFAULT_EXPORT_FORMAT = 'pdf'
+GUID_PATTERN = '[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}$'
 
 class safetyculture:
     def __init__(self):
@@ -153,7 +154,7 @@ class safetyculture:
         :param export_profile_id:  Export profile ID of the profile to retrieve
         :return:                   Export profile in JSON format
         """
-        profile_id_pattern = '^template_[a-fA-F0-9]{32}:[A-F0-9]{8}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{12}$'
+        profile_id_pattern = '^template_[a-fA-F0-9]{32}:' + GUID_PATTERN
         profile_id_is_valid = re.match(profile_id_pattern, export_profile_id)
 
         if profile_id_is_valid:
@@ -182,7 +183,7 @@ class safetyculture:
         export_url = self.audit_url + audit_id + '/export?format=' + export_format + '&timezone=' + timezone
 
         if export_profile_id is not None:
-            profile_id_pattern = '^template_[a-fA-F0-9]{32}:[A-F0-9]{8}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{12}$'
+            profile_id_pattern = '^template_[a-fA-F0-9]{32}:' + GUID_PATTERN
             profile_id_is_valid = re.match(profile_id_pattern, export_profile_id)
             if profile_id_is_valid:
                 export_url += '&export_profile=' + export_profile_id
@@ -202,7 +203,7 @@ class safetyculture:
                      export_job_id of the export to poll for
         Return:      href for export download
         """
-        job_id_pattern = '^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$'
+        job_id_pattern = '^' + GUID_PATTERN
         job_id_is_valid = re.match(job_id_pattern, export_job_id)
 
         if job_id_is_valid:
