@@ -17,6 +17,7 @@ DEFAULT_EXPORT_TIMEZONE = 'Etc/UTC'
 DEFAULT_EXPORT_FORMAT = 'pdf'
 GUID_PATTERN = '[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}$'
 
+
 class safetyculture:
     def __init__(self):
 
@@ -169,10 +170,12 @@ class safetyculture:
             self.log_http_status(response.status_code, log_message)
             return result
         else:
-            self.log_exception(ValueError, 'export_profile_id %s does not match expected pattern' % export_profile_id)
+            self.log_exception(ValueError,
+                               'export_profile_id {0} does not match expected pattern'.format(export_profile_id))
             return None
 
-    def get_export_job_id(self, audit_id, timezone=DEFAULT_EXPORT_TIMEZONE, export_profile_id=None, export_format=DEFAULT_EXPORT_FORMAT):
+    def get_export_job_id(self, audit_id, timezone=DEFAULT_EXPORT_TIMEZONE, export_profile_id=None,
+                          export_format=DEFAULT_EXPORT_FORMAT):
         """
         Parameters : audit_id           Retrieves export_job_id for given audit_id
                      timezone           Timezone to apply to exports
@@ -187,7 +190,8 @@ class safetyculture:
             if profile_id_is_valid:
                 export_url += '&export_profile=' + export_profile_id
             else:
-                self.log_exception(ValueError, 'export_profile_id %s does not match expected pattern' % export_profile_id)
+                self.log_exception(ValueError,
+                                   'export_profile_id {0} does not match expected pattern'.format(export_profile_id))
 
         response = requests.post(export_url, headers=self.auth_header)
         result = response.json() if response.status_code == requests.codes.ok else None
@@ -224,13 +228,13 @@ class safetyculture:
             else:
                 if export_attempts < 2:
                     export_attempts += 1
-                    logger.info('attempt # %d exporting report for: ' + audit_id % export_attempts)
+                    logger.info('attempt #{0} exporting report for: ' + audit_id.format(str(export_attempts))
                     retry_id = self.get_export_job_id(audit_id)
                     return self.poll_for_export(audit_id, retry_id['id'])
                 else:
-                    logger.error('export for ' + audit_id + ' failed %d times - skipping' % export_attempts)
+                    logger.error('export for ' + audit_id + ' failed {0} times - skipping'.format(export_attempts))
         else:
-            self.log_exception(ValueError, 'export_job_id %s does not match expected pattern' % export_job_id)
+            self.log_exception(ValueError, 'export_job_id {0} does not match expected pattern'.format(export_job_id))
 
     def download_export(self, export_href):
         """
@@ -244,7 +248,8 @@ class safetyculture:
         self.log_http_status(response.status_code, log_message)
         return result
 
-    def get_export(self, audit_id, timezone=DEFAULT_EXPORT_TIMEZONE, export_profile_id=None, export_format=DEFAULT_EXPORT_FORMAT):
+    def get_export(self, audit_id, timezone=DEFAULT_EXPORT_TIMEZONE, export_profile_id=None,
+                   export_format=DEFAULT_EXPORT_FORMAT):
         """
         Parameters: audit_id                        audit_id of export to obtain
                     (optional) timezone             timezone to apply to exports
