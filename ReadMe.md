@@ -10,6 +10,6 @@ SafetyPy is written in Python 2 (Python 3 *will* generate errors)
  * Install Python 2.7.x
  * Install pip (Python package manager)
  * Execute the following command from terminal:
-     * ``pip install -r SafetyPy/requirements.txt``
+     * ``sudo pip install -r SafetyPy/requirements.txt``
  * Edit SafetyPy/config.yaml - replace ``<api_token>`` with a valid api token
  * See ReadMe.md in tools/exporter/ to make use of exporter tools
