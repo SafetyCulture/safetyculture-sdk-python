@@ -10,7 +10,7 @@ Set the application to run on a recurring schedule with Task Scheduler or cron t
 
 **Instructions**:
   - Follow the instructions in the top-level ReadMe.md
-  - Execute the following command from terminal (from this directory):
+  - Execute the following command from command line (from this directory):
 
     ``sudo pip install -r requirements.txt``
   - Edit config.yaml to customize export settings

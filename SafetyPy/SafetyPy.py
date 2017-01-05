@@ -51,7 +51,7 @@ class safetyculture:
                 logger.debug('API token matched expected pattern')
                 return api_token
             else:
-                logger.error('API token failed to match expected')
+                logger.error('API token failed to match expected pattern')
                 return None
         except Exception as ex:
             self.log_exception(ex, 'Exception parsing API token from config.yaml')
@@ -169,7 +169,7 @@ class safetyculture:
             self.log_http_status(response.status_code, log_message)
             return result
         else:
-            self.log_exception(ValueError, 'export_profile_id %s does not match pattern' % export_profile_id)
+            self.log_exception(ValueError, 'export_profile_id %s does not match expected pattern' % export_profile_id)
             return None
 
     def get_export_job_id(self, audit_id, timezone=DEFAULT_EXPORT_TIMEZONE, export_profile_id=None, export_format=DEFAULT_EXPORT_FORMAT):
@@ -187,7 +187,7 @@ class safetyculture:
             if profile_id_is_valid:
                 export_url += '&export_profile=' + export_profile_id
             else:
-                self.log_exception(ValueError, 'export_profile_id %s does not match pattern' % export_profile_id)
+                self.log_exception(ValueError, 'export_profile_id %s does not match expected pattern' % export_profile_id)
 
         response = requests.post(export_url, headers=self.auth_header)
         result = response.json() if response.status_code == requests.codes.ok else None
