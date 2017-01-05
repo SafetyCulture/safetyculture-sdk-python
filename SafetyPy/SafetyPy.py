@@ -46,7 +46,7 @@ class safetyculture:
         logger = logging.getLogger('sp_logger')
         try:
             api_token = config['API']['token']
-            token_is_valid = re.match('^[a-z0-9]{64}$', api_token)
+            token_is_valid = re.match('^[a-f0-9]{64}$', api_token)
             if token_is_valid:
                 logger.debug('API token matched expected pattern')
                 return api_token
