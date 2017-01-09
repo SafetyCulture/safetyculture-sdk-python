@@ -148,7 +148,7 @@ class safetyculture:
 
         response = requests.get(search_url, headers=self.auth_header)
         result = response.json() if response.status_code == requests.codes.ok else None
-        log_message = 'status received on template discovery using ' + search_url
+        log_message = 'on template discovery using ' + search_url
 
         self.log_http_status(response.status_code, log_message)
         return result
@@ -165,7 +165,7 @@ class safetyculture:
             export_profile_url = self.api_url + '/export_profiles/' + export_profile_id
             response = requests.get(export_profile_url, headers=self.auth_header)
             result = self.parse_json(response.content) if response.status_code == requests.codes.ok else None
-            log_message = 'status received on export profile retrieval of ' + export_profile_id
+            log_message = 'on export profile retrieval of ' + export_profile_id
 
             self.log_http_status(response.status_code, log_message)
             return result
@@ -195,7 +195,7 @@ class safetyculture:
 
         response = requests.post(export_url, headers=self.auth_header)
         result = response.json() if response.status_code == requests.codes.ok else None
-        log_message = 'status received on request to ' + export_url
+        log_message = 'on request to ' + export_url
 
         self.log_http_status(response.status_code, log_message)
         return result
@@ -228,7 +228,7 @@ class safetyculture:
             else:
                 if export_attempts < 2:
                     export_attempts += 1
-                    logger.info('attempt #{0} exporting report for: ' + audit_id.format(str(export_attempts))
+                    logger.info('attempt #{0} exporting report for: ' + audit_id.format(str(export_attempts)))
                     retry_id = self.get_export_job_id(audit_id)
                     return self.poll_for_export(audit_id, retry_id['id'])
                 else:
@@ -243,7 +243,7 @@ class safetyculture:
         """
         response = requests.get(export_href, headers=self.auth_header)
         result = response.content if response.status_code == requests.codes.ok else None
-        log_message = 'status received on GET for href: ' + export_href
+        log_message = 'on GET for href: ' + export_href
 
         self.log_http_status(response.status_code, log_message)
         return result
@@ -268,7 +268,7 @@ class safetyculture:
         """
         response = requests.get(self.audit_url + audit_id, headers=self.auth_header)
         result = self.parse_json(response.content) if response.status_code == requests.codes.ok else None
-        log_message = 'status received on GET for ' + audit_id
+        log_message = 'on GET for ' + audit_id
 
         self.log_http_status(response.status_code, log_message)
         return result
