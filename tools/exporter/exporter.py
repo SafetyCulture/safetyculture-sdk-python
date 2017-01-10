@@ -26,19 +26,19 @@ def log_exception(ex, message):
 
 def get_export_profile_mapping(config_settings):
     """
-    Attempt to extract export profile id's from config file
-    If valid id's are found, return a dict mapping templates to
+    Attempt to extract export profile IDs from config file
+    If valid IDs are found, return a dict mapping templates to
       export profiles
     Otherwise return None
 
     :param config_settings:
-    :return: dict of valid export_profile_id's, or None
+    :return: dict of valid export_profile_id mappings, or None
     """
     try:
         profile_mapping = {}
         export_profile_settings = config_settings['export_profiles']
         if export_profile_settings is not None:
-            profile_lines = export_profile_settings.split(" ")
+            profile_lines = export_profile_settings.split(' ')
             for profile in profile_lines:
                 template_id = profile[:profile.index(':')]
                 if template_id not in profile_mapping.keys():

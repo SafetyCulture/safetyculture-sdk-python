@@ -1,6 +1,8 @@
 #Exporter tools
 
-Exporter tools for interacting with the Public API export capabilities
+Exporter tools for interacting with the Public API export capabilities.  Download audit reports in pdf, docx, and/or json format,
+and save them anywhere on your drive. Apply export profiles to your exports by modifying config file (illustrated below).
+Set the application to run on a recurring schedule with Task Scheduler or cron to keep up to date with all of your audit reports.
 
 **Note**:
   Exporter tools are written in Python 2.7.x
@@ -8,13 +10,13 @@ Exporter tools for interacting with the Public API export capabilities
 
 **Instructions**:
   - Follow the instructions in the top-level ReadMe.md
-  - Execute the following command from terminal (from this directory):
+  - Execute the following command from command line (from this directory):
 
-    ``pip install -r requirements.txt``
-  - Edit pdf_config.yaml to customize export settings
+    ``sudo pip install -r requirements.txt``
+  - Edit config.yaml to customize export settings
 
 
-Example configuration of pdf_config.yaml:
+Example configuration of config.yaml:
 ```
 export_options:
     export_path: /Users/Monty/Dropbox
@@ -42,11 +44,14 @@ Templates for which there is no export profile id listed will be exported withou
 
 
 
-To run the export, either double-click pdf_exporter.py or execute `python pdf_exporter.py` from terminal
+To run the export, either double-click exporter.py or execute `python exporter.py` from the command line.
 
 Supported command-line arguments:
 ```
   Argument    Example
 
-  config      python pdf_exporter.py --config=alternate_config.yaml
+  config      python exporter.py --config=alternate_config.yaml
+  format      python exporter.py --formats pdf json docx
+
+  *Note that numerous arguments can be used - `python exporter.py --config=alternate_config.yaml --formats pdf json docx`*
 ```
