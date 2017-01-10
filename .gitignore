@@ -7,3 +7,4 @@ log/
 tools/exporter/exports/
 tools/exporter/log/
 tools/exporter/last_successful.txt
+venv
