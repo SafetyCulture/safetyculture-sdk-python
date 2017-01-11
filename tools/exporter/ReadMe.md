@@ -12,7 +12,7 @@ Set the application to run on a recurring schedule with Task Scheduler or cron t
   - Follow the instructions in the top-level ReadMe.md
   - Execute the following command from command line (from this directory):
 
-    ``sudo pip install -r requirements.txt``
+    ``pip install -r requirements.txt``
   - Edit config.yaml to customize export settings
 
 
@@ -53,5 +53,5 @@ Supported command-line arguments:
   config      python exporter.py --config=alternate_config.yaml
   format      python exporter.py --formats pdf json docx
 
-  *Note that numerous arguments can be used - `python exporter.py --config=alternate_config.yaml --formats pdf json docx`*
+  *Arguments can be combined e.g. - `python exporter.py --config=alternate_config.yaml --formats pdf json docx`*
 ```
