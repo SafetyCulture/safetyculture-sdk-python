@@ -60,10 +60,10 @@ def get_sync_delay(config_settings):
                 logger.info('sync_delay is less than recommended minimum value of ' + DEFAULT_SYNC_DELAY_IN_SECONDS)
             return sync_delay
         else:
-            logger.info('Invalid sync_delay_in_seconds from config, defaulting to ' + str(DEFAULT_SYNC_DELAY_IN_SECONDS))
+            logger.info('Invalid sync_delay_in_seconds from ' + config_filename + ', defaulting to ' + str(DEFAULT_SYNC_DELAY_IN_SECONDS))
             return DEFAULT_SYNC_DELAY_IN_SECONDS
     except Exception as ex:
-        log_exception(ex, 'Exception parsing sync_delay from config, defaulting to ' + str(DEFAULT_SYNC_DELAY_IN_SECONDS))
+        log_exception(ex, 'Exception parsing sync_delay from ' + config_filename + ', defaulting to ' + str(DEFAULT_SYNC_DELAY_IN_SECONDS))
         return DEFAULT_SYNC_DELAY_IN_SECONDS
 
 
