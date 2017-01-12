@@ -179,7 +179,7 @@ def get_filename_item_id(config_settings):
 
 
 def main(config_filename):
-    sc_client = sp.safetyculture()
+    sc_client = sp.SafetyCulture()
 
     config_settings = yaml.safe_load(open(config_filename))
     export_path = get_export_path(config_settings)
@@ -239,7 +239,7 @@ logger = logging.getLogger('exporter_logger')
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--config', help='config file to use, defaults to ' + DEFAULT_CONFIG_FILE)
-parser.add_argument('--format', nargs = '*', help='formats to download, valid options are pdf, json, docx')
+parser.add_argument('--format', nargs='*', help='formats to download, valid options are pdf, json, docx')
 args = parser.parse_args()
 
 if args.config is not None:
@@ -265,5 +265,5 @@ else:
     export_formats = ['pdf']
 
 
-
-main(config_filename)
+if __name__ == '__main__':
+    main(config_filename)

@@ -18,7 +18,7 @@ DEFAULT_EXPORT_FORMAT = 'pdf'
 GUID_PATTERN = '[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}$'
 
 
-class safetyculture:
+class SafetyCulture:
     def __init__(self):
 
         self.current_dir = os.getcwd()
@@ -44,6 +44,12 @@ class safetyculture:
             sys.exit()
 
     def parse_api_token(self, config):
+        """
+        Parameters:   config  config object - contents of yaml file
+
+        Return:       API token if token matches expected pattern
+                      None if token is invalid or missing
+        """
         logger = logging.getLogger('sp_logger')
         try:
             api_token = config['API']['token']
@@ -62,17 +68,28 @@ class safetyculture:
         return json.JSONDecoder(object_pairs_hook=collections.OrderedDict).decode(json_to_parse)
 
     def log_exception(self, ex, message):
+        """
+        Parameters:   ex       Exception instance to log
+                      message  Descriptive message to describe exception
+        """
         logger = logging.getLogger('sp_logger')
         logger.critical(message)
         logger.critical(ex)
 
     def log_http_status(self, status_code, message):
+        """
+        Parameters:   status_code  http status code to log
+                      message      to describe where the status code was obtained
+        """
         logger = logging.getLogger('sp_logger')
         status_description = requests.status_codes._codes[status_code][0]
         log_string = str(status_code) + ' [' + status_description + '] status received ' + message
         logger.info(log_string) if status_code == requests.codes.ok else logger.error(log_string)
 
     def configure_logging(self):
+        """
+        Configure logging to log to std output as well as to log file
+        """
         log_level = logging.DEBUG
 
         log_filename = datetime.now().strftime('%Y-%m-%d') + '.log'
