@@ -11,6 +11,8 @@ Supported export formats: PDF, MS WORD (docx), JSON
   - Execute the following command from the command line from within this directory:
 
     ``pip install -r requirements.txt``
+  - Edit config.yaml and replace ``YOUR_SAFETYCULTURE_API_TOKEN`` with your SafetyCulture API token
+
 
 ## How to run
 
