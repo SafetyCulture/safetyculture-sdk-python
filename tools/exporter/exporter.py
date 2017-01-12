@@ -55,7 +55,9 @@ def get_sync_delay(config_settings):
     try:
         sync_delay = config_settings['sync_delay_in_seconds']
         sync_delay_is_valid = re.match('^[0-9]+$', str(sync_delay))
-        if sync_delay_is_valid and sync_delay >= 900:
+        if sync_delay_is_valid and sync_delay >= 0:
+            if sync_delay < DEFAULT_SYNC_DELAY_IN_SECONDS:
+                logger.info('sync_delay is less than recommended minimum value of ' + DEFAULT_SYNC_DELAY_IN_SECONDS)
             return sync_delay
         else:
             logger.info('Invalid sync_delay_in_seconds from config, defaulting to ' + str(DEFAULT_SYNC_DELAY_IN_SECONDS))
