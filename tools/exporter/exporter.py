@@ -6,6 +6,7 @@ import argparse
 import json
 import logging
 import os
+import re
 import sys
 from datetime import datetime
 import yaml
@@ -23,6 +24,25 @@ def log_exception(ex, message):
     logger.critical(message)
     logger.critical(ex)
 
+def parse_api_token(config_settings):
+    """
+    Parameters:   config  config object - contents of yaml file
+
+    Return:       API token if token matches expected pattern
+                  None if token is invalid or missing
+    """
+    try:
+        api_token = config_settings['API']['token']
+        token_is_valid = re.match('^[a-f0-9]{64}$', api_token)
+        if token_is_valid:
+            logger.debug('API token matched expected pattern')
+            return api_token
+        else:
+            logger.error('API token failed to match expected pattern')
+            return None
+    except Exception as ex:
+        log_exception(ex, 'Exception parsing API token from config.yaml')
+        return None
 
 def get_export_profile_mapping(config_settings):
     """
@@ -179,9 +199,11 @@ def get_filename_item_id(config_settings):
 
 
 def main(config_filename):
-    sc_client = sp.SafetyCulture()
-
     config_settings = yaml.safe_load(open(config_filename))
+    api_token = parse_api_token(config_settings)
+
+    sc_client = sp.SafetyCulture(api_token)
+
     export_path = get_export_path(config_settings)
     timezone = get_timezone(config_settings)
     export_profiles = get_export_profile_mapping(config_settings)

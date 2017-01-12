@@ -19,7 +19,7 @@ GUID_PATTERN = '[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-F
 
 
 class SafetyCulture:
-    def __init__(self):
+    def __init__(self, api_token):
 
         self.current_dir = os.getcwd()
         self.log_dir = self.current_dir + '/log/'
@@ -35,7 +35,7 @@ class SafetyCulture:
         module_dir = os.path.dirname(__file__)
         self.config_settings = yaml.safe_load(open(os.path.join(module_dir, "config.yaml")))
 
-        self.api_token = self.parse_api_token(self.config_settings)
+        self.api_token = api_token
 
         if self.api_token:
             self.auth_header = {'Authorization': 'Bearer ' + self.api_token}
@@ -43,26 +43,7 @@ class SafetyCulture:
             logger.error('No valid API token parsed! Exiting!')
             sys.exit()
 
-    def parse_api_token(self, config):
-        """
-        Parameters:   config  config object - contents of yaml file
 
-        Return:       API token if token matches expected pattern
-                      None if token is invalid or missing
-        """
-        logger = logging.getLogger('sp_logger')
-        try:
-            api_token = config['API']['token']
-            token_is_valid = re.match('^[a-f0-9]{64}$', api_token)
-            if token_is_valid:
-                logger.debug('API token matched expected pattern')
-                return api_token
-            else:
-                logger.error('API token failed to match expected pattern')
-                return None
-        except Exception as ex:
-            self.log_exception(ex, 'Exception parsing API token from config.yaml')
-            return None
 
     def parse_json(self, json_to_parse):
         return json.JSONDecoder(object_pairs_hook=collections.OrderedDict).decode(json_to_parse)
