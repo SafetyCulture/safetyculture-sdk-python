@@ -19,7 +19,7 @@ from SafetyPy import SafetyPy as sp
 
 DEFAULT_CONFIG_FILE = 'config.yaml'
 LOG_LEVEL = logging.DEBUG
-
+DEFAULT_SYNC_DELAY_IN_SECONDS = 900
 
 def log_exception(ex, message):
     logger.critical(message)
@@ -27,7 +27,7 @@ def log_exception(ex, message):
 
 def parse_api_token(config_settings):
     """
-    Parameters:   config  config object - contents of yaml file
+    Parameters:   config_settings:  config object - contents of yaml file
 
     Return:       API token if token matches expected pattern
                   None if token is invalid or missing
@@ -44,6 +44,26 @@ def parse_api_token(config_settings):
     except Exception as ex:
         log_exception(ex, 'Exception parsing API token from config.yaml')
         return None
+
+
+def get_sync_delay(config_settings):
+    """
+    Attempt to extract sync_delay_in_seconds from config settings
+    Parameters:    config_settings: config object - contents of yaml file
+    Return:        sync_delay if successful, else DEFAULT_SYNC_DELAY_IN_SECONDS
+    """
+    try:
+        sync_delay = config_settings['sync_delay_in_seconds']
+        sync_delay_is_valid = re.match('^[0-9]+$', str(sync_delay))
+        if sync_delay_is_valid and sync_delay >= 900:
+            return sync_delay
+        else:
+            logger.info('Invalid sync_delay_in_seconds from config, defaulting to ' + str(DEFAULT_SYNC_DELAY_IN_SECONDS))
+            return DEFAULT_SYNC_DELAY_IN_SECONDS
+    except Exception as ex:
+        log_exception(ex, 'Exception parsing sync_delay from config, defaulting to ' + str(DEFAULT_SYNC_DELAY_IN_SECONDS))
+        return DEFAULT_SYNC_DELAY_IN_SECONDS
+
 
 def get_export_profile_mapping(config_settings):
     """
@@ -71,6 +91,7 @@ def get_export_profile_mapping(config_settings):
     except Exception as ex:
         log_exception(ex, 'Exception getting export profiles from ' + config_filename)
         return None
+
 
 def get_export_path(config_settings):
     """
@@ -209,6 +230,7 @@ def main(config_filename):
     timezone = get_timezone(config_settings)
     export_profiles = get_export_profile_mapping(config_settings)
     filename_item_id = get_filename_item_id(config_settings)
+    sync_delay_in_seconds = get_sync_delay(config_settings)
 
     if export_path is not None:
         ensure_exports_folder_exists(export_path)
@@ -253,7 +275,7 @@ def main(config_filename):
                     write_export_doc(export_path, export_doc, export_filename, export_format)
                 logger.debug('setting last modified to ' + audit['modified_at'])
                 set_last_successful(audit['modified_at'])
-        time.sleep(900)
+        time.sleep(sync_delay_in_seconds)
 
 log_dir = os.path.join(os.getcwd(), 'log')
 ensure_log_folder_exists(log_dir)

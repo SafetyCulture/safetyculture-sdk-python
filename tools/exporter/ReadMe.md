@@ -42,7 +42,7 @@ Note:
 * Once you start the tool, it will continue running until interrupted (Ctrl + C to interrupt), repeating the process every 15 minutes
 * Only data of completed audits will be exported
 * Only audits that are owned by or shared with the SafetyCulture user account that generated the API token will be exported
-* Up to a 1000 audits will be exported at each run of the tool. To export more than 1000 audits keep running the tool until no audits are returned (see Setting the export start date section below).
+* Up to 1000 audits will be exported at each run of the tool. To export more than 1000 audits keep running the tool until no audits are returned (see Setting the export start date section below).
 
 ## Troubleshooting
 
@@ -90,6 +90,8 @@ Things you can configure:
 Here is an example customised config.yaml:
 
 ```
+API:
+    token: YOUR_SAFETYCULTURE_API_TOKEN
 export_options:
     export_path: /Users/Monty/Dropbox
     timezone: America/Chicago
@@ -99,6 +101,7 @@ export_profiles:
     template_3E631E46F466411B9C09AD804886A8B4:E50645A1-2851-4E92-B4EA-60C5CE7981BE
     ...
     ...
+sync_delay_in_seconds: 1000
 ```
 
 ## Naming the exported files
