@@ -37,7 +37,7 @@ python exporter.py --formats pdf docx json
 ```
 
 Note:
-
+* Once you start the tool, it will continue running until interrupted (Ctrl + C to interrupt), repeating the process every 15 minutes
 * Only data of completed audits will be exported
 * Only audits that are owned by or shared with the SafetyCulture user account that generated the API token will be exported
 * Up to a 1000 audits will be exported at each run of the tool. To export more than 1000 audits keep running the tool until no audits are returned (see Setting the export start date section below).

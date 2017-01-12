@@ -8,6 +8,7 @@ import logging
 import os
 import re
 import sys
+import time
 from datetime import datetime
 import yaml
 import pytz
@@ -215,44 +216,44 @@ def main(config_filename):
         logger.info('No valid export path from ' + config_filename + ', defaulting to /exports')
         export_path = os.path.join(os.getcwd(), 'exports')
         ensure_exports_folder_exists(export_path)
+    while True:
+        last_successful = get_last_successful()
+        results = sc_client.discover_audits(modified_after=last_successful)
 
-    last_successful = get_last_successful()
-    results = sc_client.discover_audits(modified_after=last_successful)
+        if results is not None:
+            logger.info(str(results['total']) + ' audits discovered')
+            export_count = 1
+            export_total = results['total']
 
-    if results is not None:
-        logger.info(str(results['total']) + ' audits discovered')
-        export_count = 1
-        export_total = results['total']
+            for audit in results['audits']:
+                logger.info('Processing audit (' + str(export_count) + '/' + str(export_total) + ')')
+                export_count += 1
+                audit_id = audit['audit_id']
+                logger.info('downloading ' + audit_id)
+                audit_json = sc_client.get_audit(audit_id)
+                template_id = audit_json['template_id']
 
-        for audit in results['audits']:
-            logger.info('Processing audit (' + str(export_count) + '/' + str(export_total) + ')')
-            export_count += 1
-            audit_id = audit['audit_id']
-            logger.info('downloading ' + audit_id)
-            audit_json = sc_client.get_audit(audit_id)
-            template_id = audit_json['template_id']
+                if template_id in export_profiles.keys():
+                    export_profile_id = export_profiles[template_id]
+                else:
+                    export_profile_id = None
 
-            if template_id in export_profiles.keys():
-                export_profile_id = export_profiles[template_id]
-            else:
-                export_profile_id = None
-
-            if filename_item_id is not None:
-                export_filename = parse_export_filename(audit_json['header_items'], filename_item_id)
-                if export_filename is None:
+                if filename_item_id is not None:
+                    export_filename = parse_export_filename(audit_json['header_items'], filename_item_id)
+                    if export_filename is None:
+                        export_filename = audit_id
+                else:
                     export_filename = audit_id
-            else:
-                export_filename = audit_id
 
-            for export_format in export_formats:
-                if export_format in ['pdf', 'docx']:
-                    export_doc = sc_client.get_export(audit_id, timezone, export_profile_id, export_format)
-                elif export_format == 'json':
-                    export_doc = json.dumps(audit_json, indent=4)
-                write_export_doc(export_path, export_doc, export_filename, export_format)
-            logger.debug('setting last modified to ' + audit['modified_at'])
-            set_last_successful(audit['modified_at'])
-
+                for export_format in export_formats:
+                    if export_format in ['pdf', 'docx']:
+                        export_doc = sc_client.get_export(audit_id, timezone, export_profile_id, export_format)
+                    elif export_format == 'json':
+                        export_doc = json.dumps(audit_json, indent=4)
+                    write_export_doc(export_path, export_doc, export_filename, export_format)
+                logger.debug('setting last modified to ' + audit['modified_at'])
+                set_last_successful(audit['modified_at'])
+        time.sleep(900)
 
 log_dir = os.path.join(os.getcwd(), 'log')
 ensure_log_folder_exists(log_dir)
