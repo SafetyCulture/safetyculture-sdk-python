@@ -1,9 +1,11 @@
 # coding=utf-8
 # Author: SafetyCulture
 # Copyright: © SafetyCulture 2016
-
+import os
+import sys
 from tzlocal import get_localzone
 import unittest
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'tools', 'exporter'))
 import exporter as ex
 
 class exporterTestCase(unittest.TestCase):
