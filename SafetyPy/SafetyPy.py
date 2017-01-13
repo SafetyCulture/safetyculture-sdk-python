@@ -32,10 +32,13 @@ class SafetyCulture:
         self.configure_logging()
         logger = logging.getLogger('sp_logger')
 
-        module_dir = os.path.dirname(__file__)
-        self.config_settings = yaml.safe_load(open(os.path.join(module_dir, "config.yaml")))
+        token_is_valid = re.match('^[a-f0-9]{64}$', api_token)
 
-        self.api_token = api_token
+        if token_is_valid:
+            self.api_token = api_token
+        else:
+            logger.error('API token failed to match expected pattern')
+            self.api_token = None
 
         if self.api_token:
             self.auth_header = {'Authorization': 'Bearer ' + self.api_token}
@@ -96,7 +99,7 @@ class SafetyCulture:
         if not os.path.isdir(log_dir):
             os.mkdir(log_dir)
 
-    def discover_audits(self, template_id=None, modified_after=None, completed=False):
+    def discover_audits(self, template_id=None, modified_after=None, completed=True):
         """
         Parameters: (optional) template_id     Restrict discovery to this template_id
                     (optional) modified_after  Restrict discovery to audits modified
