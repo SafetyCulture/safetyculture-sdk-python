@@ -3,6 +3,7 @@
 # Copyright: © SafetyCulture 2016
 
 import argparse
+import errno
 import json
 import logging
 import os
@@ -12,7 +13,6 @@ import time
 from datetime import datetime
 import yaml
 import pytz
-import errno
 from tzlocal import get_localzone
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -25,9 +25,11 @@ DEFAULT_SYNC_DELAY_IN_SECONDS = 900
 
 def log_exception(logger, ex, message):
     """
-    :param logger:
-    :param ex:
-    :param message:
+    Write exception details and message to log file
+
+    :param logger:  the logger
+    :param ex:      exception to log
+    :param message: descriptive message to log details of where/why ex occurred
     :return:
     """
     if logger is not None:
@@ -37,10 +39,11 @@ def log_exception(logger, ex, message):
 
 def parse_api_token(logger, config_settings):
     """
-    Parameters:   config_settings:  config object - contents of yaml file
+    Attempt to parse API token from config settings
 
-    :return:       API token if token matches expected pattern
-                  None if token is invalid or missing
+    :param logger:           the logger
+    :param config_settings:  config settings loaded from config file
+    :return:                 API token if valid, else None
     """
     try:
         api_token = config_settings['API']['token']
@@ -58,12 +61,13 @@ def parse_api_token(logger, config_settings):
 
 def get_sync_delay(logger, config_settings):
     """
-    Attempt to extract sync_delay_in_seconds from config settings
+    Attempt to parse delay between sync loops from config settings
 
-    :param logger:
-    :param config_settings: config object - contents of yaml file
-    :return: The  sync delay time in seconds or DEFAULT_SYNC_DELAY_IN_SECONDS if not provided or in error
+    :param logger:           the logger
+    :param config_settings:  config settings loaded from config file
+    :return:                 extracted sync delay if valid, else DEFAULT_SYNC_DELAY_IN_SECONDS
     """
+
     try:
         sync_delay = config_settings['sync_delay_in_seconds']
         sync_delay_is_valid = re.match('^[0-9]+$', str(sync_delay))
@@ -85,14 +89,11 @@ def get_sync_delay(logger, config_settings):
 
 def get_export_profile_mapping(logger, config_settings):
     """
-    Attempt to extract export profile IDs from config file
-    If valid IDs are found, return a dict mapping templates to
-      export profiles
-    Otherwise return None
+    Attempt to parse export_profile settings from config settings
 
-    :param logger:
-    :param config_settings:
-    :return: dict of valid export_profile_id mappings, or None
+    :param logger:           the logger
+    :param config_settings:  config settings loaded from config file
+    :return:                 export profile mapping if valid, else None
     """
     try:
         profile_mapping = {}
@@ -116,9 +117,9 @@ def get_export_path(logger, config_settings):
     """
     Attempt to extract export path from config settings
 
-    :param config_settings:
-    :type logger: the logger
-    :return: export path, None if path is invalid or missing
+    :param config_settings:  config settings loaded from config file
+    :param logger:           the logger
+    :return:                 export path, None if path is invalid or missing
     """
     try:
         export_path = config_settings['export_options']['export_path']
@@ -133,9 +134,11 @@ def get_export_path(logger, config_settings):
 
 def get_timezone(logger, config_settings):
     """
-    Attempt to extract Olson timezone from config settings
+    Attempt to parse timezone from config settings
 
-    :return: extracted timezone, default to local timezone on exception
+    :param logger:           the logger
+    :param config_settings:  config settings loaded from config file
+    :return:                 timezone from config if valid, else local timezone for this machine
     """
     try:
         timezone = config_settings['export_options']['timezone']
@@ -151,8 +154,9 @@ def get_timezone(logger, config_settings):
 
 def configure_logging(path_to_log_directory):
     """
+    Configure logger
 
-    :param path_to_log_directory:
+    :param path_to_log_directory:  path to folder to write log file in
     :return:
     """
     log_filename = datetime.now().strftime('%Y-%m-%d') + '.log'
@@ -177,8 +181,8 @@ def create_directory_if_not_exists(logger, path):
 
     If creation fails, the application will crash
 
-    :param logger:
-    :param path: The path to ensure it exists
+    :param logger:  the logger
+    :param path:    the path to ensure it exists
     """
     try:
         os.makedirs(path)
@@ -192,9 +196,13 @@ def create_directory_if_not_exists(logger, path):
 
 def write_export_doc(logger, export_dir, export_doc, filename, extension):
     """
-    Parameters:  export_doc:   String representation of document
-                 filename:     Desired name of file on disk
-    Returns:     None
+    Write exported document to disk at specified location with specified file name
+
+    :param logger:      the logger
+    :param export_dir:  path to folder for exports
+    :param export_doc:  export document to write
+    :param filename:    filename to give exported document
+    :param extension:   extension to give exported document
     """
     file_path = os.path.join(export_dir, filename + '.' + extension)
     if os.path.isfile(file_path):
@@ -207,14 +215,23 @@ def write_export_doc(logger, export_dir, export_doc, filename, extension):
 
 
 def set_last_successful(date_modified):
+    """
+    Set last successful value in last_successful.txt with the most recent modified_at value from audit json
+
+    :param date_modified:   modified_at value from most recently downloaded audit json
+    :return:
+    """
     with open('last_successful.txt', 'w') as last_modified_file:
         last_modified_file.write(date_modified)
 
 
 def get_last_successful(logger):
     """
-    :return: timestamp stored in last_successful.txt or timestamp
-             old enough to effectively be the beginning of time
+    Check for last_successful.txt to get last_successful time value, else default to 'beginning of time'
+
+    :param logger:  the logger
+    :return:        last_successful value extracted from last_successful.txt, 2000-01-01
+                    (the beginning of time) if no valid time is parsed
     """
     if os.path.isfile('last_successful.txt'):
         with open('last_successful.txt', 'r+') as last_run:
@@ -230,6 +247,13 @@ def get_last_successful(logger):
 
 
 def parse_export_filename(header_items, filename_item_id):
+    """
+    Get 'response' value of specified header item to use for export file name
+
+    :param header_items:      header_items array from audit json
+    :param filename_item_id:  item_id from config settings
+    :return:                  'response' value of specified item from audit json
+    """
     for item in header_items:
         if item['item_id'] == filename_item_id:
             if 'responses' in item.keys():
@@ -238,6 +262,13 @@ def parse_export_filename(header_items, filename_item_id):
 
 
 def get_filename_item_id(logger, config_settings):
+    """
+    Attempt to parse item_id for file naming from config settings
+
+    :param logger:          the logger
+    :param config_settings: config settings loaded from config file
+    :return:                item_id extracted from config_settings if valid, else None
+    """
     try:
         filename_item_id = config_settings['export_options']['filename']
         if filename_item_id is not None:
@@ -250,19 +281,27 @@ def get_filename_item_id(logger, config_settings):
 
 
 def configure_logger():
+    """
+    Declare and validate existence of log directory; create and configure logger object
+
+    :return:  instance of configured logger object
+    """
     log_dir = os.path.join(os.getcwd(), 'log')
     create_directory_if_not_exists(None, log_dir)
     configure_logging(log_dir)
     logger = logging.getLogger('exporter_logger')
     return logger
 
+def load_config_settings(logger, path_to_config_file):
+    """
+    Load config settings from config file
 
-def configure():
-    logger = configure_logger()
-
-    path_to_config_file, export_formats = parse_command_line_arguments(logger)
-
-    # TODO: move these into a load_config_settings()
+    :param logger:              the logger
+    :param path_to_config_file: location of config file
+    :return:                    api_token, export_path, timezone, export_profiles,
+                                filename_item_id, sync_delay_in_seconds values
+                                loaded from config file
+    """
     config_settings = yaml.safe_load(open(path_to_config_file))
     api_token = parse_api_token(logger, config_settings)
     export_path = get_export_path(logger, config_settings)
@@ -270,6 +309,21 @@ def configure():
     export_profiles = get_export_profile_mapping(logger, config_settings)
     filename_item_id = get_filename_item_id(logger, config_settings)
     sync_delay_in_seconds = get_sync_delay(logger, config_settings)
+
+    return api_token, export_path, timezone, export_profiles, filename_item_id, sync_delay_in_seconds
+
+
+def configure():
+    """
+    Instantiate and configure logger, load config settings from file, instantiate SafetyCulture SDK
+    
+    :return:   logger object, instance of SafetyCulture SDK object, config settings
+    """
+    logger = configure_logger()
+    path_to_config_file, export_formats = parse_command_line_arguments(logger)
+
+    api_token, export_path, timezone, export_profiles, filename_item_id, sync_delay_in_seconds =  \
+        load_config_settings(logger, path_to_config_file)
 
     sc_client = sp.SafetyCulture(api_token)
 
@@ -285,12 +339,24 @@ def configure():
 
 
 def show_usage_and_exit():
+    """
+    In the case of invalid command line arguments being passed,
+    provide example of proper argument usage and exit
+    """
     print 'Usage:'
     print 'python exporter.py [--format pdf | docx | json] [--config <filename>]'
     sys.exit(1)
 
 
 def parse_command_line_arguments(logger):
+    """
+    Parse command line arguments received, if any
+    Print example if invalid arguments are passed
+
+    :param logger:  the logger
+    :return:        config_filename passed as argument if any, else DEFAULT_CONFIG_FILENAME
+                    export_formats passed as argument if any, else 'pdf'
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', help='config file to use, defaults to ' + DEFAULT_CONFIG_FILENAME)
     parser.add_argument('--format', nargs='*', help='formats to download, valid options are pdf, json, docx')
@@ -299,8 +365,8 @@ def parse_command_line_arguments(logger):
     config_filename = DEFAULT_CONFIG_FILENAME
     if args.config is not None:
         if os.path.isfile(args.config):
-            logger.debug(config_filename + ' passed as config argument')
             config_filename = args.config
+            logger.debug(config_filename + ' passed as config argument')
         else:
             logger.error(config_filename + ' is not a valid config file')
             show_usage_and_exit()
@@ -321,6 +387,18 @@ def parse_command_line_arguments(logger):
 
 def loop(logger, sc_client, export_formats, export_profiles, filename_item_id, export_path, timezone,
          sync_delay_in_seconds):
+    """
+    Loop sync until interrupted by user
+
+    :param logger:                 the logger
+    :param sc_client:              instance of SafetyCulture SDK object
+    :param export_formats:         export formats to download
+    :param export_profiles:        export profiles to apply to exported documents
+    :param filename_item_id:       header item item_id for file naming
+    :param export_path:            path to folder in which to write exported documents
+    :param timezone:               timezone to apply to exported documents
+    :param sync_delay_in_seconds:  number of seconds between sync loops
+    """
     while True:
         last_successful = get_last_successful(logger)
         results = sc_client.discover_audits(modified_after=last_successful)
@@ -359,7 +437,7 @@ def loop(logger, sc_client, export_formats, export_profiles, filename_item_id, e
                     write_export_doc(logger, export_path, export_doc, export_filename, export_format)
                 logger.debug('setting last modified to ' + audit['modified_at'])
                 set_last_successful(audit['modified_at'])
-        logger.info('Next check with be in ' + sync_delay_in_seconds + ' seconds. Waiting...')
+        logger.info('Next check will be in ' + sync_delay_in_seconds + ' seconds. Waiting...')
         time.sleep(sync_delay_in_seconds)
 
 
