@@ -50,8 +50,10 @@ Note:
 You may want to maintain multiple export configurations in different YAML configuration files. To use a specific configuration file (other than config.yaml) do
 
 ```
-python exporter.py --config=alternate_config.yaml
+python exporter.py --config=/path/to/alternate_config.yaml
 ```
+
+Note that you can supply a relative or absolute path to alternate_config.yaml if it is in another directory
 
 Arguments can be combined e.g. - `python exporter.py --config=alternate_config.yaml --formats pdf json`
 
