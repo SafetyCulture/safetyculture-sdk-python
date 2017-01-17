@@ -30,7 +30,6 @@ def log_exception(logger, ex, message):
     :param logger:  the logger
     :param ex:      exception to log
     :param message: descriptive message to log details of where/why ex occurred
-    :return:
     """
     if logger is not None:
         logger.critical(message)
@@ -123,7 +122,7 @@ def get_export_path(logger, config_settings):
     """
     try:
         export_path = config_settings['export_options']['export_path']
-        if export_path:
+        if export_path is not None:
             return export_path
         else:
             return None
@@ -156,7 +155,7 @@ def configure_logging(path_to_log_directory):
     """
     Configure logger
 
-    :param path_to_log_directory:  path to folder to write log file in
+    :param path_to_log_directory:  path to directory to write log file in
     :return:
     """
     log_filename = datetime.now().strftime('%Y-%m-%d') + '.log'
@@ -199,7 +198,7 @@ def write_export_doc(logger, export_dir, export_doc, filename, extension):
     Write exported document to disk at specified location with specified file name
 
     :param logger:      the logger
-    :param export_dir:  path to folder for exports
+    :param export_dir:  path to directory for exports
     :param export_doc:  export document to write
     :param filename:    filename to give exported document
     :param extension:   extension to give exported document
@@ -292,50 +291,53 @@ def configure_logger():
     logger = logging.getLogger('exporter_logger')
     return logger
 
+
 def load_config_settings(logger, path_to_config_file):
     """
     Load config settings from config file
 
     :param logger:              the logger
     :param path_to_config_file: location of config file
-    :return:                    api_token, export_path, timezone, export_profiles,
-                                filename_item_id, sync_delay_in_seconds values
-                                loaded from config file
+    :return:                    settings dictionary containing values for:
+                                api_token, export_path, timezone, export_profiles,
+                                filename_item_id, sync_delay_in_seconds loaded from
+                                config file
     """
     config_settings = yaml.safe_load(open(path_to_config_file))
-    api_token = parse_api_token(logger, config_settings)
-    export_path = get_export_path(logger, config_settings)
-    timezone = get_timezone(logger, config_settings)
-    export_profiles = get_export_profile_mapping(logger, config_settings)
-    filename_item_id = get_filename_item_id(logger, config_settings)
-    sync_delay_in_seconds = get_sync_delay(logger, config_settings)
+    settings = {
+        'api_token': parse_api_token(logger, config_settings),
+        'export_path': get_export_path(logger, config_settings),
+        'timezone': get_timezone(logger, config_settings),
+        'export_profiles': get_export_profile_mapping(logger, config_settings),
+        'filename_item_id': get_filename_item_id(logger, config_settings),
+        'sync_delay_in_seconds': get_sync_delay(logger, config_settings)
+    }
 
-    return api_token, export_path, timezone, export_profiles, filename_item_id, sync_delay_in_seconds
+    return settings
 
 
 def configure():
     """
-    Instantiate and configure logger, load config settings from file, instantiate SafetyCulture SDK
-    
+    Parse command line arguments, instantiate and configure logger, load config settings from file,
+    instantiate SafetyCulture SDK
+
     :return:   logger object, instance of SafetyCulture SDK object, config settings
     """
     logger = configure_logger()
     path_to_config_file, export_formats = parse_command_line_arguments(logger)
 
-    api_token, export_path, timezone, export_profiles, filename_item_id, sync_delay_in_seconds =  \
-        load_config_settings(logger, path_to_config_file)
+    config_settings = load_config_settings(logger, path_to_config_file)
+    config_settings['export_formats'] = export_formats
+    sc_client = sp.SafetyCulture(config_settings['api_token'])
 
-    sc_client = sp.SafetyCulture(api_token)
-
-    if export_path is not None:
-        create_directory_if_not_exists(logger, export_path)
+    if config_settings['export_path'] is not None:
+        create_directory_if_not_exists(logger, config_settings['export_path'])
     else:
         logger.info('Invalid export path was found in ' + path_to_config_file + ', defaulting to /exports')
-        export_path = os.path.join(os.getcwd(), 'exports')
-        create_directory_if_not_exists(logger, export_path)
+        config_settings['export_path'] = os.path.join(os.getcwd(), 'exports')
+        create_directory_if_not_exists(logger, config_settings['export_path'])
 
-    return logger, export_path, timezone, export_formats, export_profiles, filename_item_id, sc_client, \
-        sync_delay_in_seconds
+    return logger, sc_client, config_settings
 
 
 def show_usage_and_exit():
@@ -385,20 +387,21 @@ def parse_command_line_arguments(logger):
     return config_filename, export_formats
 
 
-def loop(logger, sc_client, export_formats, export_profiles, filename_item_id, export_path, timezone,
-         sync_delay_in_seconds):
+def loop(logger, sc_client, settings):
     """
     Loop sync until interrupted by user
 
-    :param logger:                 the logger
-    :param sc_client:              instance of SafetyCulture SDK object
-    :param export_formats:         export formats to download
-    :param export_profiles:        export profiles to apply to exported documents
-    :param filename_item_id:       header item item_id for file naming
-    :param export_path:            path to folder in which to write exported documents
-    :param timezone:               timezone to apply to exported documents
-    :param sync_delay_in_seconds:  number of seconds between sync loops
+    :param logger:     the logger
+    :param sc_client:  instance of SafetyCulture SDK object
+    :param settings:   dictionary containing config settings values
     """
+    export_formats = settings['export_formats']
+    export_profiles = settings['export_profiles']
+    filename_item_id = settings['filename_item_id']
+    export_path = settings['export_path']
+    timezone = settings['timezone']
+    sync_delay_in_seconds = settings['sync_delay_in_seconds']
+
     while True:
         last_successful = get_last_successful(logger)
         results = sc_client.discover_audits(modified_after=last_successful)
@@ -443,11 +446,9 @@ def loop(logger, sc_client, export_formats, export_profiles, filename_item_id, e
 
 def main():
     try:
-        logger, export_path, timezone, export_formats, export_profiles, filename_item_id, sc_client, \
-            sync_delay_in_seconds = configure()
+        logger, sc_client, settings = configure()
 
-        loop(logger, sc_client, export_formats, export_profiles, filename_item_id, export_path, timezone,
-             sync_delay_in_seconds)
+        loop(logger, sc_client, settings)
     except KeyboardInterrupt:
         print "Interrupted by user, exiting."
         sys.exit(0)
