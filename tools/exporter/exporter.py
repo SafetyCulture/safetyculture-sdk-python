@@ -451,7 +451,7 @@ def loop(logger, sc_client, settings):
                     save_exported_document(logger, export_path, export_doc, export_filename, export_format)
                 logger.debug('setting last modified to ' + audit['modified_at'])
                 update_sync_marker_file(audit['modified_at'])
-        logger.info('Next check will be in ' + sync_delay_in_seconds + ' seconds. Waiting...')
+        logger.info('Next check will be in ' + str(sync_delay_in_seconds) + ' seconds. Waiting...')
         time.sleep(sync_delay_in_seconds)
 
 
