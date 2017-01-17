@@ -18,14 +18,22 @@ from tzlocal import get_localzone
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 from SafetyPy import SafetyPy as sp
 
+# Possible values here are DEBUG, INFO, WARN, ERROR and CRITICAL
 LOG_LEVEL = logging.DEBUG
+
+# Stores the API access token and other configuration settings
 DEFAULT_CONFIG_FILENAME = 'config.yaml'
+
+# Wait 15 minutes by default between sync attempts
 DEFAULT_SYNC_DELAY_IN_SECONDS = 900
 
+# The file that stores the "date modified" of the last successfully synced audit
+SYNC_MARKER_FILENAME = 'last_successful.txt'
 
-def log_exception(logger, ex, message):
+
+def log_critical_error(logger, ex, message):
     """
-    Write exception details and message to log file
+    Logs the exception at 'CRITICAL' log level
 
     :param logger:  the logger
     :param ex:      exception to log
@@ -36,7 +44,7 @@ def log_exception(logger, ex, message):
         logger.critical(ex)
 
 
-def parse_api_token(logger, config_settings):
+def load_setting_api_access_token(logger, config_settings):
     """
     Attempt to parse API token from config settings
 
@@ -54,11 +62,11 @@ def parse_api_token(logger, config_settings):
             logger.error('API token failed to match expected pattern')
             return None
     except Exception as ex:
-        log_exception(logger, ex, 'Exception parsing API token from config.yaml')
+        log_critical_error(logger, ex, 'Exception parsing API token from config.yaml')
         return None
 
 
-def get_sync_delay(logger, config_settings):
+def load_setting_sync_delay(logger, config_settings):
     """
     Attempt to parse delay between sync loops from config settings
 
@@ -80,13 +88,13 @@ def get_sync_delay(logger, config_settings):
                 DEFAULT_SYNC_DELAY_IN_SECONDS)))
             return DEFAULT_SYNC_DELAY_IN_SECONDS
     except Exception as ex:
-        log_exception(logger, ex,
-                      'Exception parsing sync_delay from the configuration file, defaulting to {0}'.format(str(
-                          DEFAULT_SYNC_DELAY_IN_SECONDS)))
+        log_critical_error(logger, ex,
+                           'Exception parsing sync_delay from the configuration file, defaulting to {0}'.format(str(
+                                DEFAULT_SYNC_DELAY_IN_SECONDS)))
         return DEFAULT_SYNC_DELAY_IN_SECONDS
 
 
-def get_export_profile_mapping(logger, config_settings):
+def load_setting_export_profile_mapping(logger, config_settings):
     """
     Attempt to parse export_profile settings from config settings
 
@@ -108,11 +116,11 @@ def get_export_profile_mapping(logger, config_settings):
         logger.debug('No export profile key in the configuration file')
         return None
     except Exception as ex:
-        log_exception(logger, ex, 'Exception getting export profiles from the configuration file')
+        log_critical_error(logger, ex, 'Exception getting export profiles from the configuration file')
         return None
 
 
-def get_export_path(logger, config_settings):
+def load_setting_export_path(logger, config_settings):
     """
     Attempt to extract export path from config settings
 
@@ -127,17 +135,19 @@ def get_export_path(logger, config_settings):
         else:
             return None
     except Exception as ex:
-        log_exception(logger, ex, 'Exception getting export path from the configuration file')
+        log_critical_error(logger, ex, 'Exception getting export path from the configuration file')
         return None
 
 
-def get_timezone(logger, config_settings):
+def load_setting_export_timezone(logger, config_settings):
     """
-    Attempt to parse timezone from config settings
+    If a user supplied timezone is found in the config settings it will
+    be used to set the dates in the generated audit report, otherwise
+    a local timezone will be used.
 
     :param logger:           the logger
     :param config_settings:  config settings loaded from config file
-    :return:                 timezone from config if valid, else local timezone for this machine
+    :return:                 a timezone from config if valid, else local timezone for this machine
     """
     try:
         timezone = config_settings['export_options']['timezone']
@@ -146,7 +156,7 @@ def get_timezone(logger, config_settings):
             logger.info('No valid timezone found in config file, defaulting to local timezone')
         return str(timezone)
     except Exception as ex:
-        log_exception(logger, ex, 'Exception parsing timezone from config file')
+        log_critical_error(logger, ex, 'Exception parsing timezone from config file')
         timezone = get_localzone()
         return str(timezone)
 
@@ -178,7 +188,7 @@ def create_directory_if_not_exists(logger, path):
     """
     Creates 'path' if it does not exist
 
-    If creation fails, the application will crash
+    If creation fails, an exception will be thrown
 
     :param logger:  the logger
     :param path:    the path to ensure it exists
@@ -189,13 +199,14 @@ def create_directory_if_not_exists(logger, path):
         if ex.errno == errno.EEXIST and os.path.isdir(path):
             pass
         else:
-            log_exception(logger, ex, 'An error happened trying to create ' + path)
+            log_critical_error(logger, ex, 'An error happened trying to create ' + path)
             raise
 
 
-def write_export_doc(logger, export_dir, export_doc, filename, extension):
+def save_exported_document(logger, export_dir, export_doc, filename, extension):
     """
-    Write exported document to disk at specified location with specified file name
+    Write exported document to disk at specified location with specified file name.
+    Any existing file with the same name will be overwritten.
 
     :param logger:      the logger
     :param export_dir:  path to directory for exports
@@ -210,37 +221,37 @@ def write_export_doc(logger, export_dir, export_doc, filename, extension):
         with open(file_path, 'w') as export_file:
             export_file.write(export_doc)
     except Exception as ex:
-        log_exception(logger, ex, 'Exception while writing' + file_path + ' to file')
+        log_critical_error(logger, ex, 'Exception while writing' + file_path + ' to file')
 
 
-def set_last_successful(date_modified):
+def update_sync_marker_file(date_modified):
     """
-    Set last successful value in last_successful.txt with the most recent modified_at value from audit json
+    Replaces the contents of the sync marker file with the most
+    recent modified_at date time value from audit JSON data
 
-    :param date_modified:   modified_at value from most recently downloaded audit json
+    :param date_modified:   modified_at value from most recently downloaded audit JSON
     :return:
     """
-    with open('last_successful.txt', 'w') as last_modified_file:
-        last_modified_file.write(date_modified)
+    with open(SYNC_MARKER_FILENAME, 'w') as sync_marker_file:
+        sync_marker_file.write(date_modified)
 
 
 def get_last_successful(logger):
     """
-    Check for last_successful.txt to get last_successful time value, else default to 'beginning of time'
+    Read the date and time of the last successfully exported audit data from the sync marker file
 
     :param logger:  the logger
-    :return:        last_successful value extracted from last_successful.txt, 2000-01-01
-                    (the beginning of time) if no valid time is parsed
+    :return:        A datetime value (or 2000-01-01 if syncing since the 'beginning of time')
     """
-    if os.path.isfile('last_successful.txt'):
-        with open('last_successful.txt', 'r+') as last_run:
+    if os.path.isfile(SYNC_MARKER_FILENAME):
+        with open(SYNC_MARKER_FILENAME, 'r+') as last_run:
             last_successful = last_run.readlines()[0]
     else:
         beginning_of_time = '2000-01-01T00:00:00.000Z'
         last_successful = beginning_of_time
-        with open('last_successful.txt', 'w') as last_run:
+        with open(SYNC_MARKER_FILENAME, 'w') as last_run:
             last_run.write(last_successful)
-        logger.info('Searching for audits since beginning of time')
+        logger.info('Searching for audits since the beginning of time: ' + beginning_of_time)
 
     return last_successful
 
@@ -249,9 +260,9 @@ def parse_export_filename(header_items, filename_item_id):
     """
     Get 'response' value of specified header item to use for export file name
 
-    :param header_items:      header_items array from audit json
+    :param header_items:      header_items array from audit JSON
     :param filename_item_id:  item_id from config settings
-    :return:                  'response' value of specified item from audit json
+    :return:                  'response' value of specified item from audit JSON
     """
     for item in header_items:
         if item['item_id'] == filename_item_id:
@@ -275,7 +286,7 @@ def get_filename_item_id(logger, config_settings):
         else:
             return None
     except Exception as ex:
-        log_exception(logger, ex, 'Exception retrieving setting "filename" from the configuration file')
+        log_critical_error(logger, ex, 'Exception retrieving setting "filename" from the configuration file')
         return None
 
 
@@ -305,12 +316,12 @@ def load_config_settings(logger, path_to_config_file):
     """
     config_settings = yaml.safe_load(open(path_to_config_file))
     settings = {
-        'api_token': parse_api_token(logger, config_settings),
-        'export_path': get_export_path(logger, config_settings),
-        'timezone': get_timezone(logger, config_settings),
-        'export_profiles': get_export_profile_mapping(logger, config_settings),
+        'api_token': load_setting_api_access_token(logger, config_settings),
+        'export_path': load_setting_export_path(logger, config_settings),
+        'timezone': load_setting_export_timezone(logger, config_settings),
+        'export_profiles': load_setting_export_profile_mapping(logger, config_settings),
         'filename_item_id': get_filename_item_id(logger, config_settings),
-        'sync_delay_in_seconds': get_sync_delay(logger, config_settings)
+        'sync_delay_in_seconds': load_setting_sync_delay(logger, config_settings)
     }
 
     return settings
@@ -437,9 +448,9 @@ def loop(logger, sc_client, settings):
                         export_doc = sc_client.get_export(audit_id, timezone, export_profile_id, export_format)
                     elif export_format == 'json':
                         export_doc = json.dumps(audit_json, indent=4)
-                    write_export_doc(logger, export_path, export_doc, export_filename, export_format)
+                    save_exported_document(logger, export_path, export_doc, export_filename, export_format)
                 logger.debug('setting last modified to ' + audit['modified_at'])
-                set_last_successful(audit['modified_at'])
+                update_sync_marker_file(audit['modified_at'])
         logger.info('Next check will be in ' + sync_delay_in_seconds + ' seconds. Waiting...')
         time.sleep(sync_delay_in_seconds)
 
