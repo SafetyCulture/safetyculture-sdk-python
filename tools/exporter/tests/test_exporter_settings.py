@@ -19,61 +19,61 @@ class ExporterTestCase(unittest.TestCase):
         config_settings = [{}, None, '']
         for config_setting in config_settings:
             message = '{0} should cause None to be returned'.format(str(config_setting))
-            self.assertIsNone(exp.get_export_profile_mapping(logger, config_setting), msg=message)
+            self.assertIsNone(exp.load_setting_export_profile_mapping(logger, config_setting), msg=message)
 
     def test_return_None_if_no_export_path_was_given(self):
         config_settings = [{}, None, '']
         for config_setting in config_settings:
             message = '{0} should cause None to be returned'.format(str(config_setting))
-            self.assertIsNone(exp.get_export_path(logger, config_setting), msg=message)
+            self.assertIsNone(exp.load_setting_export_path(logger, config_setting), msg=message)
 
     def test_use_user_supplied_unix_style_export_path_if_given(self):
         config_setting = {'export_options': {'export_path': '/User/Monty/Dropbox'}}
-        self.assertEqual(exp.get_export_path(logger, config_setting), config_setting['export_options']['export_path'])
+        self.assertEqual(exp.load_setting_export_path(logger, config_setting), config_setting['export_options']['export_path'])
 
     def test_use_user_supplied_windows_style_export_path_if_given(self):
         config_setting = {'export_options': {'export_path': r'C:\Users\Monty\Dropbox'}}
-        self.assertEqual(exp.get_export_path(logger, config_setting), config_setting['export_options']['export_path'])
+        self.assertEqual(exp.load_setting_export_path(logger, config_setting), config_setting['export_options']['export_path'])
 
     def test_use_local_timezone_if_none_given(self):
         config_settings = [{}, None, '']
         for config_setting in config_settings:
             message = '{0} should cause ' + str(get_localzone()) + ' to be returned'.format(str(config_setting))
-            self.assertEqual(exp.get_timezone(logger, config_setting), (str(get_localzone())), msg=message)
+            self.assertEqual(exp.load_setting_export_timezone(logger, config_setting), (str(get_localzone())), msg=message)
 
     def test_use_valid_timezone_from_settings_if_given(self):
         config_setting = {'export_options': {'timezone': 'America/Chicago'}}
-        self.assertEqual(exp.get_timezone(logger, config_setting), config_setting['export_options']['timezone'])
+        self.assertEqual(exp.load_setting_export_timezone(logger, config_setting), config_setting['export_options']['timezone'])
 
     def test_return_None_if_API_token_is_missing(self):
         config_settings = [{}, None, '']
         for config_setting in config_settings:
             message = '{0} should cause None to be returned'.format(str(config_setting))
-            self.assertIsNone(exp.parse_api_token(logger, config_setting), msg=message)
+            self.assertIsNone(exp.load_setting_api_access_token(logger, config_setting), msg=message)
 
     def test_return_None_if_API_token_has_invalid_format(self):
         config_settings = [{'API': {'token': '123'}},
                            {'API': {'token': '031c09cd1z89z43eb77e56dc82ae21588c1364b7fa6f6f59e9a1849191ef1214'}}]
         for config_setting in config_settings:
-            self.assertIsNone(exp.parse_api_token(logger, config_setting))
+            self.assertIsNone(exp.load_setting_api_access_token(logger, config_setting))
 
     def test_successfully_parse_a_valid_API_token(self):
         config_setting = {'API': {'token': '031d19ed1e89c43eb77a56dc82be21688c1364b7fa6f6f59e9a1849191ef1214'}}
-        self.assertEqual(exp.parse_api_token(logger, config_setting), config_setting['API']['token'])
+        self.assertEqual(exp.load_setting_api_access_token(logger, config_setting), config_setting['API']['token'])
 
     def test_use_default_if_sync_delay_setting_is_missing(self):
         config_settings = [{'sync_delay_in_seconds': None}, {'sync_delay_in_seconds': ''}]
         for config_setting in config_settings:
-            self.assertEqual(exp.get_sync_delay(logger, config_setting), exp.DEFAULT_SYNC_DELAY_IN_SECONDS)
+            self.assertEqual(exp.load_setting_sync_delay(logger, config_setting), exp.DEFAULT_SYNC_DELAY_IN_SECONDS)
 
     def test_use_default_if_sync_delay_setting_is_invalid(self):
         config_settings = [{'sync_delay_in_seconds': 'abc'}, {'sync_delay_in_seconds': -1}]
         for config_setting in config_settings:
-            self.assertEqual(exp.get_sync_delay(logger, config_setting), exp.DEFAULT_SYNC_DELAY_IN_SECONDS)
+            self.assertEqual(exp.load_setting_sync_delay(logger, config_setting), exp.DEFAULT_SYNC_DELAY_IN_SECONDS)
 
     def test_use_user_supplied_sync_delay_if_valid(self):
         config_setting = {'sync_delay_in_seconds': 500}
-        self.assertEqual(exp.get_sync_delay(logger, config_setting), config_setting['sync_delay_in_seconds'])
+        self.assertEqual(exp.load_setting_sync_delay(logger, config_setting), config_setting['sync_delay_in_seconds'])
 
 
 if __name__ == '__main__':
