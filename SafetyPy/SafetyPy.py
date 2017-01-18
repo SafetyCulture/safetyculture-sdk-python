@@ -179,9 +179,9 @@ class SafetyCulture:
             profile_search_url += '?template=' + template_id
         response = requests.get(profile_search_url, headers=self.auth_header)
         result = response.json() if response.status_code == requests.codes.ok else None
-        log_message = 'on retrieving export profile IDs using ' + profile_search_url
+        #log_message = 'on retrieving export profile IDs using ' + profile_search_url
 
-        self.log_http_status(response.status_code, log_message)
+        #self.log_http_status(response.status_code, log_message)
         return result
 
     def get_export_profile(self, export_profile_id):

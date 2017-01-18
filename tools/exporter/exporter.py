@@ -327,15 +327,15 @@ def load_config_settings(logger, path_to_config_file):
     return settings
 
 
-def configure():
+def configure(logger, path_to_config_file, export_formats):
     """
-    Parse command line arguments, instantiate and configure logger, load config settings from file,
-    instantiate SafetyCulture SDK
+    instantiate and configure logger, load config settings from file, instantiate SafetyCulture SDK
+    :param logger:              the logger
+    :param path_to_config_file: path to config file
+    :param export_formats:      desired export formats
+    :return:                    instance of SafetyCulture SDK object, config settings
+    """
 
-    :return:   logger object, instance of SafetyCulture SDK object, config settings
-    """
-    logger = configure_logger()
-    path_to_config_file, export_formats = parse_command_line_arguments(logger)
 
     config_settings = load_config_settings(logger, path_to_config_file)
     config_settings['export_formats'] = export_formats
@@ -348,7 +348,7 @@ def configure():
         config_settings['export_path'] = os.path.join(os.getcwd(), 'exports')
         create_directory_if_not_exists(logger, config_settings['export_path'])
 
-    return logger, sc_client, config_settings
+    return sc_client, config_settings
 
 
 def show_usage_and_exit():
@@ -373,6 +373,8 @@ def parse_command_line_arguments(logger):
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', help='config file to use, defaults to ' + DEFAULT_CONFIG_FILENAME)
     parser.add_argument('--format', nargs='*', help='formats to download, valid options are pdf, json, docx')
+    parser.add_argument('--list_export_profiles', nargs='*', help='display all export profiles, or restrict to specific'
+                                                                  ' template_id if supplied as additional argument')
     args = parser.parse_args()
 
     config_filename = DEFAULT_CONFIG_FILENAME
@@ -395,7 +397,92 @@ def parse_command_line_arguments(logger):
             else:
                 export_formats.append(option)
 
-    return config_filename, export_formats
+    return config_filename, export_formats, args.list_export_profiles
+
+
+def show_export_profiles_and_exit(list_export_profiles, sc_client):
+    """
+    Display export profiles to std out and exit
+
+    :param list_export_profiles: empty list for all profiles, list of template_ids if specified at command line
+    :param sc_client:            instance of SDK object, used to retrieve profiles
+    """
+    row_boundary = '|' + '-' * 136 + '|'
+    row_format = '|{0:<25} | {1:<25} | {2:<80}|'
+    print row_boundary
+    print row_format.format('Template Name', 'Profile Name', 'Profile ID')
+    print row_boundary
+
+    if len(list_export_profiles) > 0:
+        for template_id in list_export_profiles:
+            profile = sc_client.get_export_profile_ids(template_id)
+            template_name = str(profile['export_profiles'][0]['templates'][0]['name'])
+            profile_name = str(profile['export_profiles'][0]['name'])
+            profile_id = str(profile['export_profiles'][0]['id'])
+            print row_format.format(template_name, profile_name, profile_id)
+            print row_boundary
+        sys.exit()
+    else:
+        profiles = sc_client.get_export_profile_ids()
+        for profile in profiles['export_profiles']:
+            template_name = str(profile['templates'][0]['name'])[:19]
+            profile_name = str(profile['name'])[:19]
+            profile_id = str(profile['id'])
+            print row_format.format(template_name, profile_name, profile_id)
+            print row_boundary
+        sys.exit()
+
+def sync_exports(logger, sc_client, settings):
+    """
+    Perform sync, exporting documents modified since last execution
+
+    :param logger:    the logger
+    :param sc_client: instance of SDK object
+    :param settings:  dict containing settings values
+    """
+    export_formats = settings['export_formats']
+    export_profiles = settings['export_profiles']
+    filename_item_id = settings['filename_item_id']
+    export_path = settings['export_path']
+    timezone = settings['timezone']
+
+    last_successful = get_last_successful(logger)
+    results = sc_client.discover_audits(modified_after=last_successful)
+
+    if results is not None:
+        logger.info(str(results['total']) + ' audits discovered')
+        export_count = 1
+        export_total = results['total']
+
+        for audit in results['audits']:
+            logger.info('Processing audit (' + str(export_count) + '/' + str(export_total) + ')')
+            export_count += 1
+            audit_id = audit['audit_id']
+            logger.info('downloading ' + audit_id)
+            audit_json = sc_client.get_audit(audit_id)
+            template_id = audit_json['template_id']
+
+            if template_id in export_profiles.keys():
+                export_profile_id = export_profiles[template_id]
+            else:
+                export_profile_id = None
+
+            if filename_item_id is not None:
+                export_filename = parse_export_filename(audit_json['header_items'], filename_item_id)
+                if export_filename is None:
+                    export_filename = audit_id
+            else:
+                export_filename = audit_id
+
+            export_doc = None
+            for export_format in export_formats:
+                if export_format in ['pdf', 'docx']:
+                    export_doc = sc_client.get_export(audit_id, timezone, export_profile_id, export_format)
+                elif export_format == 'json':
+                    export_doc = json.dumps(audit_json, indent=4)
+                save_exported_document(logger, export_path, export_doc, export_filename, export_format)
+            logger.debug('setting last modified to ' + audit['modified_at'])
+            update_sync_marker_file(audit['modified_at'])
 
 
 def loop(logger, sc_client, settings):
@@ -406,58 +493,23 @@ def loop(logger, sc_client, settings):
     :param sc_client:  instance of SafetyCulture SDK object
     :param settings:   dictionary containing config settings values
     """
-    export_formats = settings['export_formats']
-    export_profiles = settings['export_profiles']
-    filename_item_id = settings['filename_item_id']
-    export_path = settings['export_path']
-    timezone = settings['timezone']
+
     sync_delay_in_seconds = settings['sync_delay_in_seconds']
 
     while True:
-        last_successful = get_last_successful(logger)
-        results = sc_client.discover_audits(modified_after=last_successful)
-
-        if results is not None:
-            logger.info(str(results['total']) + ' audits discovered')
-            export_count = 1
-            export_total = results['total']
-
-            for audit in results['audits']:
-                logger.info('Processing audit (' + str(export_count) + '/' + str(export_total) + ')')
-                export_count += 1
-                audit_id = audit['audit_id']
-                logger.info('downloading ' + audit_id)
-                audit_json = sc_client.get_audit(audit_id)
-                template_id = audit_json['template_id']
-
-                if template_id in export_profiles.keys():
-                    export_profile_id = export_profiles[template_id]
-                else:
-                    export_profile_id = None
-
-                if filename_item_id is not None:
-                    export_filename = parse_export_filename(audit_json['header_items'], filename_item_id)
-                    if export_filename is None:
-                        export_filename = audit_id
-                else:
-                    export_filename = audit_id
-
-                export_doc = None
-                for export_format in export_formats:
-                    if export_format in ['pdf', 'docx']:
-                        export_doc = sc_client.get_export(audit_id, timezone, export_profile_id, export_format)
-                    elif export_format == 'json':
-                        export_doc = json.dumps(audit_json, indent=4)
-                    save_exported_document(logger, export_path, export_doc, export_filename, export_format)
-                logger.debug('setting last modified to ' + audit['modified_at'])
-                update_sync_marker_file(audit['modified_at'])
+        sync_exports(logger, sc_client, settings)
         logger.info('Next check will be in ' + str(sync_delay_in_seconds) + ' seconds. Waiting...')
         time.sleep(sync_delay_in_seconds)
 
 
 def main():
     try:
-        logger, sc_client, settings = configure()
+        logger = configure_logger()
+        path_to_config_file, export_formats, export_profiles_to_list = parse_command_line_arguments(logger)
+        sc_client, settings = configure(logger, path_to_config_file, export_formats)
+
+        if export_profiles_to_list is not None:
+            show_export_profiles_and_exit(export_profiles_to_list, sc_client)
 
         loop(logger, sc_client, settings)
     except KeyboardInterrupt:
