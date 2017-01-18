@@ -155,12 +155,6 @@ class SafetyCulture:
         :param modified_before:  Restrict discovery to templates modified before this UTC timestamp
         :return:                 JSON object containing IDs of all templates returned by API
         """
-        """
-        Parameters: (optional) modified_after
-                    (optional) modified_before
-
-        Passing no parameters, it will discover templates with no restrictions
-        """
         search_url = self.template_search_url
         if modified_before is not None:
             search_url += '&modified_before=' + modified_before
@@ -170,6 +164,22 @@ class SafetyCulture:
         response = requests.get(search_url, headers=self.auth_header)
         result = response.json() if response.status_code == requests.codes.ok else None
         log_message = 'on template discovery using ' + search_url
+
+        self.log_http_status(response.status_code, log_message)
+        return result
+
+    def get_export_profile_ids(self, template_id=None):
+        """
+        Query API for all export profile IDs if no parameters are passed, else restrict to template_id passed
+        :param template_id: template_id to obtain export profiles for
+        :return:            JSON object containing template name: export profile pairs if no errors, or None
+        """
+        profile_search_url = self.api_url + 'export_profiles/search'
+        if template_id is not None:
+            profile_search_url += '?template=' + template_id
+        response = requests.get(profile_search_url, headers=self.auth_header)
+        result = response.json() if response.status_code == requests.codes.ok else None
+        log_message = 'on retrieving export profile IDs using ' + profile_search_url
 
         self.log_http_status(response.status_code, log_message)
         return result
