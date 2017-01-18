@@ -49,22 +49,34 @@ class SafetyCulture:
 
 
     def parse_json(self, json_to_parse):
+        """
+        Parse JSON string to OrderedDict and return
+
+        :param json_to_parse:  string representation of JSON
+        :return:               OrderedDict representation of JSON
+        """
         return json.JSONDecoder(object_pairs_hook=collections.OrderedDict).decode(json_to_parse)
 
     def log_exception(self, ex, message):
         """
-        Parameters:   ex       Exception instance to log
-                      message  Descriptive message to describe exception
+        Write exception and description message to log
+
+        :param ex:       Exception instance to log
+        :param message:  Descriptive message to describe exception
         """
+
         logger = logging.getLogger('sp_logger')
         logger.critical(message)
         logger.critical(ex)
 
     def log_http_status(self, status_code, message):
         """
-        Parameters:   status_code  http status code to log
-                      message      to describe where the status code was obtained
+        Write http status code and descriptive message to log
+
+        :param status_code:  http status code to log
+        :param message:      to describe where the status code was obtained
         """
+
         logger = logging.getLogger('sp_logger')
         status_description = requests.status_codes._codes[status_code][0]
         log_string = str(status_code) + ' [' + status_description + '] status received ' + message
@@ -93,21 +105,24 @@ class SafetyCulture:
 
     def validate_log_directory(self, log_dir):
         """
-        check for log subdirectory (current directory + '/log/')
-        create it if it doesn't exist
+        Ensure specified directory exists, create if not
+
+        :param log_dir:  directory to validate or create if not exists
         """
         if not os.path.isdir(log_dir):
             os.mkdir(log_dir)
 
     def discover_audits(self, template_id=None, modified_after=None, completed=True):
         """
-        Parameters: (optional) template_id     Restrict discovery to this template_id
-                    (optional) modified_after  Restrict discovery to audits modified
-                                               after this UTC timestamp
-                    (optional) completed       Restrict discovery to audits marked
-                                               as completed, default to False
-        Passing no parameters, it will return all audits with no restrictions
+        Return IDs of all completed audits if no parameters are passed, otherwise restrict search
+        based on parameter values
+
+        :param template_id:     Restrict discovery to this template_id
+        :param modified_after:  Restrict discovery to audits modified after this UTC timestamp
+        :param completed:       Restrict discovery to audits marked as completed, default to False
+        :return:                JSON object containing IDs of all audits returned by API
         """
+
         logger = logging.getLogger('sp_logger')
 
         last_modified = modified_after if modified_after is not None else '2000-01-01T00:00:00.000Z'
@@ -134,10 +149,15 @@ class SafetyCulture:
 
     def discover_templates(self, modified_after=None, modified_before=None):
         """
-        Parameters: (optional) modified_after   Restrict discovery to templates modified
-                                                after this UTC timestamp
-                    (optional) modified_before  Restrict discovery to templates modified
-                                                before this UTC timestamp
+        Query API for all template IDs if no parameters are passed, otherwise restrict search based on parameters
+
+        :param modified_after:   Restrict discovery to templates modified after this UTC timestamp
+        :param modified_before:  Restrict discovery to templates modified before this UTC timestamp
+        :return:                 JSON object containing IDs of all templates returned by API
+        """
+        """
+        Parameters: (optional) modified_after
+                    (optional) modified_before
 
         Passing no parameters, it will discover templates with no restrictions
         """
@@ -156,6 +176,8 @@ class SafetyCulture:
 
     def get_export_profile(self, export_profile_id):
         """
+        Query API for export profile corresponding to passed profile_id
+
         :param export_profile_id:  Export profile ID of the profile to retrieve
         :return:                   Export profile in JSON format
         """
@@ -178,10 +200,13 @@ class SafetyCulture:
     def get_export_job_id(self, audit_id, timezone=DEFAULT_EXPORT_TIMEZONE, export_profile_id=None,
                           export_format=DEFAULT_EXPORT_FORMAT):
         """
-        Parameters : audit_id           Retrieves export_job_id for given audit_id
-                     timezone           Timezone to apply to exports
-                     export_profile_id  Export Profile to apply to exports
-        Returns:     export ID from API
+        Request export job ID from API and return it
+
+        :param audit_id:           audit_id to retrieve export_job_id for
+        :param timezone:           timezone to apply to exports
+        :param export_profile_id:  export profile to apply to exports
+        :param export_format:      desired format of exported document
+        :return:                   export job ID obtained from API
         """
         export_url = self.audit_url + audit_id + '/export?format=' + export_format + '&timezone=' + timezone
 
@@ -203,9 +228,10 @@ class SafetyCulture:
 
     def poll_for_export(self, audit_id, export_job_id):
         """
-        Parameters:  audit_id  audit_id of the export to poll for
-                     export_job_id of the export to poll for
-        Return:      href for export download
+        Poll API for given export job until job is complete or excessive failed attempts occur
+        :param audit_id:       audit_id of the export to poll for
+        :param export_job_id:  export_job_id of the export to poll for
+        :return:               href for export download
         """
         job_id_pattern = '^' + GUID_PATTERN
         job_id_is_valid = re.match(job_id_pattern, export_job_id)
@@ -226,46 +252,63 @@ class SafetyCulture:
                 elif status['status'] == 'SUCCESS':
                     logger.info(str(status['status']) + ' : ' + audit_id)
                     return status['href']
-            else:
-                if export_attempts < 2:
-                    export_attempts += 1
-                    logger.info('attempt #{0} exporting report for: ' + audit_id.format(str(export_attempts)))
-                    retry_id = self.get_export_job_id(audit_id)
-                    return self.poll_for_export(audit_id, retry_id['id'])
+
                 else:
-                    logger.error('export for ' + audit_id + ' failed {0} times - skipping'.format(export_attempts))
+                    if export_attempts < 2:
+                        export_attempts += 1
+                        logger.info('attempt # {0} exporting report for: ' + audit_id.format(str(export_attempts)))
+                        retry_id = self.get_export_job_id(audit_id)
+                        return self.poll_for_export(audit_id, retry_id['id'])
+                    else:
+                        logger.error('export for ' + audit_id + ' failed {0} times - skipping'.format(export_attempts))
+            else:
+                logger.critical('Unexpected response from API: {0}'.format(status))
+
         else:
             self.log_exception(ValueError, 'export_job_id {0} does not match expected pattern'.format(export_job_id))
 
     def download_export(self, export_href):
         """
-        Parameters:  export_href:  href obtained from poll_for_export for export doc to download
-        Returns:     String representation of document
-        """
-        response = requests.get(export_href, headers=self.auth_header)
-        result = response.content if response.status_code == requests.codes.ok else None
-        log_message = 'on GET for href: ' + export_href
 
-        self.log_http_status(response.status_code, log_message)
-        return result
+        :param export_href:  href for export document to download
+        :return:             String representation of exported document
+        """
+
+        try:
+            response = requests.get(export_href, headers=self.auth_header)
+            result = response.content if response.status_code == requests.codes.ok else None
+            log_message = 'on GET for href: ' + export_href
+
+            self.log_http_status(response.status_code, log_message)
+            return result
+
+
+        except Exception as ex:
+            self.log_exception(ex, 'Exception occurred while attempting download_export({0})'.format(export_href))
 
     def get_export(self, audit_id, timezone=DEFAULT_EXPORT_TIMEZONE, export_profile_id=None,
                    export_format=DEFAULT_EXPORT_FORMAT):
         """
-        Parameters: audit_id                        audit_id of export to obtain
-                    (optional) timezone             timezone to apply to exports
-                    (optional) export_profile_id    export profile to apply to exports
-        Returns: string representation of export document
+        Obtain exported document from API and return string representation of it
+
+        :param audit_id:           audit_id of export to obtain
+        :param timezone:           timezone to apply to exports
+        :param export_profile_id:  ID of export profile to apply to exports
+        :param export_format:      desired format of exported document
+        :return:                   String representation of exported document
         """
         export_job_id = self.get_export_job_id(audit_id, timezone, export_profile_id, export_format)['id']
         export_href = self.poll_for_export(audit_id, export_job_id)
+
         export_content = self.download_export(export_href)
         return export_content
 
     def get_audit(self, audit_id):
         """
-        Parameters: audit_id of document to fetch
-        Returns:    JSON audit object
+        Request JSON representation of a single specified audit and return it
+
+        :param audit_id:  audit_id of document to fetch
+        :return:          JSON audit object
         """
         response = requests.get(self.audit_url + audit_id, headers=self.auth_header)
         result = self.parse_json(response.content) if response.status_code == requests.codes.ok else None
