@@ -1,0 +1,8 @@
+API:
+    token: YOUR_SAFETYCULTURE_API_TOKEN
+export_options:
+    export_path:
+    timezone:
+    filename:
+export_profiles:
+sync_delay_in_seconds:

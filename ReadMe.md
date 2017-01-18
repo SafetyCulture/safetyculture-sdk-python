@@ -1,15 +1,15 @@
 #SafetyPy (PythonSDK)
 
-Python SDK for interacting with SafetyCulture Public API
+Python SDK for interacting with the SafetyCulture Public API
 
 **NOTES**:
 SafetyPy is written in Python 2 (Python 3 *will* generate errors)
 
-
 **Instructions**:
  * Install Python 2.7.x
  * Install pip (Python package manager)
- * Execute the following commands from terminal:
-     * pip install -r requirements.txt
- * Edit config.yaml - replace <api_key> with a valid api key
- * Place SafetyPy.py in the same directory of the script(s) that depend on it
+ * Clone this repository to a directory on your computer
+ * Go to the cloned directory on your computer
+ * Execute the following command from the command line to install the package dependencies:
+     * ``pip install -r SafetyPy/requirements.txt``
+ * See ReadMe.md in tools/exporter for a usage example
