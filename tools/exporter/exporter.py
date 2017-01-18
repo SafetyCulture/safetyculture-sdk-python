@@ -90,7 +90,7 @@ def load_setting_sync_delay(logger, config_settings):
     except Exception as ex:
         log_critical_error(logger, ex,
                            'Exception parsing sync_delay from the configuration file, defaulting to {0}'.format(str(
-                                DEFAULT_SYNC_DELAY_IN_SECONDS)))
+                               DEFAULT_SYNC_DELAY_IN_SECONDS)))
         return DEFAULT_SYNC_DELAY_IN_SECONDS
 
 
@@ -336,7 +336,6 @@ def configure(logger, path_to_config_file, export_formats):
     :return:                    instance of SafetyCulture SDK object, config settings
     """
 
-
     config_settings = load_config_settings(logger, path_to_config_file)
     config_settings['export_formats'] = export_formats
     sc_client = sp.SafetyCulture(config_settings['api_token'])
@@ -349,16 +348,6 @@ def configure(logger, path_to_config_file, export_formats):
         create_directory_if_not_exists(logger, config_settings['export_path'])
 
     return sc_client, config_settings
-
-
-def show_usage_and_exit():
-    """
-    In the case of invalid command line arguments being passed,
-    provide example of proper argument usage and exit
-    """
-    print 'Usage:'
-    print 'python exporter.py [--format pdf | docx | json] [--config <filename>]'
-    sys.exit(1)
 
 
 def parse_command_line_arguments(logger):
@@ -384,7 +373,7 @@ def parse_command_line_arguments(logger):
             logger.debug(config_filename + ' passed as config argument')
         else:
             logger.error(config_filename + ' is not a valid config file')
-            show_usage_and_exit()
+            sys.exit(1)
 
     export_formats = ['pdf']
     if args.format is not None and len(args.format) > 0:
@@ -402,7 +391,7 @@ def parse_command_line_arguments(logger):
 
 def show_export_profiles_and_exit(list_export_profiles, sc_client):
     """
-    Display export profiles to std out and exit
+    Display export profiles to stdout and exit
 
     :param list_export_profiles: empty list for all profiles, list of template_ids if specified at command line
     :param sc_client:            instance of SDK object, used to retrieve profiles
@@ -430,7 +419,8 @@ def show_export_profiles_and_exit(list_export_profiles, sc_client):
             profile_id = str(profile['id'])
             print row_format.format(template_name, profile_name, profile_id)
             print row_boundary
-        sys.exit()
+        sys.exit(0)
+
 
 def sync_exports(logger, sc_client, settings):
     """
@@ -515,6 +505,7 @@ def main():
     except KeyboardInterrupt:
         print "Interrupted by user, exiting."
         sys.exit(0)
+
 
 if __name__ == '__main__':
     main()

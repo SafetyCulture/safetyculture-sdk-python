@@ -9,9 +9,9 @@ import os
 import re
 import sys
 import time
+import errno
 from datetime import datetime
 import requests
-import yaml
 
 DEFAULT_EXPORT_TIMEZONE = 'Etc/UTC'
 DEFAULT_EXPORT_FORMAT = 'pdf'
@@ -28,7 +28,7 @@ class SafetyCulture:
         self.audit_url = self.api_url + 'audits/'
         self.template_search_url = self.api_url + 'templates/search?field=template_id&field=name'
 
-        self.validate_log_directory(self.log_dir)
+        self.create_directory_if_not_exists(self.log_dir)
         self.configure_logging()
         logger = logging.getLogger('sp_logger')
 
@@ -46,8 +46,6 @@ class SafetyCulture:
             logger.error('No valid API token parsed! Exiting!')
             sys.exit()
 
-
-
     def parse_json(self, json_to_parse):
         """
         Parse JSON string to OrderedDict and return
@@ -57,30 +55,18 @@ class SafetyCulture:
         """
         return json.JSONDecoder(object_pairs_hook=collections.OrderedDict).decode(json_to_parse)
 
-    def log_exception(self, ex, message):
+    def log_critical_error(self, ex, message):
         """
         Write exception and description message to log
 
         :param ex:       Exception instance to log
         :param message:  Descriptive message to describe exception
         """
-
         logger = logging.getLogger('sp_logger')
-        logger.critical(message)
-        logger.critical(ex)
 
-    def log_http_status(self, status_code, message):
-        """
-        Write http status code and descriptive message to log
-
-        :param status_code:  http status code to log
-        :param message:      to describe where the status code was obtained
-        """
-
-        logger = logging.getLogger('sp_logger')
-        status_description = requests.status_codes._codes[status_code][0]
-        log_string = str(status_code) + ' [' + status_description + '] status received ' + message
-        logger.info(log_string) if status_code == requests.codes.ok else logger.error(log_string)
+        if logger is not None:
+            logger.critical(message)
+            logger.critical(ex)
 
     def configure_logging(self):
         """
@@ -103,14 +89,22 @@ class SafetyCulture:
         sh.setFormatter(formatter)
         sp_logger.addHandler(sh)
 
-    def validate_log_directory(self, log_dir):
+    def create_directory_if_not_exists(self, path):
         """
-        Ensure specified directory exists, create if not
+        Creates 'path' if it does not exist
 
-        :param log_dir:  directory to validate or create if not exists
+        If creation fails, an exception will be thrown
+
+        :param path:    the path to ensure it exists
         """
-        if not os.path.isdir(log_dir):
-            os.mkdir(log_dir)
+        try:
+            os.makedirs(path)
+        except OSError as ex:
+            if ex.errno == errno.EEXIST and os.path.isdir(path):
+                pass
+            else:
+                self.log_critical_error(ex, 'An error happened trying to create ' + path)
+                raise
 
     def discover_audits(self, template_id=None, modified_after=None, completed=True):
         """
@@ -127,7 +121,8 @@ class SafetyCulture:
 
         last_modified = modified_after if modified_after is not None else '2000-01-01T00:00:00.000Z'
 
-        search_url = self.audit_url + 'search?field=audit_id&field=modified_at&order=asc&modified_after=' + last_modified
+        search_url = self.audit_url + 'search?field=audit_id&field=modified_at&order=asc&modified_after=' \
+            + last_modified
         log_string = '\nInitiating audit_discovery with the parameters: ' + '\n'
         log_string += 'template_id    = ' + str(template_id) + '\n'
         log_string += 'modified_after = ' + str(last_modified) + '\n'
@@ -179,9 +174,6 @@ class SafetyCulture:
             profile_search_url += '?template=' + template_id
         response = requests.get(profile_search_url, headers=self.auth_header)
         result = response.json() if response.status_code == requests.codes.ok else None
-        #log_message = 'on retrieving export profile IDs using ' + profile_search_url
-
-        #self.log_http_status(response.status_code, log_message)
         return result
 
     def get_export_profile(self, export_profile_id):
@@ -203,8 +195,8 @@ class SafetyCulture:
             self.log_http_status(response.status_code, log_message)
             return result
         else:
-            self.log_exception(ValueError,
-                               'export_profile_id {0} does not match expected pattern'.format(export_profile_id))
+            self.log_critical_error(ValueError,
+                                    'export_profile_id {0} does not match expected pattern'.format(export_profile_id))
             return None
 
     def get_export_job_id(self, audit_id, timezone=DEFAULT_EXPORT_TIMEZONE, export_profile_id=None,
@@ -226,8 +218,9 @@ class SafetyCulture:
             if profile_id_is_valid:
                 export_url += '&export_profile=' + export_profile_id
             else:
-                self.log_exception(ValueError,
-                                   'export_profile_id {0} does not match expected pattern'.format(export_profile_id))
+                self.log_critical_error(ValueError,
+                                        'export_profile_id {0} does not match expected pattern'.format(
+                                            export_profile_id))
 
         response = requests.post(export_url, headers=self.auth_header)
         result = response.json() if response.status_code == requests.codes.ok else None
@@ -275,7 +268,8 @@ class SafetyCulture:
                 logger.critical('Unexpected response from API: {0}'.format(status))
 
         else:
-            self.log_exception(ValueError, 'export_job_id {0} does not match expected pattern'.format(export_job_id))
+            self.log_critical_error(ValueError,
+                                    'export_job_id {0} does not match expected pattern'.format(export_job_id))
 
     def download_export(self, export_href):
         """
@@ -292,9 +286,8 @@ class SafetyCulture:
             self.log_http_status(response.status_code, log_message)
             return result
 
-
         except Exception as ex:
-            self.log_exception(ex, 'Exception occurred while attempting download_export({0})'.format(export_href))
+            self.log_critical_error(ex, 'Exception occurred while attempting download_export({0})'.format(export_href))
 
     def get_export(self, audit_id, timezone=DEFAULT_EXPORT_TIMEZONE, export_profile_id=None,
                    export_format=DEFAULT_EXPORT_FORMAT):
@@ -326,3 +319,16 @@ class SafetyCulture:
 
         self.log_http_status(response.status_code, log_message)
         return result
+
+    def log_http_status(self, status_code, message):
+        """
+        Write http status code and descriptive message to log
+
+        :param status_code:  http status code to log
+        :param message:      to describe where the status code was obtained
+        """
+
+        logger = logging.getLogger('sp_logger')
+        status_description = requests.status_codes._codes[status_code][0]
+        log_string = str(status_code) + ' [' + status_description + '] status received ' + message
+        logger.info(log_string) if status_code == requests.codes.ok else logger.error(log_string)
