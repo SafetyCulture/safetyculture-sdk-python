@@ -29,13 +29,13 @@ or simply double click exporter.py
 To specify the export format explicitly run:
 
 ```
-python exporter.py --formats pdf
+python exporter.py --format pdf
 ```
 
 More than one supported formats can be exported at once e.g.
 
 ```
-python exporter.py --formats pdf docx json
+python exporter.py --format pdf docx json
 ```
 
 Note:
@@ -55,7 +55,7 @@ python exporter.py --config=/path/to/alternate_config.yaml
 
 Note that you can supply a relative or absolute path to alternate_config.yaml if it is in another directory
 
-Arguments can be combined e.g. - `python exporter.py --config=alternate_config.yaml --formats pdf json`
+Arguments can be combined e.g. - `python exporter.py --config=alternate_config.yaml --format pdf json`
 
 ## Export settings
 
