@@ -46,6 +46,19 @@ Note:
 
 
 ### Advanced usage
+## How to list available export profile IDs
+To list all available export profile IDs and their associated templates:
+
+```
+python exporter.py --list_export_profiles
+```
+To list export profile IDs associated with specific templates:
+```
+python exporter.py --list_export_profiles template_3E631E46F466411B9C09AD804886A8B4 
+```
+
+
+Multiple template_ids can be passed, separated by a space
 
 You may want to maintain multiple export configurations in different YAML configuration files. To use a specific configuration file (other than config.yaml) do
 
@@ -88,6 +101,8 @@ export_profiles:
 sync_delay_in_seconds: 1000
 ```
 
+Note: Templates for which there is no export profile id listed in the config file will be exported without a profile applied
+
 ## Naming the exported files
 
 When configuring a custom filename convention in export settings (in config.yaml) you can provide an audit item ID from the ones below to cause all exported audit reports be named after the response of that particular item in the audit.
@@ -115,13 +130,6 @@ export_options:
 ```
 
 will result in all exported files named after the `Conducted On` date field.
-
-
-## How to list available export profile IDs
-
-<TODO>
-
-Note: Templates for which there is no export profile id listed will be exported without a profile applied
 
 ## Troubleshooting
 
