@@ -1,12 +1,10 @@
-#safetypy (SafetyCulture Python SDK)
+# safetypy (SafetyCulture Python SDK)
 
 Python SDK for interacting with the SafetyCulture API
 
-**NOTES**:
-safetypy is written in Python 2 (Python 3 *will* generate errors)
+## Installation
 
-**Instructions**:
- * Install Python 2.7.x (and the pip package manager if your Python is older than 2.7.9)
+ * Install Python 2.7.x (and the pip package manager if your Python is older than 2.7.9, Python 3 is not supported)
  * Clone this repository to a directory on your computer
  * Go to the cloned directory on your computer
  * Execute the following command from the command line to install the package dependencies:
