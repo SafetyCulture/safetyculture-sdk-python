@@ -16,7 +16,7 @@ import pytz
 from tzlocal import get_localzone
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
-from SafetyPy import SafetyPy as sp
+from safetypy import safetypy as sp
 
 # Possible values here are DEBUG, INFO, WARN, ERROR and CRITICAL
 LOG_LEVEL = logging.DEBUG
