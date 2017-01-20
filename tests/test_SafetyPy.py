@@ -4,8 +4,8 @@
 import os
 import sys
 import unittest
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'SafetyPy'))
-import SafetyPy as sp
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'safetypy'))
+import safetypy as sp
 
 
 class SafetyPyTestCase(unittest.TestCase):
