@@ -16,7 +16,7 @@ import requests
 DEFAULT_EXPORT_TIMEZONE = 'Etc/UTC'
 DEFAULT_EXPORT_FORMAT = 'pdf'
 GUID_PATTERN = '[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}$'
-
+HTTP_USER_AGENT_ID = 'safetyculture-python-sdk'
 
 class SafetyCulture:
     def __init__(self, api_token):
@@ -41,10 +41,19 @@ class SafetyCulture:
             self.api_token = None
 
         if self.api_token:
-            self.auth_header = {'Authorization': 'Bearer ' + self.api_token}
+            self.custom_http_headers = {
+                'User-Agent': HTTP_USER_AGENT_ID,
+                'Authorization': 'Bearer ' + self.api_token
+            }
         else:
             logger.error('No valid API token parsed! Exiting!')
-            sys.exit()
+            sys.exit(1)
+
+    def authenticated_request_get(self, url):
+        return requests.get(url, headers=self.custom_http_headers)
+
+    def authenticated_request_post(self, url, data):
+        return requests.post(url, data, headers=self.custom_http_headers)
 
     def parse_json(self, json_to_parse):
         """
@@ -134,7 +143,7 @@ class SafetyCulture:
         if completed is not False:
             search_url += '&completed=true'
 
-        response = requests.get(search_url, headers=self.auth_header)
+        response = self.authenticated_request_get(search_url)
         result = response.json() if response.status_code == requests.codes.ok else None
         number_discovered = str(result['total']) if result is not None else '0'
         log_message = 'on audit_discovery: ' + number_discovered + ' discovered using ' + search_url
@@ -156,7 +165,7 @@ class SafetyCulture:
         if modified_after is not None:
             search_url += '&modified_after=' + modified_after
 
-        response = requests.get(search_url, headers=self.auth_header)
+        response = self.authenticated_request_get(search_url)
         result = response.json() if response.status_code == requests.codes.ok else None
         log_message = 'on template discovery using ' + search_url
 
@@ -172,7 +181,7 @@ class SafetyCulture:
         profile_search_url = self.api_url + 'export_profiles/search'
         if template_id is not None:
             profile_search_url += '?template=' + template_id
-        response = requests.get(profile_search_url, headers=self.auth_header)
+        response = self.authenticated_request_get(profile_search_url)
         result = response.json() if response.status_code == requests.codes.ok else None
         return result
 
@@ -188,7 +197,7 @@ class SafetyCulture:
 
         if profile_id_is_valid:
             export_profile_url = self.api_url + '/export_profiles/' + export_profile_id
-            response = requests.get(export_profile_url, headers=self.auth_header)
+            response = self.authenticated_request_get(export_profile_url)
             result = self.parse_json(response.content) if response.status_code == requests.codes.ok else None
             log_message = 'on export profile retrieval of ' + export_profile_id
 
@@ -222,7 +231,7 @@ class SafetyCulture:
                                         'export_profile_id {0} does not match expected pattern'.format(
                                             export_profile_id))
 
-        response = requests.post(export_url, headers=self.auth_header)
+        response = self.authenticated_request_post(export_url, data=None)
         result = response.json() if response.status_code == requests.codes.ok else None
         log_message = 'on request to ' + export_url
 
@@ -243,7 +252,7 @@ class SafetyCulture:
             delay_in_seconds = 5
             poll_url = self.audit_url + audit_id + '/exports/' + export_job_id
             export_attempts = 1
-            poll_status = requests.get(poll_url, headers=self.auth_header)
+            poll_status = self.authenticated_request_get(poll_url)
             status = poll_status.json()
             logger = logging.getLogger('sp_logger')
             if 'status' in status.keys():
@@ -279,7 +288,7 @@ class SafetyCulture:
         """
 
         try:
-            response = requests.get(export_href, headers=self.auth_header)
+            response = self.authenticated_request_get(export_href)
             result = response.content if response.status_code == requests.codes.ok else None
             log_message = 'on GET for href: ' + export_href
 
@@ -313,7 +322,7 @@ class SafetyCulture:
         :param audit_id:  audit_id of document to fetch
         :return:          JSON audit object
         """
-        response = requests.get(self.audit_url + audit_id, headers=self.auth_header)
+        response = self.authenticated_request_get(self.audit_url + audit_id)
         result = self.parse_json(response.content) if response.status_code == requests.codes.ok else None
         log_message = 'on GET for ' + audit_id
 
