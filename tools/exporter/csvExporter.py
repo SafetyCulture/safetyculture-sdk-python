@@ -6,14 +6,19 @@ import csv
 
 import re
 
+import sys
+from io import BytesIO
 
-environment = "prod"
-url = "http://sync-gateway-internal.%s.safetyculture.io:4985/soter/" % environment
-tokens = { 'prod': 'Bearer 90263ab9c6f9b5584b9d532b9222f3c8d503baceedb21eef5c1789641640cffa', 
-'sandpit': 'Bearer 90263ab9c6f9b5584b9d532b9222f3c8d503baceedb21eef5c1789641640cffa' }
-bearer = tokens[environment]
 
-put_headers = {'Authorization': bearer, 'Content-Type': 'application/json'}
+# TOKEN  = "fb31b33411b59481a2fe44769de1c89df9baa81300f4b5ed1ee8c568d999cd4a" 
+# TIMEZONE = "Australia/Melbourne"
+# AUTH_HEADER = {'Authorization': 'Bearer ' + TOKEN}
+# TYPE_HEADER = {"Content-Type": "application/json"}
+# URL = "https://api.safetyculture.io/audits/audit_893A10D909AC493CA8310552CF190A6B"
+
+# id = raw_input("audit id: ")
+# URL = URL + id
+# put_headers = {'Authorization': bearer, 'Content-Type': 'application/json'}
 
 
 CSV_HEADER_ROW = [
@@ -40,18 +45,19 @@ CSV_HEADER_ROW = [
 
 LATITUDE_LONGITUDE_REGEX = '\((\-?\d+\.\d+?),\s*(\-?\d+\.\d+?)\)$'
 
-csvFile = open('test.csv', 'wb')
+csvFile = open('temp.csv', 'wb')
 wr = csv.writer(csvFile, quoting=csv.QUOTE_ALL)
 
-def getAudit(id): 
-	get_doc = requests.get(url + id)
-	if get_doc.status_code == 200:
-		return get_doc.json()
-	else:
-		print(get_doc.status_code)
+# def get_audit(id):
+#     print "Getting audits based off " + str(id)
+#     audit_dictionary = requests.get(URL, headers= AUTH_HEADER)
+#     if audit_dictionary.status_code != 200:
+#         print "Failed to retrieve Audits from " + id
+#         print "STATUS CODE: " + str(audit_dictionary.status_code)
+#         quit()
+#     return audit_dictionary.json() 
 
-	
-	
+
 def generateCsvRowItemData(item):
 #   We are outputting 'null' on purpose for absent data.
 #   PowerBI can import 'null' and empty string, but not undefined.
@@ -61,6 +67,11 @@ def generateCsvRowItemData(item):
 	score = ''
 	maxScore = ''
 	scorePercentage = ''
+	parent_id = ''
+	
+	
+	if 'parent_id' in item.keys():
+		parent_id = item['parent_id']
 	
 	# Determine if the item has failed responses configured and set the boolean accordingly
 	if item.get('responses') and 'failed' in item['responses'].keys():
@@ -98,8 +109,8 @@ def generateCsvRowItemData(item):
 		# Possible solution, duplicate the item across multiple rows, each with
 		# a unique selected multiple-choice response.
 		# Whether PowerBI can accept data like that is completely untested.
-		for response in item['responses']['response']:
-			response += str(response) + ','
+		for _response in item['responses']['selected']:
+			response += str(_response['label']) + ','
 		#remove trailing comma
 		response = response[:-1]
 			
@@ -125,14 +136,14 @@ def generateCsvRowItemData(item):
 	else: 
 		print 'Unhandled item type: ' + str(item['type'])
 	
-	return [item['label'], response, comments, item['type'], score, maxScore, scorePercentage, failed, item['item_id'], item['parent_id']]
+	return [item['label'], response, comments, item['type'], score, maxScore, scorePercentage, failed, item['item_id'], parent_id]
 	
 	
 def generateCsvRowMetadata(metadata, id):
-
 	metadataArray = []
 	
-	metadataArray.append(metadata['authorship']['owner']['name'])
+# 	metadataArray.append(metadata['authorship']['owner']['name']) -- this works when exported form sync-gateway
+	metadataArray.append(metadata['authorship']['owner'])
 	metadataArray.append(metadata['name'])
 	metadataArray.append(metadata['score'])
 	metadataArray.append(metadata['total_score'])
@@ -145,25 +156,23 @@ def generateCsvRowMetadata(metadata, id):
 	return metadataArray	
 	
 
-def getItemsAndMetadata(id):
+def getItemsAndMetadata(audit):
 	# add try / catch statement here
-	audit = getAudit(id) 
 	metadata = audit['audit_data']
-	items = audit['header'] + audit['items']
+	# items = audit['header'] + audit['items'] -- this works when exported form sync-gateway
+	items = audit['header_items'] + audit['items']
 	return (metadata, items)
 
-# /**
-# * Generate a CSV file from multiple audits with an item per row and each with audit metadata.
-# * @param {array} ids The IDs of the audits to process
-# * @param {string} bearer The authentication token needed to access SafetyCulture public API
-# * @param {string} filePath The path where to output the file (defaults to "./output.csv") [optional]
-# * @param {integer} concurrency How many audits to process concurrently (defaults to 3) [optional]
-# */
-def exportAuditsToCSV(): 
-	id = raw_input("audit id: ")
+
+def exportAuditsToCSV(audit_json): 
+  	"""
+  	enerate a CSV file from multiple audits with an item per row and each with audit metadata.
+  	
+  	:param audit_json:	audit data to export as CSV
+  	"""
 	
 	wr.writerow(CSV_HEADER_ROW)
-	metadataAndItems = getItemsAndMetadata(id)
+	metadataAndItems = getItemsAndMetadata(audit_json)
 	metadata = metadataAndItems[0]
 	items = metadataAndItems[1]
 	
@@ -172,5 +181,7 @@ def exportAuditsToCSV():
 		itemArray = generateCsvRowItemData(item)
 		rowArray = itemArray + metadataArray
 		wr.writerow(rowArray)
+		
 
 exportAuditsToCSV()
+

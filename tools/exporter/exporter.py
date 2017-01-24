@@ -15,6 +15,8 @@ import yaml
 import pytz
 from tzlocal import get_localzone
 
+import csvExporter as csv 
+
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 from SafetyPy import SafetyPy as sp
 
@@ -377,7 +379,7 @@ def parse_command_line_arguments(logger):
 
     export_formats = ['pdf']
     if args.format is not None and len(args.format) > 0:
-        valid_export_formats = ['json', 'docx', 'pdf']
+        valid_export_formats = ['json', 'docx', 'pdf', 'csv']
         export_formats = []
         for option in args.format:
             if option not in valid_export_formats:
@@ -470,11 +472,30 @@ def sync_exports(logger, sc_client, settings):
                     export_doc = sc_client.get_export(audit_id, timezone, export_profile_id, export_format)
                 elif export_format == 'json':
                     export_doc = json.dumps(audit_json, indent=4)
+                elif export_format == 'csv':
+                    export_doc = csvExporter(audit_json)
                 save_exported_document(logger, export_path, export_doc, export_filename, export_format)
             logger.debug('setting last modified to ' + audit['modified_at'])
             update_sync_marker_file(audit['modified_at'])
 
+def csvExporter(audit_json): 
+    """
+    Export Audit in CSV format
 
+    :param audit_json:    audit data to be exported 
+    """
+    csv.exportAuditsToCSV(audit_json)
+    
+    with open('temp.csv', 'r') as myfile:
+        data = myfile.read()
+        
+    print 'deleting temporary csv file'
+    os.remove('/Users/tonyoreglia/safetyculture-sdk-python/tools/exporter/temp.csv')
+    
+    print 'data: ' + data
+    return data
+    
+    
 def loop(logger, sc_client, settings):
     """
     Loop sync until interrupted by user
