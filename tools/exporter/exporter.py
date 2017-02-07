@@ -15,7 +15,7 @@ import yaml
 import pytz
 from tzlocal import get_localzone
 
-import csvExporter as csv 
+import csvExporter as csv
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 from safetypy import safetypy as sp
@@ -216,11 +216,22 @@ def save_exported_document(logger, export_dir, export_doc, filename, extension):
     :param filename:    filename to give exported document
     :param extension:   extension to give exported document
     """
+
     file_path = os.path.join(export_dir, filename + '.' + extension)
+
+    append_or_overwrite = 'w'
     if os.path.isfile(file_path):
-        logger.info('Overwriting existing report at ' + file_path)
+        if extension == 'csv':
+            logger.info('Appending existing report at ' + file_path)
+            append_or_overwrite = 'a'
+        else:
+            logger.info('Overwriting existing report at ' + file_path)
+    else:
+        # if file doesn't exist, csv needs header row
+        if extension == 'csv':
+            export_doc = csv.add_header(export_doc)
     try:
-        with open(file_path, 'w') as export_file:
+        with open(file_path, append_or_overwrite) as export_file:
             export_file.write(export_doc)
     except Exception as ex:
         log_critical_error(logger, ex, 'Exception while writing' + file_path + ' to file')
@@ -474,28 +485,28 @@ def sync_exports(logger, sc_client, settings):
                     export_doc = json.dumps(audit_json, indent=4)
                 elif export_format == 'csv':
                     export_doc = csvExporter(audit_json)
+                    # this should be encoded in config file -- "filename_item_id"
+                    export_filename = audit_json['template_id']
+
                 save_exported_document(logger, export_path, export_doc, export_filename, export_format)
             logger.debug('setting last modified to ' + audit['modified_at'])
             update_sync_marker_file(audit['modified_at'])
 
-def csvExporter(audit_json): 
+
+def csvExporter(audit_json):
     """
     Export Audit in CSV format
 
     :param audit_json:    audit data to be exported 
     """
     csv.exportAuditsToCSV(audit_json)
-    
     with open('temp.csv', 'r') as myfile:
         data = myfile.read()
-        
-    print 'deleting temporary csv file'
     os.remove('/Users/tonyoreglia/safetyculture-sdk-python/tools/exporter/temp.csv')
-    
-    print 'data: ' + data
+
     return data
-    
-    
+
+
 def loop(logger, sc_client, settings):
     """
     Loop sync until interrupted by user
@@ -504,9 +515,7 @@ def loop(logger, sc_client, settings):
     :param sc_client:  instance of SafetyCulture SDK object
     :param settings:   dictionary containing config settings values
     """
-
     sync_delay_in_seconds = settings['sync_delay_in_seconds']
-
     while True:
         sync_exports(logger, sc_client, settings)
         logger.info('Next check will be in ' + str(sync_delay_in_seconds) + ' seconds. Waiting...')
