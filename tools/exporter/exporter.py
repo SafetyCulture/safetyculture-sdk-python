@@ -208,7 +208,8 @@ def create_directory_if_not_exists(logger, path):
 def save_exported_document(logger, export_dir, export_doc, filename, extension):
     """
     Write exported document to disk at specified location with specified file name.
-    Any existing file with the same name will be overwritten.
+    In the case of PDF and Word exports, any existing file will be overwritten. CSV exports
+    will append to the existing file.
 
     :param logger:      the logger
     :param export_dir:  path to directory for exports
@@ -484,25 +485,26 @@ def sync_exports(logger, sc_client, settings):
                 elif export_format == 'json':
                     export_doc = json.dumps(audit_json, indent=4)
                 elif export_format == 'csv':
-                    export_doc = csvExporter(audit_json)
-                    # this should be encoded in config file -- "filename_item_id"
+                    csv_exporter = csv.CsvExporter(audit_json)
+                    export_doc = export_audit_as_csv(csv_exporter)
                     export_filename = audit_json['template_id']
-
                 save_exported_document(logger, export_path, export_doc, export_filename, export_format)
             logger.debug('setting last modified to ' + audit['modified_at'])
             update_sync_marker_file(audit['modified_at'])
 
 
-def csvExporter(audit_json):
+def export_audit_as_csv(csv_exporter):
     """
     Export Audit in CSV format
 
-    :param audit_json:    audit data to be exported 
+    :param csv_exporter:    instance of CsvExporter class
+    :return:                csv data in string format
     """
-    csv.exportAuditsToCSV(audit_json)
+    csv_exporter.process_items()
+    # csv_exporter.export_audit_to_csv(audit_json)
     with open('temp.csv', 'r') as myfile:
         data = myfile.read()
-    os.remove('/Users/tonyoreglia/safetyculture-sdk-python/tools/exporter/temp.csv')
+    os.remove('temp.csv')
 
     return data
 
