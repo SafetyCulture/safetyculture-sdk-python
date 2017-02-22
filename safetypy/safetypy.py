@@ -19,7 +19,7 @@ GUID_PATTERN = '[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-F
 HTTP_USER_AGENT_ID = 'safetyculture-python-sdk'
 
 class SafetyCulture:
-    def __init__(self, api_token):
+    def __init__(self, api_token, proxy_settings = None):
 
         self.current_dir = os.getcwd()
         self.log_dir = self.current_dir + '/log/'
@@ -27,6 +27,8 @@ class SafetyCulture:
         self.api_url = 'https://api.safetyculture.io/'
         self.audit_url = self.api_url + 'audits/'
         self.template_search_url = self.api_url + 'templates/search?field=template_id&field=name'
+
+        self.proxy_settings = proxy_settings
 
         self.create_directory_if_not_exists(self.log_dir)
         self.configure_logging()
@@ -50,10 +52,10 @@ class SafetyCulture:
             sys.exit(1)
 
     def authenticated_request_get(self, url):
-        return requests.get(url, headers=self.custom_http_headers)
+        return requests.get(url, headers=self.custom_http_headers, proxies=self.proxy_settings)
 
     def authenticated_request_post(self, url, data):
-        return requests.post(url, data, headers=self.custom_http_headers)
+        return requests.post(url, data, headers=self.custom_http_headers, proxies=self.proxy_settings)
 
     def parse_json(self, json_to_parse):
         """

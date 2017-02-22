@@ -161,6 +161,21 @@ def load_setting_export_timezone(logger, config_settings):
         return str(timezone)
 
 
+def load_setting_proxy(logger, config_settings):
+    try:
+        proxy_settings = config_settings['proxy']
+        proxy_is_valid = re.match('(\d+\.\d+\.\d+\.\d+):(\d+)', proxy_settings['https'])
+        if proxy_is_valid:
+            return proxy_settings
+        else:
+            proxy_settings = None
+            return proxy_settings
+    except Exception as ex:
+        log_critical_error(logger, ex, 'Exception parsing proxy settings')
+        proxy_settings = None
+        return proxy_settings
+
+
 def configure_logging(path_to_log_directory):
     """
     Configure logger
@@ -317,6 +332,7 @@ def load_config_settings(logger, path_to_config_file):
     config_settings = yaml.safe_load(open(path_to_config_file))
     settings = {
         'api_token': load_setting_api_access_token(logger, config_settings),
+        'proxy': load_setting_proxy(logger, config_settings),
         'export_path': load_setting_export_path(logger, config_settings),
         'timezone': load_setting_export_timezone(logger, config_settings),
         'export_profiles': load_setting_export_profile_mapping(logger, config_settings),
@@ -338,7 +354,7 @@ def configure(logger, path_to_config_file, export_formats):
 
     config_settings = load_config_settings(logger, path_to_config_file)
     config_settings['export_formats'] = export_formats
-    sc_client = sp.SafetyCulture(config_settings['api_token'])
+    sc_client = sp.SafetyCulture(config_settings['api_token'], config_settings['proxy'])
 
     if config_settings['export_path'] is not None:
         create_directory_if_not_exists(logger, config_settings['export_path'])
@@ -497,7 +513,6 @@ def main():
         logger = configure_logger()
         path_to_config_file, export_formats, export_profiles_to_list = parse_command_line_arguments(logger)
         sc_client, settings = configure(logger, path_to_config_file, export_formats)
-
         if export_profiles_to_list is not None:
             show_export_profiles_and_exit(export_profiles_to_list, sc_client)
 

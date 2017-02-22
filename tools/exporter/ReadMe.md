@@ -63,6 +63,8 @@ Here is an example customised config.yaml:
 ```
 API:
     token: YOUR_SAFETYCULTURE_API_TOKEN
+proxy:
+    https: 127.0.0.1:8888
 export_options:
     export_path: /Users/Monty/Dropbox
     timezone: America/Chicago
