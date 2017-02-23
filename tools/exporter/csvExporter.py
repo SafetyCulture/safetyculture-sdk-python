@@ -37,18 +37,20 @@ class CsvExporter:
         self.audit_json = audit_json
         self.csv_writer = self.create_file('temp.csv')
         self.audit_id = audit_json['audit_id']
-        audit_data_and_items = self.get_items_and_auditdata(self.audit_json)
+        audit_data_and_items = self.get_items_and_auditdata()
         self.auditdata = audit_data_and_items[0]
         self.items = audit_data_and_items[1]
-        self.auditdata_array = self.retrieve_auditdata(self.auditdata, self.audit_id)
-
+        self.auditdata_array = self.retrieve_auditdata()
 
     def process_items(self):
         for item in self.items:
-            item_array = self.generate_csv_row_item_data(item, audit_id)
-            row_array = item_array + auditdata_array
-            self.remove_newline(row_array)
+            item_array = self.generate_csv_row_item_data(item)
+            row_array = item_array + self.auditdata_array
             self.csv_writer.writerow(row_array)
+        self.csv_file.close()
+        with open('temp.csv', 'rb') as x:
+            ret = x.read()
+        return ret
 
     def path(self, obj, *args):
         """
@@ -67,7 +69,6 @@ class CsvExporter:
             else:
                 return ''
         return obj
-
 
     # noinspection PyDictCreation
     def generate_csv_row_item_data(self, item):
@@ -96,7 +97,7 @@ class CsvExporter:
         fields[SCORE] = self.path(item, 'scoring', 'score') or self.path(item, 'scoring', 'combined_score')
         fields[MAX_SCORE] = self.path(item, 'scoring', 'max_score') or self.path(item, 'scoring', 'combined_max_score')
         fields[SCORE_PERCENTAGE] = self.path(item, 'scoring', 'score_percentage') \
-            or self.path(item, 'scoring', 'combined_score_percentage')
+                                   or self.path(item, 'scoring', 'combined_score_percentage')
 
         fields[COMMENTS] = self.path(item, 'responses', 'text')
 
@@ -143,11 +144,12 @@ class CsvExporter:
         elif item.get('type') == 'scanner':
             self.handle_scanner_field(item, fields)
         else:
-            print 'Unhandled item type: ' + str(item.get('type')) + ' from ' + self.audit_id + ', ' + item.get('item_id')
+            print 'Unhandled item type: ' + str(item.get('type')) + ' from ' + self.audit_id + ', ' + item.get(
+                'item_id')
 
-        return [item['label'], fields['response'], fields['comments'], item['type'], fields['score'], fields['maxScore'],
+        return [item['label'], fields['response'], fields['comments'], item['type'], fields['score'],
+                fields['maxScore'],
                 fields['scorePercentage'], fields['failed'], item['item_id'], fields['parent_id']]
-
 
     def handle_question_field(self, item, fields):
         """
@@ -157,7 +159,6 @@ class CsvExporter:
         :return:            fields dic is passed as reference, so updates are global
         """
         fields['response'] = self.path(item, 'responses', 'selected', 0, 'label')
-
 
     def handle_list_field(self, item, fields):
         """
@@ -171,7 +172,6 @@ class CsvExporter:
                 fields['response'] += self.path(response, 'label') + ','
                 fields['response'] = fields['response'][:-1]
 
-
     def handle_datetime_field(self, item, fields):
         """
         retrieve information specific to datetime field, populate fields dictionary with data
@@ -180,7 +180,6 @@ class CsvExporter:
         :return:            fields dic is passed as reference, so updates are global
         """
         fields['response'] = self.path(item, 'responses', 'datetime')
-
 
     def handle_slider_field(self, item, fields):
         """
@@ -191,7 +190,6 @@ class CsvExporter:
         """
         fields['response'] = self.path(item, 'responses', 'value')
 
-
     def handle_drawing_field(self, item, fields):
         """
         retrieve information specific to drawing field, populate fields dictionary with data
@@ -200,7 +198,6 @@ class CsvExporter:
         :return:            fields dic is passed as reference, so updates are global
         """
         fields['response'] = self.path(item, 'responses', 'image', 'media_id')
-
 
     def handle_checkbox_field(self, item, fields):
         """
@@ -211,7 +208,6 @@ class CsvExporter:
         """
         fields['response'] = self.path(item, 'responses', 'value')
 
-
     def handle_switch_field(self, item, fields):
         """
         retrieve information specific to switch field, populate fields dictionary with data
@@ -220,7 +216,6 @@ class CsvExporter:
         :return:            fields dic is passed as reference, so updates are global
         """
         fields['response'] = self.path(item, 'responses', 'value')
-
 
     def handle_address_field(self, item, fields):
         """
@@ -233,8 +228,7 @@ class CsvExporter:
             fields['response'] += ','
             fields['response'] += line
         if fields['response'] != '':
-                fields['response'] = fields['response'][1:]
-
+            fields['response'] = fields['response'][1:]
 
     def handle_signature_field(self, item, fields):
         """
@@ -244,7 +238,6 @@ class CsvExporter:
         :return:            fields dic is passed as reference, so updates are global
         """
         fields['response'] = self.path(item, 'responses', 'image', 'media_id')
-
 
     def handle_media_field(self, item, fields):
         """
@@ -259,7 +252,6 @@ class CsvExporter:
         if fields['response'] != '':
             fields['response'] = fields['response'][1:]
 
-
     def handle_smartfield_field(self, item, fields):
         """
         retrieve information specific to smartfield field, populate fields dictionary with data
@@ -269,54 +261,41 @@ class CsvExporter:
         """
         fields['response'] = self.path(item, 'evaluation')
 
-
     def handle_textsingle_field(self, item, fields):
         pass
-
 
     def handle_text_field(self, item, fields):
         pass
 
-
     def handle_scanner_field(self, item, fields):
         pass
-
 
     def handle_weather_field(self, item, fields):
         pass
 
-
     def handle_asset_field(self, item, fields):
         pass
-
 
     def handle_section_field(self, item, fields):
         pass
 
-
     def handle_category_field(self, item, fields):
         pass
-
 
     def handle_information_field(self, item, fields):
         pass
 
-
     def handle_dynamic_field(self, item, fields):
         pass
-
 
     def handle_element_field(self, item, fields):
         pass
 
-
     def handle_primeelement_field(self, item, fields):
         pass
 
-
     def handle_dynamicfield_field(self, item, fields):
         pass
-
 
     def retrieve_auditdata(self):
         """
@@ -335,7 +314,6 @@ class CsvExporter:
         auditdata_array.append(self.audit_id)
         return auditdata_array
 
-
     def get_items_and_auditdata(self):
         """
         Retrieve raw JSON Items and Auditdata list from Audit JSON. This is the data to be processed into CSV format
@@ -347,33 +325,17 @@ class CsvExporter:
         items = self.audit_json['header_items'] + self.audit_json['items']
         return auditdata, items
 
-
     def create_file(self, file_name):
         """
         create new file to hold CSV output. Setup CSV writer
         :return:    CSV writer instance,
         """
         try:
-            csv_file = open(file_name, 'wb')
-            wr = csv.writer(csv_file, quoting=csv.QUOTE_ALL)
+            self.csv_file = open(file_name, 'wb')
+            wr = csv.writer(self.csv_file, quoting=csv.QUOTE_ALL)
             return wr
         except Exception as ex:
             print str(ex) + ': Exception while writing' + file_name + ' to file'
-
-
-    def remove_newline(self, row_array):
-        """
-        Remove newline characters within text answer. Replace with comma.
-        This is necessary for Excel exporting of multi line text and comments
-        :param row_array:    Array representing CSV row
-        :return:            Array with newline characters replaced with commmas
-        """
-        i = 0
-        for cell in row_array:
-            if isinstance(cell, basestring):
-                cell = cell.replace('\n', ',')
-            row_array[i] = cell
-            i += 1
 
 
 def add_header(data):

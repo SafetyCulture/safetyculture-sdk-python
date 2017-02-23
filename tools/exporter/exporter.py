@@ -76,7 +76,6 @@ def load_setting_sync_delay(logger, config_settings):
     :param config_settings:  config settings loaded from config file
     :return:                 extracted sync delay if valid, else DEFAULT_SYNC_DELAY_IN_SECONDS
     """
-
     try:
         sync_delay = config_settings['sync_delay_in_seconds']
         sync_delay_is_valid = re.match('^[0-9]+$', str(sync_delay))
@@ -220,11 +219,11 @@ def save_exported_document(logger, export_dir, export_doc, filename, extension):
 
     file_path = os.path.join(export_dir, filename + '.' + extension)
 
-    append_or_overwrite = 'w'
+    append_or_overwrite = 'wb'
     if os.path.isfile(file_path):
         if extension == 'csv':
             logger.info('Appending existing report at ' + file_path)
-            append_or_overwrite = 'a'
+            append_or_overwrite = 'ab'
         else:
             logger.info('Overwriting existing report at ' + file_path)
     else:
@@ -501,8 +500,7 @@ def export_audit_as_csv(csv_exporter):
     :return:                csv data in string format
     """
     csv_exporter.process_items()
-    # csv_exporter.export_audit_to_csv(audit_json)
-    with open('temp.csv', 'r') as myfile:
+    with open('temp.csv', 'rb') as myfile:
         data = myfile.read()
     os.remove('temp.csv')
 
