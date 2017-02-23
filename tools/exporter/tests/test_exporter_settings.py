@@ -80,6 +80,11 @@ class ExporterTestCase(unittest.TestCase):
         for config_setting in config_settings:
             self.assertEqual(exp.load_setting_proxy(logger, config_setting), None);
 
+    def test_return_None_if_proxy_ip_is_invalid(self):
+        config_settings = [{'proxy': {'https': '192.168.6.b:8080'}}, {'proxy': {'https': '256.254.0.81:2154'}},{'proxy': {'https': '192.168.6.1'}}]
+        for config_setting in config_settings:
+            self.assertEqual(exp.load_setting_proxy(logger, config_setting), None);
+        
     def test_use_user_supplied_proxy_if_valid(self):
         config_settings = [{'proxy': {'https': '192.168.6.1:8080'}}, {'proxy': {'https': '10.254.0.81:2154'}}]
         for config_setting in config_settings:
