@@ -9,3 +9,4 @@ tools/exporter/log/
 tools/exporter/last_successful.txt
 venv
 last_successful.txt
+dev_config.yaml
