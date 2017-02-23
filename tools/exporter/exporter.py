@@ -15,6 +15,8 @@ import yaml
 import pytz
 from tzlocal import get_localzone
 
+import csvExporter as csv
+
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 from safetypy import safetypy as sp
 
@@ -74,7 +76,6 @@ def load_setting_sync_delay(logger, config_settings):
     :param config_settings:  config settings loaded from config file
     :return:                 extracted sync delay if valid, else DEFAULT_SYNC_DELAY_IN_SECONDS
     """
-
     try:
         sync_delay = config_settings['sync_delay_in_seconds']
         sync_delay_is_valid = re.match('^[0-9]+$', str(sync_delay))
@@ -206,7 +207,8 @@ def create_directory_if_not_exists(logger, path):
 def save_exported_document(logger, export_dir, export_doc, filename, extension):
     """
     Write exported document to disk at specified location with specified file name.
-    Any existing file with the same name will be overwritten.
+    In the case of PDF and Word exports, any existing file will be overwritten. CSV exports
+    will append to the existing file.
 
     :param logger:      the logger
     :param export_dir:  path to directory for exports
@@ -214,11 +216,22 @@ def save_exported_document(logger, export_dir, export_doc, filename, extension):
     :param filename:    filename to give exported document
     :param extension:   extension to give exported document
     """
+
     file_path = os.path.join(export_dir, filename + '.' + extension)
+
+    append_or_overwrite = 'wb'
     if os.path.isfile(file_path):
-        logger.info('Overwriting existing report at ' + file_path)
+        if extension == 'csv':
+            logger.info('Appending existing report at ' + file_path)
+            append_or_overwrite = 'ab'
+        else:
+            logger.info('Overwriting existing report at ' + file_path)
+    else:
+        # if file doesn't exist, csv needs header row
+        if extension == 'csv':
+            export_doc = csv.add_header(export_doc)
     try:
-        with open(file_path, 'w') as export_file:
+        with open(file_path, append_or_overwrite) as export_file:
             export_file.write(export_doc)
     except Exception as ex:
         log_critical_error(logger, ex, 'Exception while writing' + file_path + ' to file')
@@ -377,7 +390,7 @@ def parse_command_line_arguments(logger):
 
     export_formats = ['pdf']
     if args.format is not None and len(args.format) > 0:
-        valid_export_formats = ['json', 'docx', 'pdf']
+        valid_export_formats = ['json', 'docx', 'pdf', 'csv']
         export_formats = []
         for option in args.format:
             if option not in valid_export_formats:
@@ -470,9 +483,28 @@ def sync_exports(logger, sc_client, settings):
                     export_doc = sc_client.get_export(audit_id, timezone, export_profile_id, export_format)
                 elif export_format == 'json':
                     export_doc = json.dumps(audit_json, indent=4)
+                elif export_format == 'csv':
+                    csv_exporter = csv.CsvExporter(audit_json)
+                    export_doc = export_audit_as_csv(csv_exporter)
+                    export_filename = audit_json['template_id']
                 save_exported_document(logger, export_path, export_doc, export_filename, export_format)
             logger.debug('setting last modified to ' + audit['modified_at'])
             update_sync_marker_file(audit['modified_at'])
+
+
+def export_audit_as_csv(csv_exporter):
+    """
+    Export Audit in CSV format
+
+    :param csv_exporter:    instance of CsvExporter class
+    :return:                csv data in string format
+    """
+    csv_exporter.process_items()
+    with open('temp.csv', 'rb') as myfile:
+        data = myfile.read()
+    os.remove('temp.csv')
+
+    return data
 
 
 def loop(logger, sc_client, settings):
@@ -483,9 +515,7 @@ def loop(logger, sc_client, settings):
     :param sc_client:  instance of SafetyCulture SDK object
     :param settings:   dictionary containing config settings values
     """
-
     sync_delay_in_seconds = settings['sync_delay_in_seconds']
-
     while True:
         sync_exports(logger, sc_client, settings)
         logger.info('Next check will be in ' + str(sync_delay_in_seconds) + ' seconds. Waiting...')
