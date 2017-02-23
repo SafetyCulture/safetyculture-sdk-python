@@ -164,7 +164,7 @@ def load_setting_export_timezone(logger, config_settings):
 def load_setting_proxy(logger, config_settings):
     try:
         proxy_settings = config_settings['proxy']
-        proxy_is_valid = re.match('(\d+\.\d+\.\d+\.\d+):(\d+)', proxy_settings['https'])
+        proxy_is_valid = re.match('(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]):\d', proxy_settings['https'])
         if proxy_is_valid:
             return proxy_settings
         else:
