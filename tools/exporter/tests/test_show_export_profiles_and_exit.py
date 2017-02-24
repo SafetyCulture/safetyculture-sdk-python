@@ -58,7 +58,7 @@ class ShowExportProfilesAndExitTestCase(unittest.TestCase):
 		for id in list_export_profiles:
 			mock_sc_client.get_export_profile_ids.assert_any_call(id)
 		self.assertEqual(mock_sc_client.get_export_profile_ids.call_count, len(list_export_profiles))
-		mock_sys.exit.assert_called
+		mock_sys.exit.assert_called()
 
 	@mock.patch('exporter.sys')
 	def test_call_get_ids_with_no_args(self, mock_sys):
