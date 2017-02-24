@@ -58,13 +58,13 @@ class CsvExporter:
         if not os.path.isfile(file_path) or write_or_append == 'wb':
             self.data.insert(0, CSV_HEADER_ROW)
         try:
-            self.csv_file = open(file_path, write_or_append)
-            wr = csv.writer(self.csv_file, quoting=csv.QUOTE_ALL)
+            csv_file = open(file_path, write_or_append)
+            wr = csv.writer(csv_file, quoting=csv.QUOTE_ALL)
+            for row in self.data:
+                wr.writerow(row)
+            csv_file.close()
         except Exception as ex:
             print str(ex) + ': Exception while writing' + filename + ' to file'
-        for row in self.data:
-            wr.writerow(row)
-        self.csv_file.close()
 
     def path(self, obj, *args):
         """
@@ -111,7 +111,7 @@ class CsvExporter:
         fields[SCORE] = self.path(item, 'scoring', 'score') or self.path(item, 'scoring', 'combined_score')
         fields[MAX_SCORE] = self.path(item, 'scoring', 'max_score') or self.path(item, 'scoring', 'combined_max_score')
         fields[SCORE_PERCENTAGE] = self.path(item, 'scoring', 'score_percentage') \
-                                   or self.path(item, 'scoring', 'combined_score_percentage')
+            or self.path(item, 'scoring', 'combined_score_percentage')
 
         fields[COMMENTS] = self.path(item, 'responses', 'text')
 
@@ -184,7 +184,7 @@ class CsvExporter:
         for response in self.path(item, 'responses', 'selected'):
             if response:
                 fields['response'] += self.path(response, 'label') + ','
-                fields['response'] = fields['response'][:-1]
+        fields['response'] = fields['response'][:-1]
 
     def handle_datetime_field(self, item, fields):
         """
