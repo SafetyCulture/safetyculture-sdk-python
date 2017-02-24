@@ -14,7 +14,6 @@ from datetime import datetime
 import yaml
 import pytz
 from tzlocal import get_localzone
-
 import csvExporter as csv
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -207,31 +206,18 @@ def create_directory_if_not_exists(logger, path):
 def save_exported_document(logger, export_dir, export_doc, filename, extension):
     """
     Write exported document to disk at specified location with specified file name.
-    In the case of PDF and Word exports, any existing file will be overwritten. CSV exports
-    will append to the existing file.
-
+    Any existing file with the same name will be overwritten.
     :param logger:      the logger
     :param export_dir:  path to directory for exports
     :param export_doc:  export document to write
     :param filename:    filename to give exported document
     :param extension:   extension to give exported document
     """
-
     file_path = os.path.join(export_dir, filename + '.' + extension)
-
-    append_or_overwrite = 'wb'
     if os.path.isfile(file_path):
-        if extension == 'csv':
-            logger.info('Appending existing report at ' + file_path)
-            append_or_overwrite = 'ab'
-        else:
-            logger.info('Overwriting existing report at ' + file_path)
-    else:
-        # if file doesn't exist, csv needs header row
-        if extension == 'csv':
-            export_doc = csv.add_header(export_doc)
+        logger.info('Overwriting existing report at ' + file_path)
     try:
-        with open(file_path, append_or_overwrite) as export_file:
+        with open(file_path, 'wb') as export_file:
             export_file.write(export_doc)
     except Exception as ex:
         log_critical_error(logger, ex, 'Exception while writing' + file_path + ' to file')
@@ -485,26 +471,13 @@ def sync_exports(logger, sc_client, settings):
                     export_doc = json.dumps(audit_json, indent=4)
                 elif export_format == 'csv':
                     csv_exporter = csv.CsvExporter(audit_json)
-                    export_doc = export_audit_as_csv(csv_exporter)
                     export_filename = audit_json['template_id']
+                    csv_exporter.write(export_path, export_filename, 'ab')
+                    # skip call to save_exported_document, csv_exporter class handles it with call to write()
+                    continue
                 save_exported_document(logger, export_path, export_doc, export_filename, export_format)
             logger.debug('setting last modified to ' + audit['modified_at'])
             update_sync_marker_file(audit['modified_at'])
-
-
-def export_audit_as_csv(csv_exporter):
-    """
-    Export Audit in CSV format
-
-    :param csv_exporter:    instance of CsvExporter class
-    :return:                csv data in string format
-    """
-    csv_exporter.process_items()
-    with open('temp.csv', 'rb') as myfile:
-        data = myfile.read()
-    os.remove('temp.csv')
-
-    return data
 
 
 def loop(logger, sc_client, settings):

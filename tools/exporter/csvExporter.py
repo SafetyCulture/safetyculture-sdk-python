@@ -1,4 +1,7 @@
 import unicodecsv as csv
+import json
+import sys
+import os
 
 CSV_HEADER_ROW = [
     'Label',
@@ -35,22 +38,33 @@ BLANK = ''
 class CsvExporter:
     def __init__(self, audit_json):
         self.audit_json = audit_json
-        self.csv_writer = self.create_file('temp.csv')
         self.audit_id = audit_json['audit_id']
         audit_data_and_items = self.get_items_and_auditdata()
         self.auditdata = audit_data_and_items[0]
         self.items = audit_data_and_items[1]
         self.auditdata_array = self.retrieve_auditdata()
+        self.data = self.process_items()
 
     def process_items(self):
+        self.data = []
         for item in self.items:
             item_array = self.generate_csv_row_item_data(item)
             row_array = item_array + self.auditdata_array
-            self.csv_writer.writerow(row_array)
+            self.data.append(row_array)
+        return self.data
+
+    def write(self, path, filename, write_or_append='wb'):
+        file_path = os.path.join(path, filename + '.csv')
+        if not os.path.isfile(file_path) or write_or_append == 'wb':
+            self.data.insert(0, CSV_HEADER_ROW)
+        try:
+            self.csv_file = open(file_path, write_or_append)
+            wr = csv.writer(self.csv_file, quoting=csv.QUOTE_ALL)
+        except Exception as ex:
+            print str(ex) + ': Exception while writing' + filename + ' to file'
+        for row in self.data:
+            wr.writerow(row)
         self.csv_file.close()
-        with open('temp.csv', 'rb') as x:
-            ret = x.read()
-        return ret
 
     def path(self, obj, *args):
         """
@@ -325,29 +339,13 @@ class CsvExporter:
         items = self.audit_json['header_items'] + self.audit_json['items']
         return auditdata, items
 
-    def create_file(self, file_name):
-        """
-        create new file to hold CSV output. Setup CSV writer
-        :return:    CSV writer instance,
-        """
-        try:
-            self.csv_file = open(file_name, 'wb')
-            wr = csv.writer(self.csv_file, quoting=csv.QUOTE_ALL)
-            return wr
-        except Exception as ex:
-            print str(ex) + ': Exception while writing' + file_name + ' to file'
+
+def main():
+    for arg in sys.argv[1:]:
+        audit_json = json.load(open(arg, 'r'))
+        csv_exporter = CsvExporter(audit_json)
+        csv_exporter.write('', audit_json.get('audit_id'))
 
 
-def add_header(data):
-    """
-    Add column titles to data. If audit is being appended to existing csv, this does not need to be called
-
-    :param data:    audit csv data string
-    :return:        audit csv data with the inserted header columns
-    """
-    header_string = ''
-    for item in CSV_HEADER_ROW:
-        header_string = header_string + item + ','
-    header_string = header_string[:-1]
-    header_string += '\n'
-    return header_string + data
+if __name__ == '__main__':
+    main()
