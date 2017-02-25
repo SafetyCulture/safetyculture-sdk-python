@@ -36,7 +36,23 @@ BLANK = ''
 
 
 class CsvExporter:
+    """
+    provides tools to convert single json audit to CSV
+
+    Attributes:
+        audit_json(json):       audit to be converted to csv
+        audit_id (str):         id of current audit
+        auditdata (json):       general audit information
+        items (json):           list of audit's data input fields
+        auditdata_array(list):  list of general audit information
+        data(list):             2 diminsional list, each list is a single item, which corresponds to a single row
+    """
     def __init__(self, audit_json):
+        """
+        initialize class
+
+        :param audit_json:      audit in json format to be converted to csv
+        """
         self.audit_json = audit_json
         self.audit_id = audit_json['audit_id']
         audit_data_and_items = self.get_items_and_auditdata()
@@ -46,6 +62,11 @@ class CsvExporter:
         self.data = self.process_items()
 
     def process_items(self):
+        """
+        convert json of audit items to 2 dimensional list
+
+        :return:    2 diminsional list, each list is a single item, which corresponds to a single row
+        """
         self.data = []
         for item in self.items:
             item_array = self.generate_csv_row_item_data(item)
@@ -54,6 +75,16 @@ class CsvExporter:
         return self.data
 
     def write(self, path, filename, write_or_append='wb'):
+        """
+        write audit data to csv, this can be run immediately after instance of class is initialized
+
+        :param path:            path to desired output location
+        :param filename:        desired name of file
+        :param write_or_append:
+        :return:
+        """
+        if filename[-4:] != '.csv':
+            filename = filename + '.csv'
         file_path = os.path.join(path, filename + '.csv')
         if not os.path.isfile(file_path) or write_or_append == 'wb':
             self.data.insert(0, CSV_HEADER_ROW)
@@ -116,13 +147,13 @@ class CsvExporter:
         fields[COMMENTS] = self.path(item, 'responses', 'text')
 
         if item.get('type') == 'section':
-            self.handle_section_field(item, fields)
+            pass
         elif item.get('type') == 'category':
-            self.handle_category_field(item, fields)
+            pass
         elif item.get('type') == 'text':
-            self.handle_text_field(item, fields)
+            pass
         elif item.get('type') == 'textsingle':
-            self.handle_textsingle_field(item, fields)
+            pass
         elif item.get('type') == 'question':
             self.handle_question_field(item, fields)
         elif item.get('type') == 'list':
@@ -138,7 +169,7 @@ class CsvExporter:
         elif item.get('type') == 'drawing':
             self.handle_drawing_field(item, fields)
         elif item.get('type') == 'information':
-            self.handle_information_field(item, fields)
+            pass
         elif item.get('type') == 'media':
             self.handle_media_field(item, fields)
         elif item.get('type') == 'signature':
@@ -146,17 +177,17 @@ class CsvExporter:
         elif item.get('type') == 'smartfield':
             self.handle_smartfield_field(item, fields)
         elif item.get('type') == 'dynamicfield':
-            self.handle_dynamicfield_field(item, fields)
+            pass
         elif item.get('type') == 'element':
-            self.handle_element_field(item, fields)
+            pass
         elif item.get('type') == 'primeelement':
-            self.handle_primeelement_field(item, fields)
+            pass
         elif item.get('type') == 'datetime':
-            self.handle_datetime_field(item, fields)
+            pass
         elif item.get('type') == 'asset':
-            self.handle_asset_field(item, fields)
+            pass
         elif item.get('type') == 'scanner':
-            self.handle_scanner_field(item, fields)
+            pass
         else:
             print 'Unhandled item type: ' + str(item.get('type')) + ' from ' + self.audit_id + ', ' + item.get(
                 'item_id')
@@ -275,42 +306,6 @@ class CsvExporter:
         """
         fields['response'] = self.path(item, 'evaluation')
 
-    def handle_textsingle_field(self, item, fields):
-        pass
-
-    def handle_text_field(self, item, fields):
-        pass
-
-    def handle_scanner_field(self, item, fields):
-        pass
-
-    def handle_weather_field(self, item, fields):
-        pass
-
-    def handle_asset_field(self, item, fields):
-        pass
-
-    def handle_section_field(self, item, fields):
-        pass
-
-    def handle_category_field(self, item, fields):
-        pass
-
-    def handle_information_field(self, item, fields):
-        pass
-
-    def handle_dynamic_field(self, item, fields):
-        pass
-
-    def handle_element_field(self, item, fields):
-        pass
-
-    def handle_primeelement_field(self, item, fields):
-        pass
-
-    def handle_dynamicfield_field(self, item, fields):
-        pass
-
     def retrieve_auditdata(self):
         """
         Generate audit_data CSV data, this is appended to every row for a given Audit
@@ -333,14 +328,17 @@ class CsvExporter:
         Retrieve raw JSON Items and Auditdata list from Audit JSON. This is the data to be processed into CSV format
         :return:        Tuple with auditdata JSON and items JSON
         """
-        # add try / catch statement here
         auditdata = self.audit_json['audit_data']
-        # items = audit['header'] + audit['items'] -- this works when exported form sync-gateway
         items = self.audit_json['header_items'] + self.audit_json['items']
         return auditdata, items
 
 
 def main():
+    """
+    convert single audit json file to csv
+
+    :param arg:     path to audit json file
+    """
     for arg in sys.argv[1:]:
         audit_json = json.load(open(arg, 'r'))
         csv_exporter = CsvExporter(audit_json)
