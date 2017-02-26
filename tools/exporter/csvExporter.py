@@ -42,11 +42,12 @@ class CsvExporter:
     Attributes:
         audit_json(json):       audit to be converted to csv
         audit_id (str):         id of current audit
-        auditdata (json):       general audit information
+        audit_data (json):       general audit information
         items (json):           list of audit's data input fields
-        auditdata_array(list):  list of general audit information
+        audit_data_array(list):  list of general audit information
         data(list):             2 diminsional list, each list is a single item, which corresponds to a single row
     """
+
     def __init__(self, audit_json):
         """
         initialize class
@@ -55,10 +56,10 @@ class CsvExporter:
         """
         self.audit_json = audit_json
         self.audit_id = audit_json['audit_id']
-        audit_data_and_items = self.get_items_and_auditdata()
-        self.auditdata = audit_data_and_items[0]
+        audit_data_and_items = self.get_items_and_audit_data()
+        self.audit_data = audit_data_and_items[0]
         self.items = audit_data_and_items[1]
-        self.auditdata_array = self.retrieve_auditdata()
+        self.audit_data_array = self.retrieve_audit_data()
         self.data = self.process_items()
 
     def process_items(self):
@@ -70,7 +71,7 @@ class CsvExporter:
         self.data = []
         for item in self.items:
             item_array = self.generate_csv_row_item_data(item)
-            row_array = item_array + self.auditdata_array
+            row_array = item_array + self.audit_data_array
             self.data.append(row_array)
         return self.data
 
@@ -85,7 +86,7 @@ class CsvExporter:
         """
         if filename[-4:] != '.csv':
             filename = filename + '.csv'
-        file_path = os.path.join(path, filename + '.csv')
+        file_path = os.path.join(path, filename)
         if not os.path.isfile(file_path) or write_or_append == 'wb':
             self.data.insert(0, CSV_HEADER_ROW)
         try:
@@ -142,19 +143,11 @@ class CsvExporter:
         fields[SCORE] = self.path(item, 'scoring', 'score') or self.path(item, 'scoring', 'combined_score')
         fields[MAX_SCORE] = self.path(item, 'scoring', 'max_score') or self.path(item, 'scoring', 'combined_max_score')
         fields[SCORE_PERCENTAGE] = self.path(item, 'scoring', 'score_percentage') \
-            or self.path(item, 'scoring', 'combined_score_percentage')
+                                   or self.path(item, 'scoring', 'combined_score_percentage')
 
         fields[COMMENTS] = self.path(item, 'responses', 'text')
 
-        if item.get('type') == 'section':
-            pass
-        elif item.get('type') == 'category':
-            pass
-        elif item.get('type') == 'text':
-            pass
-        elif item.get('type') == 'textsingle':
-            pass
-        elif item.get('type') == 'question':
+        if item.get('type') == 'question':
             self.handle_question_field(item, fields)
         elif item.get('type') == 'list':
             self.handle_list_field(item, fields)
@@ -188,13 +181,20 @@ class CsvExporter:
             pass
         elif item.get('type') == 'scanner':
             pass
+        elif item.get('type') == 'category':
+            pass
+        elif item.get('type') == 'text':
+            pass
+        elif item.get('type') == 'textsingle':
+            pass
+        elif item.get('type') == 'section':
+            pass
         else:
-            print 'Unhandled item type: ' + str(item.get('type')) + ' from ' + self.audit_id + ', ' + item.get(
-                'item_id')
+            print 'Unhandled item type: ' + str(item.get('type')) + ' from ' + \
+                  self.audit_id + ', ' + item.get('item_id')
 
         return [item['label'], fields['response'], fields['comments'], item['type'], fields['score'],
-                fields['maxScore'],
-                fields['scorePercentage'], fields['failed'], item['item_id'], fields['parent_id']]
+                fields['maxScore'], fields['scorePercentage'], fields['failed'], item['item_id'], fields['parent_id']]
 
     def handle_question_field(self, item, fields):
         """
@@ -306,31 +306,31 @@ class CsvExporter:
         """
         fields['response'] = self.path(item, 'evaluation')
 
-    def retrieve_auditdata(self):
+    def retrieve_audit_data(self):
         """
         Generate audit_data CSV data, this is appended to every row for a given Audit
         :return:            metdata array in format the csv writer can handle
         """
-        auditdata_array = list()
-        auditdata_array.append(self.auditdata['authorship']['owner'])
-        auditdata_array.append(self.auditdata['name'])
-        auditdata_array.append(self.auditdata['score'])
-        auditdata_array.append(self.auditdata['total_score'])
-        auditdata_array.append(self.auditdata['score_percentage'])
-        auditdata_array.append(self.auditdata['duration'])
-        auditdata_array.append(self.auditdata['date_started'])
-        auditdata_array.append(self.auditdata['date_completed'])
-        auditdata_array.append(self.audit_id)
-        return auditdata_array
+        audit_data_array = list()
+        audit_data_array.append(self.audit_data['authorship']['owner'])
+        audit_data_array.append(self.audit_data['name'])
+        audit_data_array.append(self.audit_data['score'])
+        audit_data_array.append(self.audit_data['total_score'])
+        audit_data_array.append(self.audit_data['score_percentage'])
+        audit_data_array.append(self.audit_data['duration'])
+        audit_data_array.append(self.audit_data['date_started'])
+        audit_data_array.append(self.audit_data['date_completed'])
+        audit_data_array.append(self.audit_id)
+        return audit_data_array
 
-    def get_items_and_auditdata(self):
+    def get_items_and_audit_data(self):
         """
-        Retrieve raw JSON Items and Auditdata list from Audit JSON. This is the data to be processed into CSV format
-        :return:        Tuple with auditdata JSON and items JSON
+        Retrieve raw JSON Items and audit data list from Audit JSON. This is the data to be processed into CSV format
+        :return:        Tuple with audit data JSON and items JSON
         """
-        auditdata = self.audit_json['audit_data']
+        audit_data = self.audit_json['audit_data']
         items = self.audit_json['header_items'] + self.audit_json['items']
-        return auditdata, items
+        return audit_data, items
 
 
 def main():
