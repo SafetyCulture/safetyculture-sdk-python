@@ -1,7 +1,6 @@
 import unicodecsv as csv
 import json
 import sys
-import os
 
 CSV_HEADER_ROW = [
     'Label',
@@ -25,14 +24,17 @@ CSV_HEADER_ROW = [
     'Audit ID'
 ]
 
+# audit item empty response 
+EMPTY_RESPONSE = ''
+
+# audit item property constants
 COMMENTS = 'comments'
 FAILED = 'failed'
 SCORE = 'score'
-MAX_SCORE = 'maxScore'
-SCORE_PERCENTAGE = 'scorePercentage'
+MAX_SCORE = 'max_score'
+SCORE_PERCENTAGE = 'score_percentage'
 PARENT_ID = 'parent_id'
 RESPONSE = 'response'
-BLANK = ''
 
 
 class CsvExporter:
@@ -40,68 +42,89 @@ class CsvExporter:
     provides tools to convert single json audit to CSV
 
     Attributes:
-        audit_json(json):       audit to be converted to csv
-        audit_id (str):         id of current audit
-        audit_data (json):       general audit information
-        items (json):           list of audit's data input fields
-        audit_data_array(list):  list of general audit information
-        data(list):             2 diminsional list, each list is a single item, which corresponds to a single row
+        audit_json(json): audit to be converted to CSV
+        audit_table(list): the audit data converted to a table
     """
 
     def __init__(self, audit_json):
         """
-        initialize class
+        Constructor
 
-        :param audit_json:      audit in json format to be converted to csv
+        :param audit_json:      audit in JSON format to be converted to CSV
         """
         self.audit_json = audit_json
-        self.audit_id = audit_json['audit_id']
-        audit_data_and_items = self.get_items_and_audit_data()
-        self.audit_data = audit_data_and_items[0]
-        self.items = audit_data_and_items[1]
-        self.audit_data_array = self.retrieve_audit_data()
-        self.data = self.process_items()
+        self.audit_table = self.convert_audit_to_table()
 
-    def process_items(self):
+    def audit_id(self):
         """
-        convert json of audit items to 2 dimensional list
-
-        :return:    2 diminsional list, each list is a single item, which corresponds to a single row
+        :return:    The audit ID
         """
-        self.data = []
-        for item in self.items:
-            item_array = self.generate_csv_row_item_data(item)
-            row_array = item_array + self.audit_data_array
-            self.data.append(row_array)
-        return self.data
+        return self.audit_json['audit_id']
 
-    def write(self, path, filename, write_or_append='wb'):
+    def audit_items(self):
         """
-        write audit data to csv, this can be run immediately after instance of class is initialized
+        :return:    All audit items, including header and non-header items
+        """
+        return self.audit_json['header_items'] + self.audit_json['items']
 
-        :param path:            path to desired output location
-        :param filename:        desired name of file
+    def common_audit_data(self):
+        """
+        :return:    Selected sub-properties of the audit_data property of the audit JSON as a list
+        """
+        audit_data_property = self.audit_json['audit_data']
+        audit_data_as_list = list()
+        audit_data_as_list.append(audit_data_property['authorship']['owner'])
+        audit_data_as_list.append(audit_data_property['name'])
+        audit_data_as_list.append(audit_data_property[SCORE])
+        audit_data_as_list.append(audit_data_property['total_score'])
+        audit_data_as_list.append(audit_data_property[SCORE_PERCENTAGE])
+        audit_data_as_list.append(audit_data_property['duration'])
+        audit_data_as_list.append(audit_data_property['date_started'])
+        audit_data_as_list.append(audit_data_property['date_completed'])
+        audit_data_as_list.append(self.audit_id())
+        return audit_data_as_list
+
+    def convert_audit_to_table(self):
+        """
+        Collects all audit item responses, appends common audit data and returns
+        as a 2-dimensional list.
+
+        :return:    2 dimensional list, each list is a single item, which corresponds to a single row
+        """
+        self.audit_table = []
+        for item in self.audit_items():
+            row_array = self.item_properties_as_list(item) + self.common_audit_data()
+            self.audit_table.append(row_array)
+        return self.audit_table
+
+    def append_audit_table_to_bulk_export_file(self, path_to_export_file):
+        pass
+
+    def save_converted_audit_to_file(self, output_csv_path):
+        """
+        Saves audit data table to a file at 'path'
+
+        :param output_csv_path:  The full path to the file to save
         :param write_or_append:
         :return:
         """
-        if filename[-4:] != '.csv':
-            filename = filename + '.csv'
-        file_path = os.path.join(path, filename)
-        if not os.path.isfile(file_path) or write_or_append == 'wb':
-            self.data.insert(0, CSV_HEADER_ROW)
+        # file_path = os.path.join(output_csv_path, output_csv_path)
+        # if not os.path.isfile(output_csv_path) or write_or_append == 'wb':
+        self.audit_table.insert(0, CSV_HEADER_ROW)
         try:
-            csv_file = open(file_path, write_or_append)
+            csv_file = open(output_csv_path, 'wb')
             wr = csv.writer(csv_file, quoting=csv.QUOTE_ALL)
-            for row in self.data:
+            for row in self.audit_table:
                 wr.writerow(row)
             csv_file.close()
         except Exception as ex:
-            print str(ex) + ': Exception while writing' + filename + ' to file'
+            print str(ex) + ': Error saving audit_table to ' + output_csv_path
 
-    def path(self, obj, *args):
+    @staticmethod
+    def get_json_property(obj, *args):
         """
-        Check for the existence of path for a given JSON object
-        :param obj:     JSON Object
+        Returns json property if it exists. If it does not exist, returns an empty string
+        :param obj:     JON Object
         :param args:    target path, list of keys
         :return:        if path exists, return value, otherwise return empty string
         """
@@ -110,239 +133,91 @@ class CsvExporter:
                 if len(obj) == 0:
                     return ''
                 obj = obj[arg]
-            elif arg in obj.keys():
+            elif (isinstance(obj, object) or isinstance(obj, dict)) and arg in obj.keys():
                 obj = obj[arg]
             else:
                 return ''
         return obj
 
-    # noinspection PyDictCreation
-    def generate_csv_row_item_data(self, item):
+    def get_item_response(self, item):
         """
-        Process item JSON data into array that CSV writer can handle
+        :param item:    audit item JSON
+        :return:        response property
+        """
+        response = ''
+        if item.get('type') == 'question':
+            response = self.get_json_property(item, 'responses', 'selected', 0, 'label')
+        elif item.get('type') == 'list':
+            for single_response in self.get_json_property(item, 'responses', 'selected'):
+                if single_response:
+                    response += self.get_json_property(single_response, 'label') + ','
+            response = response[:-1]
+        elif item.get('type') == 'address':
+            for line in self.get_json_property(item, 'responses', 'location', 'formatted_address'):
+                response += ','
+                response += line
+            if response != '':
+                response = response[1:]
+        elif item.get('type') == 'checkbox':
+            response = self.get_json_property(item, 'responses', 'value')
+        elif item.get('type') == 'switch':
+            response = self.get_json_property(item, 'responses', 'value')
+        elif item.get('type') == 'slider':
+            response = self.get_json_property(item, 'responses', 'value')
+        elif item.get('type') == 'drawing':
+            response = self.get_json_property(item, 'responses', 'image', 'media_id')
+        elif item.get('type') == 'media':
+            for image in self.get_json_property(item, 'media'):
+                response += ','
+                response += self.get_json_property(image, 'media_id')
+            if response != '':
+                response = response[1:]
+        elif item.get('type') == 'signature':
+            response = self.get_json_property(item, 'responses', 'image', 'media_id')
+        elif item.get('type') == 'smartfield':
+            response = self.get_json_property(item, 'evaluation')
+        elif item.get('type') == 'datetime':
+            response = self.get_json_property(item, 'responses', 'datetime')
+        else:
+            print 'Unhandled item type: ' + str(item.get('type')) + ' from ' + \
+                self.audit_id() + ', ' + item.get('item_id')
+        return response
+
+    def item_properties_as_list(self, item):
+        """
+        Returns selected properties of the audit item JSON as a list
+
         :param item:    single item in JSON format
         :return:        array of item data, in format that CSV writer can handle
         """
+        item_properties = {
+            COMMENTS: self.get_json_property(item, 'responses', 'text'),
+            FAILED: self.get_json_property(item, 'responses', FAILED),
+            SCORE: self.get_json_property(item, 'scoring', SCORE) or self.get_json_property(item, 'scoring',
+                'combined_score'),
+            MAX_SCORE: self.get_json_property(item, 'scoring', MAX_SCORE) or self.get_json_property(item, 'scoring',
+                'combined_max_score'),
+            SCORE_PERCENTAGE: self.get_json_property(item, 'scoring', SCORE_PERCENTAGE) \
+                or self.get_json_property(item, 'scoring', 'combined_score_percentage'),
+            PARENT_ID: self.get_json_property(item, PARENT_ID),
+            RESPONSE: self.get_item_response(item)}
 
-        fields = {
-            COMMENTS: BLANK,
-            FAILED: BLANK,
-            SCORE: BLANK,
-            MAX_SCORE: BLANK,
-            SCORE_PERCENTAGE: BLANK,
-            PARENT_ID: BLANK,
-            RESPONSE: BLANK
-        }
-
-        # all fields have a parent id, grab this and insert into fields dictionary
-        fields[PARENT_ID] = self.path(item, 'parent_id')
-        # if failed key exists, insert value into dictionary
-        fields[FAILED] = self.path(item, 'responses', 'failed')
-
-        # check if this item has score information. insert data into dictionary
-        fields[SCORE] = self.path(item, 'scoring', 'score') or self.path(item, 'scoring', 'combined_score')
-        fields[MAX_SCORE] = self.path(item, 'scoring', 'max_score') or self.path(item, 'scoring', 'combined_max_score')
-        fields[SCORE_PERCENTAGE] = self.path(item, 'scoring', 'score_percentage') \
-                                   or self.path(item, 'scoring', 'combined_score_percentage')
-
-        fields[COMMENTS] = self.path(item, 'responses', 'text')
-
-        if item.get('type') == 'question':
-            self.handle_question_field(item, fields)
-        elif item.get('type') == 'list':
-            self.handle_list_field(item, fields)
-        elif item.get('type') == 'address':
-            self.handle_address_field(item, fields)
-        elif item.get('type') == 'checkbox':
-            self.handle_checkbox_field(item, fields)
-        elif item.get('type') == 'switch':
-            self.handle_switch_field(item, fields)
-        elif item.get('type') == 'slider':
-            self.handle_slider_field(item, fields)
-        elif item.get('type') == 'drawing':
-            self.handle_drawing_field(item, fields)
-        elif item.get('type') == 'information':
-            pass
-        elif item.get('type') == 'media':
-            self.handle_media_field(item, fields)
-        elif item.get('type') == 'signature':
-            self.handle_signature_field(item, fields)
-        elif item.get('type') == 'smartfield':
-            self.handle_smartfield_field(item, fields)
-        elif item.get('type') == 'dynamicfield':
-            pass
-        elif item.get('type') == 'element':
-            pass
-        elif item.get('type') == 'primeelement':
-            pass
-        elif item.get('type') == 'datetime':
-            pass
-        elif item.get('type') == 'asset':
-            pass
-        elif item.get('type') == 'scanner':
-            pass
-        elif item.get('type') == 'category':
-            pass
-        elif item.get('type') == 'text':
-            pass
-        elif item.get('type') == 'textsingle':
-            pass
-        elif item.get('type') == 'section':
-            pass
-        else:
-            print 'Unhandled item type: ' + str(item.get('type')) + ' from ' + \
-                  self.audit_id + ', ' + item.get('item_id')
-
-        return [item['label'], fields['response'], fields['comments'], item['type'], fields['score'],
-                fields['maxScore'], fields['scorePercentage'], fields['failed'], item['item_id'], fields['parent_id']]
-
-    def handle_question_field(self, item, fields):
-        """
-        retrieve information specific to question field, populate fields dictionary with data
-        :param item:        single question type item in JSON format
-        :param fields:      dictionary of keys whose corresponding data we want to export to CSV
-        :return:            fields dic is passed as reference, so updates are global
-        """
-        fields['response'] = self.path(item, 'responses', 'selected', 0, 'label')
-
-    def handle_list_field(self, item, fields):
-        """
-        retrieve information specific to list field, populate fields dictionary with data
-        :param item:        single list type item in JSON format
-        :param fields:      dictionary of keys whose corresponding data we want to export to CSV
-        :return:            fields dic is passed as reference, so updates are global
-        """
-        for response in self.path(item, 'responses', 'selected'):
-            if response:
-                fields['response'] += self.path(response, 'label') + ','
-        fields['response'] = fields['response'][:-1]
-
-    def handle_datetime_field(self, item, fields):
-        """
-        retrieve information specific to datetime field, populate fields dictionary with data
-        :param item:        single datetime type item in JSON format
-        :param fields:      dictionary of keys whose corresponding data we want to export to CSV
-        :return:            fields dic is passed as reference, so updates are global
-        """
-        fields['response'] = self.path(item, 'responses', 'datetime')
-
-    def handle_slider_field(self, item, fields):
-        """
-        retrieve information specific to slider field, populate fields dictionary with data
-        :param item:        single slider type item in JSON format
-        :param fields:      dictionary of keys whose corresponding data we want to export to CSV
-        :return:            fields dic is passed as reference, so updates are global
-        """
-        fields['response'] = self.path(item, 'responses', 'value')
-
-    def handle_drawing_field(self, item, fields):
-        """
-        retrieve information specific to drawing field, populate fields dictionary with data
-        :param item:        single drawing type item in JSON format
-        :param fields:      dictionary of keys whose corresponding data we want to export to CSV
-        :return:            fields dic is passed as reference, so updates are global
-        """
-        fields['response'] = self.path(item, 'responses', 'image', 'media_id')
-
-    def handle_checkbox_field(self, item, fields):
-        """
-        retrieve information specific to checkbox field, populate fields dictionary with data
-        :param item:        single checkbox type item in JSON format
-        :param fields:      dictionary of keys whose corresponding data we want to export to CSV
-        :return:            fields dic is passed as reference, so updates are global
-        """
-        fields['response'] = self.path(item, 'responses', 'value')
-
-    def handle_switch_field(self, item, fields):
-        """
-        retrieve information specific to switch field, populate fields dictionary with data
-        :param item:        single switch type item in JSON format
-        :param fields:      dictionary of keys whose corresponding data we want to export to CSV
-        :return:            fields dic is passed as reference, so updates are global
-        """
-        fields['response'] = self.path(item, 'responses', 'value')
-
-    def handle_address_field(self, item, fields):
-        """
-        retrieve formatted address information from address field, populate fields dictionary with data
-        :param item:        single address type item in JSON format
-        :param fields:      dictionary of keys whose corresponding data we want to export to CSV
-        :return:            fields dic is passed as reference, so updates are global
-        """
-        for line in self.path(item, 'responses', 'location', 'formatted_address'):
-            fields['response'] += ','
-            fields['response'] += line
-        if fields['response'] != '':
-            fields['response'] = fields['response'][1:]
-
-    def handle_signature_field(self, item, fields):
-        """
-        retrieve information specific to signature field, populate fields dictionary with data
-        :param item:        single signature type item in JSON format
-        :param fields:      dictionary of keys whose corresponding data we want to export to CSV
-        :return:            fields dic is passed as reference, so updates are global
-        """
-        fields['response'] = self.path(item, 'responses', 'image', 'media_id')
-
-    def handle_media_field(self, item, fields):
-        """
-        retrieve information specific to media field, populate fields dictionary with data
-        :param item:        single media type item in JSON format
-        :param fields:      dictionary of keys whose corresponding data we want to export to CSV
-        :return:            fields dic is passed as reference, so updates are global
-        """
-        for image in self.path(item, 'media'):
-            fields['response'] += ','
-            fields['response'] += self.path(image, 'media_id')
-        if fields['response'] != '':
-            fields['response'] = fields['response'][1:]
-
-    def handle_smartfield_field(self, item, fields):
-        """
-        retrieve information specific to smartfield field, populate fields dictionary with data
-        :param item:        single smartfield type item in JSON format
-        :param fields:      dictionary of keys whose corresponding data we want to export to CSV
-        :return:            fields dic is passed as reference, so updates are global
-        """
-        fields['response'] = self.path(item, 'evaluation')
-
-    def retrieve_audit_data(self):
-        """
-        Generate audit_data CSV data, this is appended to every row for a given Audit
-        :return:            metdata array in format the csv writer can handle
-        """
-        audit_data_array = list()
-        audit_data_array.append(self.audit_data['authorship']['owner'])
-        audit_data_array.append(self.audit_data['name'])
-        audit_data_array.append(self.audit_data['score'])
-        audit_data_array.append(self.audit_data['total_score'])
-        audit_data_array.append(self.audit_data['score_percentage'])
-        audit_data_array.append(self.audit_data['duration'])
-        audit_data_array.append(self.audit_data['date_started'])
-        audit_data_array.append(self.audit_data['date_completed'])
-        audit_data_array.append(self.audit_id)
-        return audit_data_array
-
-    def get_items_and_audit_data(self):
-        """
-        Retrieve raw JSON Items and audit data list from Audit JSON. This is the data to be processed into CSV format
-        :return:        Tuple with audit data JSON and items JSON
-        """
-        audit_data = self.audit_json['audit_data']
-        items = self.audit_json['header_items'] + self.audit_json['items']
-        return audit_data, items
+        return [item['label'], item_properties[RESPONSE], item_properties[COMMENTS], item['type'], item_properties[SCORE],
+                item_properties[MAX_SCORE], item_properties[SCORE_PERCENTAGE], item_properties[FAILED], item['item_id'],
+                item_properties[PARENT_ID]]
 
 
 def main():
     """
-    convert single audit json file to csv
+    Processes the audit JSON file givon on the command line and saves the converted CSV file to a file with the same
+    name with CSV extension
 
     :param arg:     path to audit json file
     """
     for arg in sys.argv[1:]:
         audit_json = json.load(open(arg, 'r'))
         csv_exporter = CsvExporter(audit_json)
-        csv_exporter.write('', audit_json.get('audit_id'))
+        csv_exporter.save_converted_audit_to_file(str(audit_json['audit_id']) + '.csv')
 
 
 if __name__ == '__main__':

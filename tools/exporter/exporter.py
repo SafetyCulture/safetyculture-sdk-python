@@ -472,7 +472,7 @@ def sync_exports(logger, sc_client, settings):
                 elif export_format == 'csv':
                     csv_exporter = csv.CsvExporter(audit_json)
                     export_filename = audit_json['template_id']
-                    csv_exporter.write(export_path, export_filename, 'ab')
+                    csv_exporter.save_converted_audit_to_file(export_path, export_filename, 'ab')
                     # skip call to save_exported_document, csv_exporter class handles it with call to write()
                     continue
                 save_exported_document(logger, export_path, export_doc, export_filename, export_format)
