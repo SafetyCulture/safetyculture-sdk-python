@@ -18,7 +18,7 @@ class ExporterTestCase(unittest.TestCase):
     def test_convert_single_question_with_standard_yes_no_na_answered_yes(self):
         csv_exporter = csv.CsvExporter(json.load(open(os.path.join(
             self.path_to_test_files, 'test_convert_single_question_with_standard_yes_no_na_answered_yes_audit.json'), 'r')))
-        csv_exporter.save_converted_audit_to_file('temp.csv')
+        csv_exporter.save_converted_audit_to_file('temp.csv', allow_overwrite=True)
         self.assertEqual(open('temp.csv', 'r').read(), open(os.path.join(
             self.path_to_test_files, 'test_convert_single_question_with_standard_yes_no_na_answered_yes_expected_output.csv'), 'r').read())
         os.remove('temp.csv')

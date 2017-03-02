@@ -101,31 +101,36 @@ class CsvExporter:
     def append_converted_audit_to_bulk_export_file(self, output_csv_path):
         """
         Appends audit data table to bulk export file at output_csv_path
+
         :param path_to_export_file: The full path to the file to save
         """
         if not os.path.isfile(output_csv_path) and self.audit_table[0] != CSV_HEADER_ROW:
             self.audit_table.insert(0, CSV_HEADER_ROW)
-        try:
-            csv_file = open(output_csv_path, 'ab')
-            wr = csv.writer(csv_file, quoting=csv.QUOTE_ALL)
-            for row in self.audit_table:
-                wr.writerow(row)
-            csv_file.close()
-        except Exception as ex:
-            print str(ex) + ': Error saving audit_table to ' + output_csv_path
+        self.write_file(output_csv_path, 'ab')
 
-    def save_converted_audit_to_file(self, output_csv_path):
+    def save_converted_audit_to_file(self, output_csv_path, allow_overwrite):
         """
-        Saves audit data table to a file at 'path'
+        Saves audit data table to a file at output_csv_path
 
         :param output_csv_path:  The full path to the file to save
         """
-        if self.audit_table[0] != CSV_HEADER_ROW:
+        if os.path.isfile(output_csv_path) and not allow_overwrite:
+            sys.exit('File already exists at ' + output_csv_path + '\nPlease set allow_overwrite to True in confil.yaml file. See ReadMe.md for further instruction')
+        elif os.path.isfile(output_csv_path) and allow_overwrite:
+            print 'Overwriting file at ' + output_csv_path
+        elif self.audit_table[0] != CSV_HEADER_ROW:
             self.audit_table.insert(0, CSV_HEADER_ROW)
-        if os.path.isfile(output_csv_path):
-            print 'Overwriting existing report at ' + output_csv_path
+        self.write_file(output_csv_path, 'wb')
+
+    def write_file(self, output_csv_path, mode):
+        """
+        Saves audit data table to a file at 'path'
+
+        :param output_csv_path: the full path to file to save
+        :param mode:    write ('wb') or append ('ab') mode
+        """
         try:
-            csv_file = open(output_csv_path, 'wb')
+            csv_file = open(output_csv_path, mode)
             wr = csv.writer(csv_file, quoting=csv.QUOTE_ALL)
             for row in self.audit_table:
                 wr.writerow(row)
@@ -192,8 +197,8 @@ class CsvExporter:
         elif item.get('type') == 'datetime':
             response = self.get_json_property(item, 'responses', 'datetime')
         elif item.get('type') in ['dynamicfield', 'element', 'primeelement', 'asset', 'scanner', 'category', 'text',
-                                  'textsingle', 'section']:
-            pass  # no response to grab from these fields, but they are already handled
+                                  'textsingle', 'section', 'information']:
+            pass
         else:
             print 'Unhandled item type: ' + str(item.get('type')) + ' from ' + \
                   self.audit_id() + ', ' + item.get('item_id')
