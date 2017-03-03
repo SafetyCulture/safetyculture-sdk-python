@@ -75,20 +75,6 @@ class ExporterTestCase(unittest.TestCase):
         config_setting = {'sync_delay_in_seconds': 500}
         self.assertEqual(exp.load_setting_sync_delay(logger, config_setting), config_setting['sync_delay_in_seconds'])
 
-    def test_return_None_if_no_proxy_setting_is_given(self):
-        config_settings = [{'proxy': {'https:': ''}}, {'proxy': {'https:': None} }, '', None]
-        for config_setting in config_settings:
-            self.assertEqual(exp.load_setting_proxy(logger, config_setting), None);
-
-    def test_return_None_if_proxy_ip_is_invalid(self):
-        config_settings = [{'proxy': {'https': '192.168.6.b:8080'}}, {'proxy': {'https': '256.254.0.81:2154'}},{'proxy': {'https': '192.168.6.1'}}]
-        for config_setting in config_settings:
-            self.assertEqual(exp.load_setting_proxy(logger, config_setting), None);
-        
-    def test_use_user_supplied_proxy_if_valid(self):
-        config_settings = [{'proxy': {'https': '192.168.6.1:8080'}}, {'proxy': {'https': '10.254.0.81:2154'}}]
-        for config_setting in config_settings:
-            self.assertEqual(exp.load_setting_proxy(logger, config_setting), config_setting['proxy']);
 
 if __name__ == '__main__':
     unittest.main()

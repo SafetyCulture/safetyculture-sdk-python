@@ -1,7 +1,5 @@
 API:
     token: YOUR_SAFETYCULTURE_API_TOKEN
-proxy:
-    https:
 export_options:
     export_path:
     timezone:
