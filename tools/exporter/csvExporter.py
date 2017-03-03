@@ -34,6 +34,9 @@ FAILED = 'failed'
 SCORE = 'score'
 MAX_SCORE = 'max_score'
 SCORE_PERCENTAGE = 'score_percentage'
+COMBINED_SCORE = 'combined_score'
+COMBINED_MAX_SCORE = 'combined_max_score'
+COMBINED_SCORE_PERCENTAGE = 'combined_score_percentage'
 PARENT_ID = 'parent_id'
 RESPONSE = 'response'
 
@@ -159,7 +162,7 @@ class CsvExporter:
 
     def get_item_response(self, item):
         """
-        :param item:    audit item JSON
+        :param item:    single item in JSON format
         :return:        response property
         """
         response = ''
@@ -204,6 +207,26 @@ class CsvExporter:
                   self.audit_id() + ', ' + item.get('item_id')
         return response
 
+    def get_item_score(self, item, score_property_to_retrieve, combined_score_property_to_retrieve):
+        """
+        retrieve score property from item. There are three score properties for a given item,
+        each of which may be either combined (score for multiple items, e.g. a section type item) or
+        singular (score representing a single item, e.g. a question field)
+            1. score and combined_score
+            2. max_score or combined_max_score
+            3. score_percentage or combined_score_percentage
+        :param item:    single item in JSON format
+        :param score_property_to_retrieve:  score property to retrieve it it exists
+        :param combined_score_property_to_retrieve: combined_score property to retrieve it it exists
+        :return:    score property or empty string if property does not exist
+        """
+        if isinstance(self.get_json_property(item, 'scoring', score_property_to_retrieve), int):
+            return self.get_json_property(item, 'scoring', score_property_to_retrieve)
+        elif isinstance(self.get_json_property(item, 'scoring', combined_score_property_to_retrieve), int):
+            return self.get_json_property(item, 'scoring', combined_score_property_to_retrieve)
+        else:
+            return ''
+
     def item_properties_as_list(self, item):
         """
         Returns selected properties of the audit item JSON as a list
@@ -211,15 +234,13 @@ class CsvExporter:
         :param item:    single item in JSON format
         :return:        array of item data, in format that CSV writer can handle
         """
+
         item_properties = {
             COMMENTS: self.get_json_property(item, 'responses', 'text'),
             FAILED: self.get_json_property(item, 'responses', FAILED),
-            SCORE: self.get_json_property(item, 'scoring', SCORE) or self.get_json_property(item, 'scoring',
-                                                                                            'combined_score'),
-            MAX_SCORE: self.get_json_property(item, 'scoring', MAX_SCORE) or self.get_json_property(item, 'scoring',
-                                                                                                    'combined_max_score'),
-            SCORE_PERCENTAGE: self.get_json_property(item, 'scoring', SCORE_PERCENTAGE) \
-                              or self.get_json_property(item, 'scoring', 'combined_score_percentage'),
+            SCORE: self.get_item_score(item, SCORE, COMBINED_SCORE),
+            MAX_SCORE: self.get_item_score(item, MAX_SCORE, COMBINED_MAX_SCORE),
+            SCORE_PERCENTAGE: self.get_item_score(item, SCORE_PERCENTAGE, COMBINED_SCORE_PERCENTAGE),
             PARENT_ID: self.get_json_property(item, PARENT_ID),
             RESPONSE: self.get_item_response(item)}
 

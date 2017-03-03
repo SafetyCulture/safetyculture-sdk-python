@@ -45,11 +45,13 @@ Note:
 * Up to 1000 audits will be exported each time the software checks for new audits. If more than 1000 audits exist on the SafetyCulture platform, they will be retrieved automatically in subsequent sync cycles.
 
 ### CSV Export
-* Audits that are build off a common Template will appended one after the other into the same CSV file. 
+#### Bulk Export Mode
+* Audits that are built off a common Template will be appended one after the other into the same CSV file. 
 * For an example of the CSV format, open the file: 
 ```
 safetyculture-sdk-python/tools/exporter/tests/csv_test_files/test_convert_single_question_with_standard_yes_no_na_answered_yes_expected_output.csv
 ```
+#### Single Audit Export Mode
 * To export a single Audit, first export the Audit in JSON format, then call csvExporter.py with the Audit JSON sent as an argument:
 ```
 python exporter.py --format json
