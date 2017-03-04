@@ -9,7 +9,8 @@ CSV_HEADER_ROW = [
     'Label',
     'Response',
     'Comment',
-    'Type',
+    'Media',
+    'Field Type',
     'Inactive',
     'Item Score',
     'Item Max Score',
@@ -22,7 +23,7 @@ CSV_HEADER_ROW = [
     'Audit Score',
     'Audit Max Score',
     'Audit Score Percentage',
-    'Audit Duration',
+    'Audit Duration (seconds)',
     'Date Started',
     'Date Completed',
     'Audit ID',
@@ -287,7 +288,7 @@ class CsvExporter:
         elif type == 'smartfield':
             response = self.get_json_property(item, 'evaluation')
         elif type == 'datetime':
-            response = self.get_json_property(item, 'responses', 'datetime')
+            response = self.reformat_date(self.get_json_property(item, 'responses', 'datetime'))
         elif type == 'text' or type == 'textsingle':
             response = self.get_json_property(item, 'responses', 'text')
         elif type in ['dynamicfield', 'element', 'primeelement', 'asset', 'scanner', 'category', 'section', 'information']:
@@ -346,11 +347,11 @@ class CsvExporter:
         :param item:    single item in JSON format
         :return:        array of item data, in format that CSV writer can handle
         """
-
         return [
             self.get_item_label(item),
             self.get_item_response(item),
             self.get_json_property(item, 'responses', 'text') if item.get('type') not in ['text', 'textsingle'] else '',
+            '\n'.join(image['href'] for image in self.get_json_property(item, 'media')),
             self.get_json_property(item, 'type'),
             self.get_json_property(item, 'inactive'),
             self.get_item_score(item, SCORE, COMBINED_SCORE),
