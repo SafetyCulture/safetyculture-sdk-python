@@ -2,12 +2,14 @@ import unicodecsv as csv
 import json
 import sys
 import os
+import copy
 
 CSV_HEADER_ROW = [
     'Label',
     'Response',
     'Comments / Text',
     'Type',
+    'Inactive',
     'Item Score',
     'Item Max Score',
     'Item Score Percentage',
@@ -22,13 +24,17 @@ CSV_HEADER_ROW = [
     'Audit Duration',
     'Date Started',
     'Date Completed',
-    'Audit ID'
+    'Audit ID',
+    'Template ID',
+    'Template Name',
+    'Template Author'
 ]
 
 # audit item empty response 
 EMPTY_RESPONSE = ''
 
 # audit item property constants
+LABEL = 'label'
 COMMENTS = 'comments'
 FAILED = 'failed'
 SCORE = 'score'
@@ -39,6 +45,58 @@ COMBINED_MAX_SCORE = 'combined_max_score'
 COMBINED_SCORE_PERCENTAGE = 'combined_score_percentage'
 PARENT_ID = 'parent_id'
 RESPONSE = 'response'
+
+smartfield_conditional_id_to_statement_map = {
+    # conditional statements for question item
+    '3f206180-e4f6-11e1-aff1-0800200c9a66': 'if response selected',
+    '3f206181-e4f6-11e1-aff1-0800200c9a66': 'if response not selected',
+    '3f206182-e4f6-11e1-aff1-0800200c9a66': 'if response is',
+    '3f206183-e4f6-11e1-aff1-0800200c9a66': 'if response is not',
+    '3f206184-e4f6-11e1-aff1-0800200c9a66': 'if response is one of',
+    '3f206185-e4f6-11e1-aff1-0800200c9a66': 'if response is not one of',
+    # conditional statements for list item
+    '35f6c130-e500-11e1-aff1-0800200c9a66': 'if response selected',
+    '35f6c131-e500-11e1-aff1-0800200c9a66': 'if response not selected',
+    '35f6c132-e500-11e1-aff1-0800200c9a66': 'if response is',
+    '35f6c133-e500-11e1-aff1-0800200c9a66': 'if response is not',
+    '35f6c134-e500-11e1-aff1-0800200c9a66': 'if response is one of',
+    '35f6c135-e500-11e1-aff1-0800200c9a66': 'if resonse is not one of',
+    # conditional statements for slider item
+    'cda7c330-e500-11e1-aff1-0800200c9a66': 'if slider value is less than',
+    'cda7c331-e500-11e1-aff1-0800200c9a66': 'if slider value is less than or equal to',
+    'cda7c332-e500-11e1-aff1-0800200c9a66': 'if slider value is equal to',
+    'cda7c333-e500-11e1-aff1-0800200c9a66': 'if slider value is not equal to',
+    'cda7c334-e500-11e1-aff1-0800200c9a66': 'if slider value is greater than or equal to',
+    'cda7c335-e500-11e1-aff1-0800200c9a66': 'if the slider value is greater than',
+    'cda7c336-e500-11e1-aff1-0800200c9a66': 'if the slider value is between',
+    'cda7c337-e500-11e1-aff1-0800200c9a66': 'if the slider value is not between',
+    # conditional statements for checkbox item
+    '4e671f40-e4ff-11e1-aff1-0800200c9a66': 'if the checkbox is checked',
+    '4e671f41-e4ff-11e1-aff1-0800200c9a66': 'if the checkbox is not checked',
+    # conditional statements for switch item
+    '3d346f00-e501-11e1-aff1-0800200c9a66': 'if the switch is on',
+    '3d346f01-e501-11e1-aff1-0800200c9a66': 'if the switch is off',
+    # conditional statements for text item
+    '7c441470-e501-11e1-aff1-0800200c9a66': 'text is',
+    '7c441471-e501-11e1-aff1-0800200c9a66': 'text is not',
+    # conditional statements for textsingle item
+    '6ff300f0-e501-11e1-aff1-0800200c9a66': 'text is',
+    '6ff300f1-e501-11e1-aff1-0800200c9a66': 'text is not',
+    # conditional statements for signature item
+    '831f8ff0-e500-11e1-aff1-0800200c9a66': 'if signature exists',
+    '831f8ff1-e500-11e1-aff1-0800200c9a66': 'if the signature does not exist',
+    '831f8ff2-e500-11e1-aff1-0800200c9a66': 'if the signature name is',
+    '831f8ff3-e500-11e1-aff1-0800200c9a66': 'if the signature name is not'
+}
+
+standard_response_id_map = {
+    '8bcfbf00-e11b-11e1-9b23-0800200c9a66': 'Yes',
+    '8bcfbf01-e11b-11e1-9b23-0800200c9a66': 'No',
+    '8bcfbf02-e11b-11e1-9b23-0800200c9a66': 'N/A',
+    'b5c92350-e11b-11e1-9b23-0800200c9a66': 'Safe',
+    'b5c92351-e11b-11e1-9b23-0800200c9a66': 'At Risk',
+    'b5c92352-e11b-11e1-9b23-0800200c9a66': 'N/A'
+}
 
 
 class CsvExporter:
@@ -71,11 +129,23 @@ class CsvExporter:
         """
         return self.audit_json['header_items'] + self.audit_json['items']
 
+    def audit_custom_response_id_to_label_map(self):
+        """
+        :return:     dictionary mapping custom response_id's to their label
+        """
+        custom_response_sets = self.audit_json['template_data']['response_sets']
+        audit_custom_response_id_to_label_map = dict()
+        for response_set in custom_response_sets.keys():
+            for response in custom_response_sets[response_set]['responses']:
+                audit_custom_response_id_to_label_map[response['id']] = response['label']
+        return audit_custom_response_id_to_label_map
+
     def common_audit_data(self):
         """
         :return:    Selected sub-properties of the audit_data property of the audit JSON as a list
         """
         audit_data_property = self.audit_json['audit_data']
+        template_data_property = self.audit_json['template_data']
         audit_data_as_list = list()
         audit_data_as_list.append(audit_data_property['authorship']['owner'])
         audit_data_as_list.append(audit_data_property['name'])
@@ -86,6 +156,10 @@ class CsvExporter:
         audit_data_as_list.append(audit_data_property['date_started'])
         audit_data_as_list.append(audit_data_property['date_completed'])
         audit_data_as_list.append(self.audit_id())
+        audit_data_as_list.append(self.audit_json['template_id'])
+        audit_data_as_list.append(template_data_property['metadata']['name'])
+        audit_data_as_list.append(template_data_property['authorship']['author'])
+
         return audit_data_as_list
 
     def convert_audit_to_table(self):
@@ -105,7 +179,7 @@ class CsvExporter:
         """
         Appends audit data table to bulk export file at output_csv_path
 
-        :param path_to_export_file: The full path to the file to save
+        :param output_csv_path: The full path to the file to save
         """
         if not os.path.isfile(output_csv_path) and self.audit_table[0] != CSV_HEADER_ROW:
             self.audit_table.insert(0, CSV_HEADER_ROW)
@@ -118,7 +192,9 @@ class CsvExporter:
         :param output_csv_path:  The full path to the file to save
         """
         if os.path.isfile(output_csv_path) and not allow_overwrite:
-            sys.exit('File already exists at ' + output_csv_path + '\nPlease set allow_overwrite to True in confil.yaml file. See ReadMe.md for further instruction')
+            sys.exit(
+                'File already exists at ' + output_csv_path +
+                '\nPlease set allow_overwrite to True in confil.yaml file. See ReadMe.md for further instruction')
         elif os.path.isfile(output_csv_path) and allow_overwrite:
             print 'Overwriting file at ' + output_csv_path
         elif self.audit_table[0] != CSV_HEADER_ROW:
@@ -227,6 +303,28 @@ class CsvExporter:
         else:
             return ''
 
+    def get_item_label(self, item):
+        """
+        retrieve item label property
+
+        :param item:    single item in JSON format
+        :return:        label property
+        """
+        if self.get_json_property(item, 'type') == 'smartfield':
+            custom_response_id_to_label_map = self.audit_custom_response_id_to_label_map()
+            label = copy.deepcopy(
+                smartfield_conditional_id_to_statement_map[self.get_json_property(item, 'options', 'condition')])
+            for value in self.get_json_property(item, 'options', 'values'):
+                label += '|'
+                if value in standard_response_id_map.keys():
+                    label += standard_response_id_map[value]
+                elif value in custom_response_id_to_label_map.keys():
+                    label += custom_response_id_to_label_map[value]
+                label += '|'
+            return label
+        else:
+            return self.get_json_property(item, LABEL)
+
     def item_properties_as_list(self, item):
         """
         Returns selected properties of the audit item JSON as a list
@@ -236,15 +334,17 @@ class CsvExporter:
         """
 
         item_properties = {
+            LABEL: self.get_item_label(item),
             COMMENTS: self.get_json_property(item, 'responses', 'text'),
             FAILED: self.get_json_property(item, 'responses', FAILED),
             SCORE: self.get_item_score(item, SCORE, COMBINED_SCORE),
             MAX_SCORE: self.get_item_score(item, MAX_SCORE, COMBINED_MAX_SCORE),
             SCORE_PERCENTAGE: self.get_item_score(item, SCORE_PERCENTAGE, COMBINED_SCORE_PERCENTAGE),
             PARENT_ID: self.get_json_property(item, PARENT_ID),
-            RESPONSE: self.get_item_response(item)}
+            RESPONSE: self.get_item_response(item)
+        }
 
-        return [item['label'], item_properties[RESPONSE], item_properties[COMMENTS], item['type'],
+        return [item_properties[LABEL], item_properties[RESPONSE], item_properties[COMMENTS], item['type'],
                 item_properties[SCORE],
                 item_properties[MAX_SCORE], item_properties[SCORE_PERCENTAGE], item_properties[FAILED], item['item_id'],
                 item_properties[PARENT_ID]]
