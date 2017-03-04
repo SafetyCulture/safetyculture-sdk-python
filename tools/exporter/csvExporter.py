@@ -7,7 +7,7 @@ import copy
 CSV_HEADER_ROW = [
     'Label',
     'Response',
-    'Comments / Text',
+    'Comment',
     'Type',
     'Inactive',
     'Item Score',
@@ -36,6 +36,7 @@ EMPTY_RESPONSE = ''
 # audit item property constants
 LABEL = 'label'
 COMMENTS = 'comments'
+TYPE = 'type'
 FAILED = 'failed'
 SCORE = 'score'
 MAX_SCORE = 'max_score'
@@ -45,6 +46,8 @@ COMBINED_MAX_SCORE = 'combined_max_score'
 COMBINED_SCORE_PERCENTAGE = 'combined_score_percentage'
 PARENT_ID = 'parent_id'
 RESPONSE = 'response'
+INACTIVE = 'inactive'
+ID = 'item_id'
 
 smartfield_conditional_id_to_statement_map = {
     # conditional statements for question item
@@ -242,44 +245,46 @@ class CsvExporter:
         :return:        response property
         """
         response = ''
-        if item.get('type') == 'question':
+        type = item.get('type')
+        if type == 'question':
             response = self.get_json_property(item, 'responses', 'selected', 0, 'label')
-        elif item.get('type') == 'list':
+        elif type == 'list':
             for single_response in self.get_json_property(item, 'responses', 'selected'):
                 if single_response:
                     response += self.get_json_property(single_response, 'label') + ','
             response = response[:-1]
-        elif item.get('type') == 'address':
+        elif type == 'address':
             for line in self.get_json_property(item, 'responses', 'location', 'formatted_address'):
                 response += ','
                 response += line
             if response != '':
                 response = response[1:]
-        elif item.get('type') == 'checkbox':
+        elif type == 'checkbox':
             response = self.get_json_property(item, 'responses', 'value')
-        elif item.get('type') == 'switch':
+        elif type == 'switch':
             response = self.get_json_property(item, 'responses', 'value')
-        elif item.get('type') == 'slider':
+        elif type == 'slider':
             response = self.get_json_property(item, 'responses', 'value')
-        elif item.get('type') == 'drawing':
+        elif type == 'drawing':
             response = self.get_json_property(item, 'responses', 'image', 'media_id')
-        elif item.get('type') == 'media':
+        elif type == 'media':
             for image in self.get_json_property(item, 'media'):
                 response += ','
                 response += self.get_json_property(image, 'media_id')
             if response != '':
                 response = response[1:]
-        elif item.get('type') == 'signature':
+        elif type == 'signature':
             response = self.get_json_property(item, 'responses', 'image', 'media_id')
-        elif item.get('type') == 'smartfield':
+        elif type == 'smartfield':
             response = self.get_json_property(item, 'evaluation')
-        elif item.get('type') == 'datetime':
+        elif type == 'datetime':
             response = self.get_json_property(item, 'responses', 'datetime')
-        elif item.get('type') in ['dynamicfield', 'element', 'primeelement', 'asset', 'scanner', 'category', 'text',
-                                  'textsingle', 'section', 'information']:
+        elif type == 'text' or type == 'textsingle':
+            response = self.get_json_property(item, 'responses', 'text')
+        elif type in ['dynamicfield', 'element', 'primeelement', 'asset', 'scanner', 'category', 'section', 'information']:
             pass
         else:
-            print 'Unhandled item type: ' + str(item.get('type')) + ' from ' + \
+            print 'Unhandled item type: ' + str(type) + ' from ' + \
                   self.audit_id() + ', ' + item.get('item_id')
         return response
 
@@ -333,21 +338,19 @@ class CsvExporter:
         :return:        array of item data, in format that CSV writer can handle
         """
 
-        item_properties = {
-            LABEL: self.get_item_label(item),
-            COMMENTS: self.get_json_property(item, 'responses', 'text'),
-            FAILED: self.get_json_property(item, 'responses', FAILED),
-            SCORE: self.get_item_score(item, SCORE, COMBINED_SCORE),
-            MAX_SCORE: self.get_item_score(item, MAX_SCORE, COMBINED_MAX_SCORE),
-            SCORE_PERCENTAGE: self.get_item_score(item, SCORE_PERCENTAGE, COMBINED_SCORE_PERCENTAGE),
-            PARENT_ID: self.get_json_property(item, PARENT_ID),
-            RESPONSE: self.get_item_response(item)
-        }
-
-        return [item_properties[LABEL], item_properties[RESPONSE], item_properties[COMMENTS], item['type'],
-                item_properties[SCORE],
-                item_properties[MAX_SCORE], item_properties[SCORE_PERCENTAGE], item_properties[FAILED], item['item_id'],
-                item_properties[PARENT_ID]]
+        return [
+            self.get_item_label(item),
+            self.get_item_response(item),
+            self.get_json_property(item, 'responses', 'text') if item.get('type') not in ['text', 'textsingle'] else '',
+            self.get_json_property(item, 'type'),
+            self.get_json_property(item, 'inactive'),
+            self.get_item_score(item, SCORE, COMBINED_SCORE),
+            self.get_item_score(item, MAX_SCORE, COMBINED_MAX_SCORE),
+            self.get_item_score(item, SCORE_PERCENTAGE, COMBINED_SCORE_PERCENTAGE),
+            self.get_json_property(item, 'responses', FAILED),
+            item[ID],
+            self.get_json_property(item, PARENT_ID)
+                ]
 
 
 def main():
