@@ -3,6 +3,7 @@ import json
 import sys
 import os
 import copy
+from datetime import datetime
 
 CSV_HEADER_ROW = [
     'Label',
@@ -156,14 +157,22 @@ class CsvExporter:
         audit_data_as_list.append(audit_data_property['total_score'])
         audit_data_as_list.append(audit_data_property[SCORE_PERCENTAGE])
         audit_data_as_list.append(audit_data_property['duration'])
-        audit_data_as_list.append(audit_data_property['date_started'])
-        audit_data_as_list.append(audit_data_property['date_completed'])
+        audit_data_as_list.append(self.reformat_date(audit_data_property['date_started']))
+        audit_data_as_list.append(self.reformat_date(audit_data_property['date_completed']))
         audit_data_as_list.append(self.audit_id())
         audit_data_as_list.append(self.audit_json['template_id'])
         audit_data_as_list.append(template_data_property['metadata']['name'])
         audit_data_as_list.append(template_data_property['authorship']['author'])
-
         return audit_data_as_list
+
+    def reformat_date(self, date):
+        """
+        :param date:    date in the format: 2017-03-03T03:45:58.090Z
+        :return:        date in the format: 03 March 2017 at 03:45AM
+        """
+        date_object = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ')
+        formatted_date = date_object.strftime('%d %B %Y at %I:%M%p')
+        return formatted_date
 
     def convert_audit_to_table(self):
         """
