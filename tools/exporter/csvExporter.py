@@ -16,6 +16,7 @@ CSV_HEADER_ROW = [
     'Item Max Score',
     'Item Score Percentage',
     'Failed Response',
+    'Response ID',
     'Item ID',
     'Parent ID',
     'Audit Owner',
@@ -255,14 +256,18 @@ class CsvExporter:
         :return:        response property
         """
         response = ''
+        response_id = ''
         type = item.get('type')
         if type == 'question':
             response = self.get_json_property(item, 'responses', 'selected', 0, 'label')
+            response_id = self.get_json_property(item, 'responses', 'selected', 0, 'id')
         elif type == 'list':
             for single_response in self.get_json_property(item, 'responses', 'selected'):
                 if single_response:
-                    response += self.get_json_property(single_response, 'label') + ','
-            response = response[:-1]
+                    response += self.get_json_property(single_response, 'label') + ', '
+                    response_id += self.get_json_property(single_response, 'id') + ', '
+            response = response[:-2]
+            response_id = response_id[:-2]
         elif type == 'address':
             for line in self.get_json_property(item, 'responses', 'location', 'formatted_address'):
                 response += ','
@@ -296,7 +301,7 @@ class CsvExporter:
         else:
             print 'Unhandled item type: ' + str(type) + ' from ' + \
                   self.audit_id() + ', ' + item.get('item_id')
-        return response
+        return response, response_id
 
     def get_item_score(self, item, score_property_to_retrieve, combined_score_property_to_retrieve):
         """
@@ -349,7 +354,7 @@ class CsvExporter:
         """
         return [
             self.get_item_label(item),
-            self.get_item_response(item),
+            self.get_item_response(item)[0],
             self.get_json_property(item, 'responses', 'text') if item.get('type') not in ['text', 'textsingle'] else '',
             '\n'.join(image['href'] for image in self.get_json_property(item, 'media')),
             self.get_json_property(item, 'type'),
@@ -358,6 +363,7 @@ class CsvExporter:
             self.get_item_score(item, MAX_SCORE, COMBINED_MAX_SCORE),
             self.get_item_score(item, SCORE_PERCENTAGE, COMBINED_SCORE_PERCENTAGE),
             self.get_json_property(item, 'responses', FAILED),
+            self.get_item_response(item)[1],
             item[ID],
             self.get_json_property(item, PARENT_ID)
                 ]
