@@ -9,7 +9,7 @@ CSV_HEADER_ROW = [
     'Label',
     'Response',
     'Comment',
-    'Media',
+    'Media HREF',
     'Field Type',
     'Inactive',
     'Item Score',
@@ -205,11 +205,12 @@ class CsvExporter:
 
         :param output_csv_path:  The full path to the file to save
         """
-        if os.path.isfile(output_csv_path) and not allow_overwrite:
+        file_exists = os.path.isfile(output_csv_path)
+        if file_exists and not allow_overwrite:
             sys.exit(
                 'File already exists at ' + output_csv_path +
                 '\nPlease set allow_overwrite to True in confil.yaml file. See ReadMe.md for further instruction')
-        elif os.path.isfile(output_csv_path) and allow_overwrite:
+        elif file_exists and allow_overwrite:
             print 'Overwriting file at ' + output_csv_path
         elif self.audit_table[0] != CSV_HEADER_ROW:
             self.audit_table.insert(0, CSV_HEADER_ROW)
@@ -269,11 +270,7 @@ class CsvExporter:
             response = response[:-2]
             response_id = response_id[:-2]
         elif type == 'address':
-            for line in self.get_json_property(item, 'responses', 'location', 'formatted_address'):
-                response += ','
-                response += line
-            if response != '':
-                response = response[1:]
+            response = self.get_json_property(item, 'responses', 'location_text')
         elif type == 'checkbox':
             response = self.get_json_property(item, 'responses', 'value')
         elif type == 'switch':
@@ -296,7 +293,8 @@ class CsvExporter:
             response = self.reformat_date(self.get_json_property(item, 'responses', 'datetime'))
         elif type == 'text' or type == 'textsingle':
             response = self.get_json_property(item, 'responses', 'text')
-        elif type in ['dynamicfield', 'element', 'primeelement', 'asset', 'scanner', 'category', 'section', 'information']:
+        elif type in ['dynamicfield', 'element', 'primeelement', 'asset', 'scanner', 'category', 'section',
+                      'information']:
             pass
         else:
             print 'Unhandled item type: ' + str(type) + ' from ' + \
@@ -330,7 +328,8 @@ class CsvExporter:
         :param item:    single item in JSON format
         :return:        label property
         """
-        if self.get_json_property(item, 'type') == 'smartfield':
+        type = self.get_json_property(item, 'type')
+        if type == 'smartfield':
             custom_response_id_to_label_map = self.audit_custom_response_id_to_label_map()
             label = copy.deepcopy(
                 smartfield_conditional_id_to_statement_map[self.get_json_property(item, 'options', 'condition')])
@@ -342,8 +341,33 @@ class CsvExporter:
                     label += custom_response_id_to_label_map[value]
                 label += '|'
             return label
+        elif type == 'information' and self.get_json_property(item, 'options', 'type') == 'link':
+            return self.get_json_property(item, LABEL) + '\n' + self.get_json_property(item, 'options', 'link')
         else:
             return self.get_json_property(item, LABEL)
+
+    def get_item_type(self, item):
+        """
+        :param item:    single item in JSON format
+        :return:        item type property
+        """
+        type = self.get_json_property(item, 'type')
+        if type == 'information':
+            type += ' - ' + self.get_json_property(item, 'options', 'type')
+        return type
+
+    def get_item_media(self, item):
+        """
+        :param item:    single item in JSON format
+        :return:        item media href links
+        """
+        type = self.get_json_property(item, 'type')
+        if type == 'information' and self.get_json_property(item, 'options', 'type') == 'media':
+            return self.get_json_property(item, 'options' 'media', 'href')
+        elif type == 'drawing':
+            return self.get_json_property(item, 'responses', 'image', 'href')
+        else:
+            return '\n'.join(image['href'] for image in self.get_json_property(item, 'media'))
 
     def item_properties_as_list(self, item):
         """
@@ -356,8 +380,8 @@ class CsvExporter:
             self.get_item_label(item),
             self.get_item_response(item)[0],
             self.get_json_property(item, 'responses', 'text') if item.get('type') not in ['text', 'textsingle'] else '',
-            '\n'.join(image['href'] for image in self.get_json_property(item, 'media')),
-            self.get_json_property(item, 'type'),
+            self.get_item_media(item),
+            self.get_item_type(item),
             self.get_json_property(item, 'inactive'),
             self.get_item_score(item, SCORE, COMBINED_SCORE),
             self.get_item_score(item, MAX_SCORE, COMBINED_MAX_SCORE),
@@ -366,7 +390,7 @@ class CsvExporter:
             self.get_item_response(item)[1],
             item[ID],
             self.get_json_property(item, PARENT_ID)
-                ]
+        ]
 
 
 def main():
@@ -379,8 +403,7 @@ def main():
     for arg in sys.argv[1:]:
         audit_json = json.load(open(arg, 'r'))
         csv_exporter = CsvExporter(audit_json)
-        csv_exporter.save_converted_audit_to_file(str(audit_json['audit_id']) + '.csv')
-
+        csv_exporter.save_converted_audit_to_file(os.path.splitext(arg)[0] + '.csv', allow_overwrite=True)
 
 if __name__ == '__main__':
     main()
