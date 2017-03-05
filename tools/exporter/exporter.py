@@ -161,21 +161,6 @@ def load_setting_export_timezone(logger, config_settings):
         return str(timezone)
 
 
-def load_setting_proxy(logger, config_settings):
-    try:
-        proxy_settings = config_settings['proxy']
-        proxy_is_valid = re.match('(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]):\d', proxy_settings['https'])
-        if proxy_is_valid:
-            return proxy_settings
-        else:
-            proxy_settings = None
-            return proxy_settings
-    except Exception as ex:
-        log_critical_error(logger, ex, 'Exception parsing proxy settings')
-        proxy_settings = None
-        return proxy_settings
-
-
 def configure_logging(path_to_log_directory):
     """
     Configure logger
@@ -332,7 +317,7 @@ def load_config_settings(logger, path_to_config_file):
     config_settings = yaml.safe_load(open(path_to_config_file))
     settings = {
         'api_token': load_setting_api_access_token(logger, config_settings),
-        'proxy': load_setting_proxy(logger, config_settings),
+        'proxy': config_settings['proxy'],
         'export_path': load_setting_export_path(logger, config_settings),
         'timezone': load_setting_export_timezone(logger, config_settings),
         'export_profiles': load_setting_export_profile_mapping(logger, config_settings),
