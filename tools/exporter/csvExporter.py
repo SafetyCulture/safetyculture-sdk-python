@@ -265,14 +265,14 @@ class CsvExporter:
         elif type == 'list':
             for single_response in self.get_json_property(item, 'responses', 'selected'):
                 if single_response:
-                    response += self.get_json_property(single_response, 'label') + ', '
-                    response_id += self.get_json_property(single_response, 'id') + ', '
-            response = response[:-2]
-            response_id = response_id[:-2]
+                    response += self.get_json_property(single_response, 'label') + '\n'
+                    response_id += self.get_json_property(single_response, 'id') + '\n'
+            response = response[:-1]
+            response_id = response_id[:-1]
         elif type == 'address':
             response = self.get_json_property(item, 'responses', 'location_text')
         elif type == 'checkbox':
-            response = self.get_json_property(item, 'responses', 'value')
+            response = bool(self.get_json_property(item, 'responses', 'value'))
         elif type == 'switch':
             response = self.get_json_property(item, 'responses', 'value')
         elif type == 'slider':
@@ -281,9 +281,8 @@ class CsvExporter:
             response = self.get_json_property(item, 'responses', 'image', 'media_id')
         elif type == 'media':
             for image in self.get_json_property(item, 'media'):
-                response += ','
-                response += self.get_json_property(image, 'media_id')
-            if response != '':
+                response += '\n' + self.get_json_property(image, 'media_id')
+            if response:
                 response = response[1:]
         elif type == 'signature':
             response = self.get_json_property(item, 'responses', 'image', 'media_id')
@@ -364,7 +363,7 @@ class CsvExporter:
         type = self.get_json_property(item, 'type')
         if type == 'information' and self.get_json_property(item, 'options', 'type') == 'media':
             return self.get_json_property(item, 'options' 'media', 'href')
-        elif type == 'drawing':
+        elif type in ['drawing', 'signature']:
             return self.get_json_property(item, 'responses', 'image', 'href')
         else:
             return '\n'.join(image['href'] for image in self.get_json_property(item, 'media'))

@@ -23,12 +23,10 @@ class ExporterTestCase(unittest.TestCase):
             self.path_to_test_files, 'test_convert_single_question_with_standard_yes_no_na_answered_yes_expected_output.csv'), 'r').read())
         os.remove('test 1.csv')
 
-    def test_checkbox_field_checked(self):
-        csv_exporter = csv.CsvExporter(json.load(open(os.path.join(
-            self.path_to_test_files, 'test checkbox field - checked.json'), 'r')))
+    def test_single_checkbox_checked(self):
+        csv_exporter = csv.CsvExporter(json.load(open(os.path.join(self.path_to_test_files, 'unit_test_single_checkbox_checked.json'), 'r')))
         csv_exporter.save_converted_audit_to_file('test 2.csv', allow_overwrite=True)
-        self.assertEqual(open('test 2.csv', 'r').read(), open(os.path.join(
-            self.path_to_test_files, 'test checkbox field - checked expected output.csv'), 'r').read())
+        self.assertEqual(open('test 2.csv', 'r').read(), open(os.path.join(self.path_to_test_files, 'unit_test_single_checkbox_checked_expected_output.csv'), 'r').read())
         os.remove('test 2.csv')
 
     def test_datetime_field(self):
