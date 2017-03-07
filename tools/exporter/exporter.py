@@ -366,7 +366,7 @@ def parse_command_line_arguments(logger):
     parser.add_argument('--format', nargs='*', help='formats to download, valid options are pdf, json, docx')
     parser.add_argument('--list_export_profiles', nargs='*', help='display all export profiles, or restrict to specific'
                                                                   ' template_id if supplied as additional argument')
-    parser.add_argument('--no_loop', nargs='*', help='execute once and terminate')
+    parser.add_argument('--loop', nargs='*', help='execute continuously until interrupted')
     args = parser.parse_args()
 
     config_filename = DEFAULT_CONFIG_FILENAME
@@ -389,9 +389,9 @@ def parse_command_line_arguments(logger):
             else:
                 export_formats.append(option)
 
-    do_loop = False if args.no_loop is not None else True
+    loop_enabled = True if args.loop is not None else False
 
-    return config_filename, export_formats, args.list_export_profiles, do_loop
+    return config_filename, export_formats, args.list_export_profiles, loop_enabled
 
 
 def show_export_profiles_and_exit(list_export_profiles, sc_client):
@@ -500,13 +500,13 @@ def loop(logger, sc_client, settings):
 def main():
     try:
         logger = configure_logger()
-        path_to_config_file, export_formats, export_profiles_to_list, do_loop = parse_command_line_arguments(logger)
+        path_to_config_file, export_formats, export_profiles_to_list, loop_enabled = parse_command_line_arguments(logger)
         sc_client, settings = configure(logger, path_to_config_file, export_formats)
 
         if export_profiles_to_list is not None:
             show_export_profiles_and_exit(export_profiles_to_list, sc_client)
 
-        if do_loop:
+        if loop_enabled:
             loop(logger, sc_client, settings)
         else:
             sync_exports(logger, sc_client, settings)
