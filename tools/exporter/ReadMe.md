@@ -26,6 +26,12 @@ python exporter.py
 
 or simply double click exporter.py
 
+To enable to tool to run continuously until interrupted, use the loop command line argument:
+
+```
+python exporter.py --loop
+```
+
 To specify the export format explicitly run:
 
 ```
@@ -39,7 +45,7 @@ python exporter.py --format pdf docx json
 ```
 
 Note:
-* Once you start the tool, it will continue running until interrupted (Ctrl + C to interrupt), checking for new audits every 15 minutes
+* Unless you start the tool with the --loop argument, it will sync documents once and terminate
 * Only data of completed audits will be exported
 * Only audits that are owned by or shared with the SafetyCulture user account that generated the API token will be exported
 * Up to 1000 audits will be exported each time the software checks for new audits. If more than 1000 audits exist on the SafetyCulture platform, they will be retrieved automatically in subsequent sync cycles.
