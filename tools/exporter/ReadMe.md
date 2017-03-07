@@ -26,7 +26,7 @@ python exporter.py
 
 or simply double click exporter.py
 
-To enable to tool to run continuously until interrupted, use the loop command line argument:
+To enable app to run continuously until interrupted, use the loop command line argument:
 
 ```
 python exporter.py --loop
