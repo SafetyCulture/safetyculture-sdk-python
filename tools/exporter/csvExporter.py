@@ -53,21 +53,21 @@ INACTIVE = 'inactive'
 ID = 'item_id'
 
 smartfield_conditional_id_to_statement_map = {
-    # conditional statements for question item
+    # conditional statements for question field
     '3f206180-e4f6-11e1-aff1-0800200c9a66': 'if response selected',
     '3f206181-e4f6-11e1-aff1-0800200c9a66': 'if response not selected',
     '3f206182-e4f6-11e1-aff1-0800200c9a66': 'if response is',
     '3f206183-e4f6-11e1-aff1-0800200c9a66': 'if response is not',
     '3f206184-e4f6-11e1-aff1-0800200c9a66': 'if response is one of',
     '3f206185-e4f6-11e1-aff1-0800200c9a66': 'if response is not one of',
-    # conditional statements for list item
+    # conditional statements for list field
     '35f6c130-e500-11e1-aff1-0800200c9a66': 'if response selected',
     '35f6c131-e500-11e1-aff1-0800200c9a66': 'if response not selected',
     '35f6c132-e500-11e1-aff1-0800200c9a66': 'if response is',
     '35f6c133-e500-11e1-aff1-0800200c9a66': 'if response is not',
     '35f6c134-e500-11e1-aff1-0800200c9a66': 'if response is one of',
     '35f6c135-e500-11e1-aff1-0800200c9a66': 'if resonse is not one of',
-    # conditional statements for slider item
+    # conditional statements for slider field
     'cda7c330-e500-11e1-aff1-0800200c9a66': 'if slider value is less than',
     'cda7c331-e500-11e1-aff1-0800200c9a66': 'if slider value is less than or equal to',
     'cda7c332-e500-11e1-aff1-0800200c9a66': 'if slider value is equal to',
@@ -76,23 +76,26 @@ smartfield_conditional_id_to_statement_map = {
     'cda7c335-e500-11e1-aff1-0800200c9a66': 'if the slider value is greater than',
     'cda7c336-e500-11e1-aff1-0800200c9a66': 'if the slider value is between',
     'cda7c337-e500-11e1-aff1-0800200c9a66': 'if the slider value is not between',
-    # conditional statements for checkbox item
+    # conditional statements for checkbox field
     '4e671f40-e4ff-11e1-aff1-0800200c9a66': 'if the checkbox is checked',
     '4e671f41-e4ff-11e1-aff1-0800200c9a66': 'if the checkbox is not checked',
-    # conditional statements for switch item
+    # conditional statements for switch field
     '3d346f00-e501-11e1-aff1-0800200c9a66': 'if the switch is on',
     '3d346f01-e501-11e1-aff1-0800200c9a66': 'if the switch is off',
-    # conditional statements for text item
+    # conditional statements for text field
     '7c441470-e501-11e1-aff1-0800200c9a66': 'text is',
     '7c441471-e501-11e1-aff1-0800200c9a66': 'text is not',
-    # conditional statements for textsingle item
+    # conditional statements for textsingle field
     '6ff300f0-e501-11e1-aff1-0800200c9a66': 'text is',
     '6ff300f1-e501-11e1-aff1-0800200c9a66': 'text is not',
-    # conditional statements for signature item
+    # conditional statements for signature field
     '831f8ff0-e500-11e1-aff1-0800200c9a66': 'if signature exists',
     '831f8ff1-e500-11e1-aff1-0800200c9a66': 'if the signature does not exist',
     '831f8ff2-e500-11e1-aff1-0800200c9a66': 'if the signature name is',
-    '831f8ff3-e500-11e1-aff1-0800200c9a66': 'if the signature name is not'
+    '831f8ff3-e500-11e1-aff1-0800200c9a66': 'if the signature name is not',
+    # conditional statemens for barcode field
+    '8259d900-12e3-11e4-9191-0800200c9a66': 'if the scanned barcode is',
+    '8259d901-12e3-11e4-9191-0800200c9a66': 'if the scanned barcode is not'
 }
 
 standard_response_id_map = {
@@ -172,9 +175,10 @@ class CsvExporter:
         :param date:    date in the format: 2017-03-03T03:45:58.090Z
         :return:        date in the format: 03 March 2017 at 03:45AM
         """
-        date_object = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ')
-        formatted_date = date_object.strftime('%d %B %Y at %I:%M%p')
-        return formatted_date
+        if date:
+            date_object = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ')
+            formatted_date = date_object.strftime('%d %B %Y at %I:%M%p')
+            return formatted_date
 
     def convert_audit_to_table(self):
         """
@@ -245,7 +249,7 @@ class CsvExporter:
                 if len(obj) == 0:
                     return ''
                 obj = obj[arg]
-            elif (isinstance(obj, object) or isinstance(obj, dict)) and arg in obj.keys():
+            elif isinstance(obj, dict) and arg in obj.keys():
                 obj = obj[arg]
             else:
                 return ''
@@ -327,11 +331,13 @@ class CsvExporter:
         :param item:    single item in JSON format
         :return:        label property
         """
+        label =  ''
         type = self.get_json_property(item, 'type')
         if type == 'smartfield':
             custom_response_id_to_label_map = self.audit_custom_response_id_to_label_map()
-            label = copy.deepcopy(
-                smartfield_conditional_id_to_statement_map[self.get_json_property(item, 'options', 'condition')])
+            conditional_id = self.get_json_property(item, 'options', 'condition')
+            if conditional_id:
+                label = copy.deepcopy(smartfield_conditional_id_to_statement_map[conditional_id])
             for value in self.get_json_property(item, 'options', 'values'):
                 label += '|'
                 if value in standard_response_id_map.keys():

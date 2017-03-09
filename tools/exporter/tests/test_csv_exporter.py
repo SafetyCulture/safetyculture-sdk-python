@@ -160,6 +160,30 @@ class ExporterTestCase(unittest.TestCase):
         self.assertEqual(open('test 23.csv', 'r').read(), open(os.path.join(self.path_to_test_files, 'unit_test_single_text_single_line_Single_line_entered_expected_output.csv'), 'r').read())
         os.remove('test 23.csv')
 
+    def test_null_date_value(self):
+        csv_exporter = csv.CsvExporter(json.load(open(os.path.join(self.path_to_test_files, 'unit_test_null_date_value.json'), 'r')))
+        csv_exporter.save_converted_audit_to_file('test 24.csv', allow_overwrite=True)
+        self.assertEqual(open('test 24.csv', 'r').read(), open(os.path.join(self.path_to_test_files, 'unit_test_null_date_value_expected_output.csv'), 'r').read())
+        os.remove('test 24.csv')
+
+    def test_missing_smartfield_conditional(self):
+        csv_exporter = csv.CsvExporter(json.load(open(os.path.join(self.path_to_test_files, 'unit_test_missing_smartfield_conditional.json'), 'r')))
+        csv_exporter.save_converted_audit_to_file('test 25.csv', allow_overwrite=True)
+        self.assertEqual(open('test 25.csv', 'r').read(), open(os.path.join(self.path_to_test_files, 'unit_test_missing_smartfield_conditional_expected_output.csv'), 'r').read())
+        os.remove('test 25.csv')
+
+    def test_smartfield_applied_to_barcode_field(self):
+        csv_exporter = csv.CsvExporter(json.load(open(os.path.join(self.path_to_test_files, 'unit_test_smartfield_applied_to_barcode_field.json'), 'r')))
+        csv_exporter.save_converted_audit_to_file('test 26.csv', allow_overwrite=True)
+        self.assertEqual(open('test 26.csv', 'r').read(), open(os.path.join(self.path_to_test_files, 'unit_test_smartfield_applied_to_barcode_field_expected_output.csv'), 'r').read())
+        os.remove('test 26.csv')
+
+    def test_global_response_set_irregular_api_response(self):
+        csv_exporter = csv.CsvExporter(json.load(open(os.path.join(self.path_to_test_files, 'unit_test_global_response_set_irregular_api_response.json'), 'r')))
+        csv_exporter.save_converted_audit_to_file('test 27.csv', allow_overwrite=True)
+        self.assertEqual(open('test 27.csv', 'r').read(), open(os.path.join(self.path_to_test_files, 'unit_test_global_response_set_irregular_api_response_expected_output.csv'), 'r').read())
+        os.remove('test 27.csv')
+
 
 if __name__ == '__main__':
     unittest.main()

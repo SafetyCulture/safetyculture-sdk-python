@@ -21,11 +21,24 @@ def get_test_number():
     return count
 
 def main():
+    auto_create_name = False
     for arg in sys.argv[1:]:
+        # set naming setting
+        if arg == 'automatic_naming':
+            auto_create_name = True
+            continue
+        elif arg == 'manual_naming':
+            auto_create_name = False
+            continue
+
+        # get name according to setting
+        if auto_create_name:
+            name = audit_json['template_data']['metadata']['name'] + '_' + audit_json['audit_data']['name']
+            name = name.replace(' ', '_')
+        else:
+            name = raw_input('What do you want to name the json file for ' + arg + ': ')
+
         audit_json = sc_sdk.get_audit(arg)
-        # name = raw_input('What do you want to name the json file: ')
-        name = audit_json['template_data']['metadata']['name'] + '_' + audit_json['audit_data']['name']
-        name = name.replace(' ', '_')
         test_number = str(get_test_number() + 1)
         name_root = os.path.splitext(name)[0]
         unit_test_fxn_name = 'test_' + name_root
