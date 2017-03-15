@@ -1,13 +1,13 @@
 {
-    "template_id": "template_db0799376f094956bde2893147ad4821", 
-    "audit_id": "audit_cdb71f6139f7493c9e3460527c8537bb", 
-    "created_at": "2017-03-04T09:57:17.564Z", 
-    "modified_at": "2017-03-04T09:57:29.069Z", 
+    "template_id": "template_af08f8935d7a4ec7a93f9c1025484f99", 
+    "audit_id": "audit_7261a27bc2f943e093028fb6328e4a2b", 
+    "created_at": "2017-03-13T06:11:33.326Z", 
+    "modified_at": "2017-03-13T06:11:54.094Z", 
     "audit_data": {
         "score": 1, 
         "total_score": 1, 
         "score_percentage": 100, 
-        "name": "checked", 
+        "name": "answered mandatory field", 
         "duration": 0, 
         "authorship": {
             "device_id": "8a582619-95e9-43e8-b671-5f316745b254", 
@@ -16,9 +16,9 @@
             "author": "Tony Oreglia", 
             "author_id": "user_fdd054fbf4ef4a069dfc86ff004e7a67"
         }, 
-        "date_completed": "2017-03-04T09:57:28.967Z", 
-        "date_modified": "2017-03-04T09:57:28.968Z", 
-        "date_started": "2017-03-04T09:57:17.563Z"
+        "date_completed": "2017-03-13T06:11:53.952Z", 
+        "date_modified": "2017-03-13T06:11:53.953Z", 
+        "date_started": "2017-03-13T06:11:33.324Z"
     }, 
     "template_data": {
         "authorship": {
@@ -30,7 +30,7 @@
         }, 
         "metadata": {
             "description": "", 
-            "name": "single checkbox"
+            "name": "single question as mandatory field"
         }, 
         "response_sets": {}
     }, 
@@ -64,7 +64,7 @@
             "label": "Audit Title", 
             "type": "textsingle", 
             "responses": {
-                "text": "checked"
+                "text": "answered mandatory field"
             }
         }, 
         {
@@ -84,7 +84,7 @@
                 "enable_time": true
             }, 
             "responses": {
-                "datetime": "2017-03-04T09:57:20.000Z"
+                "datetime": "2017-03-13T06:11:34.000Z"
             }
         }, 
         {
@@ -112,7 +112,7 @@
     ], 
     "items": [
         {
-            "item_id": "ebce25a7-1847-44dc-9aac-d49d998285e8", 
+            "item_id": "a03ce9e7-f23c-4426-9c78-f1e47d2bae7a", 
             "label": "Audit", 
             "type": "section", 
             "scoring": {
@@ -121,24 +121,37 @@
                 "combined_score_percentage": 100
             }, 
             "children": [
-                "08f9e332-ed33-49f7-9677-382b57465726"
+                "4b540ddb-a56f-4822-a8eb-0f14dd35da3a"
             ]
         }, 
         {
-            "parent_id": "ebce25a7-1847-44dc-9aac-d49d998285e8", 
-            "item_id": "08f9e332-ed33-49f7-9677-382b57465726", 
-            "label": "did you do it? ", 
-            "type": "checkbox", 
+            "parent_id": "a03ce9e7-f23c-4426-9c78-f1e47d2bae7a", 
+            "item_id": "4b540ddb-a56f-4822-a8eb-0f14dd35da3a", 
+            "label": "Is this question mandatory? ", 
+            "type": "question", 
             "scoring": {
                 "score": 1, 
                 "max_score": 1, 
                 "score_percentage": 100
             }, 
             "options": {
-                "weighting": 1
+                "weighting": 1, 
+                "response_set": "7bb1cb10-7020-11e2-bcfd-0800200c9a66", 
+                "is_mandatory": true
             }, 
             "responses": {
-                "value": 1
+                "selected": [
+                    {
+                        "id": "8bcfbf00-e11b-11e1-9b23-0800200c9a66", 
+                        "type": "text", 
+                        "label": "Yes", 
+                        "short_label": "Y", 
+                        "colour": "162,182,58", 
+                        "image": "", 
+                        "enable_score": true, 
+                        "score": 1
+                    }
+                ]
             }
         }
     ]

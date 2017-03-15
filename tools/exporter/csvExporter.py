@@ -6,18 +6,19 @@ import copy
 from datetime import datetime
 
 CSV_HEADER_ROW = [
+    'Field Type',
     'Label',
     'Response',
     'Comment',
     'Media HREF',
-    'Field Type',
-    'Inactive',
     'Item Score',
     'Item Max Score',
     'Item Score Percentage',
+    'Mandatory',
     'Failed Response',
-    'Response ID',
+    'Inactive',
     'Item ID',
+    'Response ID',
     'Parent ID',
     'Audit Owner',
     'Audit Name',
@@ -52,6 +53,7 @@ RESPONSE = 'response'
 INACTIVE = 'inactive'
 ID = 'item_id'
 
+# maps smartfield conditional statement IDs to the corresponding text
 smartfield_conditional_id_to_statement_map = {
     # conditional statements for question field
     '3f206180-e4f6-11e1-aff1-0800200c9a66': 'if response selected',
@@ -66,7 +68,7 @@ smartfield_conditional_id_to_statement_map = {
     '35f6c132-e500-11e1-aff1-0800200c9a66': 'if response is',
     '35f6c133-e500-11e1-aff1-0800200c9a66': 'if response is not',
     '35f6c134-e500-11e1-aff1-0800200c9a66': 'if response is one of',
-    '35f6c135-e500-11e1-aff1-0800200c9a66': 'if resonse is not one of',
+    '35f6c135-e500-11e1-aff1-0800200c9a66': 'if response is not one of',
     # conditional statements for slider field
     'cda7c330-e500-11e1-aff1-0800200c9a66': 'if slider value is less than',
     'cda7c331-e500-11e1-aff1-0800200c9a66': 'if slider value is less than or equal to',
@@ -93,11 +95,12 @@ smartfield_conditional_id_to_statement_map = {
     '831f8ff1-e500-11e1-aff1-0800200c9a66': 'if the signature does not exist',
     '831f8ff2-e500-11e1-aff1-0800200c9a66': 'if the signature name is',
     '831f8ff3-e500-11e1-aff1-0800200c9a66': 'if the signature name is not',
-    # conditional statemens for barcode field
+    # conditional statements for barcode field
     '8259d900-12e3-11e4-9191-0800200c9a66': 'if the scanned barcode is',
     '8259d901-12e3-11e4-9191-0800200c9a66': 'if the scanned barcode is not'
 }
 
+# maps default answer IDs to corresponding Text
 standard_response_id_map = {
     '8bcfbf00-e11b-11e1-9b23-0800200c9a66': 'Yes',
     '8bcfbf01-e11b-11e1-9b23-0800200c9a66': 'No',
@@ -170,7 +173,8 @@ class CsvExporter:
         audit_data_as_list.append(template_data_property['authorship']['author'])
         return audit_data_as_list
 
-    def reformat_date(self, date):
+    @staticmethod
+    def reformat_date(date):
         """
         :param date:    date in the format: 2017-03-03T03:45:58.090Z
         :return:        date in the format: 03 March 2017 at 03:45AM
@@ -182,8 +186,7 @@ class CsvExporter:
 
     def convert_audit_to_table(self):
         """
-        Collects all audit item responses, appends common audit data and returns
-        as a 2-dimensional list.
+        Collects all audit item responses, appends common audit data and returns a 2-dimensional list.
 
         :return:    2 dimensional list, each list is a single item, which corresponds to a single row
         """
@@ -207,13 +210,14 @@ class CsvExporter:
         """
         Saves audit data table to a file at output_csv_path
 
-        :param output_csv_path:  The full path to the file to save
+        :param output_csv_path:     The full path to the file to save
+        :param allow_overwrite:     if True, allow function to overwrite existing file
         """
         file_exists = os.path.isfile(output_csv_path)
         if file_exists and not allow_overwrite:
             sys.exit(
                 'File already exists at ' + output_csv_path +
-                '\nPlease set allow_overwrite to True in confil.yaml file. See ReadMe.md for further instruction')
+                '\nPlease set allow_overwrite to True in config.yaml file. See ReadMe.md for further instruction')
         elif file_exists and allow_overwrite:
             print 'Overwriting file at ' + output_csv_path
         elif self.audit_table[0] != CSV_HEADER_ROW:
@@ -229,9 +233,8 @@ class CsvExporter:
         """
         try:
             csv_file = open(output_csv_path, mode)
-            wr = csv.writer(csv_file, quoting=csv.QUOTE_ALL)
-            for row in self.audit_table:
-                wr.writerow(row)
+            wr = csv.writer(csv_file, dialect='excel', quoting=csv.QUOTE_ALL)
+            wr.writerows(self.audit_table)
             csv_file.close()
         except Exception as ex:
             print str(ex) + ': Error saving audit_table to ' + output_csv_path
@@ -253,7 +256,7 @@ class CsvExporter:
                 obj = obj[arg]
             else:
                 return ''
-        return obj
+        return obj if obj is not None else ''
 
     def get_item_response(self, item):
         """
@@ -262,65 +265,87 @@ class CsvExporter:
         """
         response = ''
         response_id = ''
-        type = item.get('type')
-        if type == 'question':
+        item_type = self.get_json_property(item, 'type')
+        if item_type == 'question':
             response = self.get_json_property(item, 'responses', 'selected', 0, 'label')
             response_id = self.get_json_property(item, 'responses', 'selected', 0, 'id')
-        elif type == 'list':
+        elif item_type == 'list':
             for single_response in self.get_json_property(item, 'responses', 'selected'):
                 if single_response:
                     response += self.get_json_property(single_response, 'label') + '\n'
                     response_id += self.get_json_property(single_response, 'id') + '\n'
             response = response[:-1]
             response_id = response_id[:-1]
-        elif type == 'address':
+        elif item_type == 'address':
             response = self.get_json_property(item, 'responses', 'location_text')
-        elif type == 'checkbox':
+        elif item_type == 'checkbox':
             response = bool(self.get_json_property(item, 'responses', 'value'))
-        elif type == 'switch':
+        elif item_type == 'switch':
             response = self.get_json_property(item, 'responses', 'value')
-        elif type == 'slider':
+        elif item_type == 'slider':
             response = self.get_json_property(item, 'responses', 'value')
-        elif type == 'drawing':
+        elif item_type == 'drawing':
             response = self.get_json_property(item, 'responses', 'image', 'media_id')
-        elif type == 'media':
+        elif item_type == 'media':
             for image in self.get_json_property(item, 'media'):
                 response += '\n' + self.get_json_property(image, 'media_id')
             if response:
                 response = response[1:]
-        elif type == 'signature':
-            response = self.get_json_property(item, 'responses', 'image', 'media_id')
-        elif type == 'smartfield':
+        elif item_type == 'signature':
+            response = self.get_json_property(item, 'responses', 'name')
+        elif item_type == 'smartfield':
             response = self.get_json_property(item, 'evaluation')
-        elif type == 'datetime':
+        elif item_type == 'datetime':
             response = self.reformat_date(self.get_json_property(item, 'responses', 'datetime'))
-        elif type == 'text' or type == 'textsingle':
+        elif item_type == 'text' or item_type == 'textsingle':
             response = self.get_json_property(item, 'responses', 'text')
-        elif type in ['dynamicfield', 'element', 'primeelement', 'asset', 'scanner', 'category', 'section',
-                      'information']:
+        elif item_type in ['dynamicfield', 'element', 'primeelement', 'asset', 'scanner', 'category', 'section',
+                           'information']:
             pass
         else:
-            print 'Unhandled item type: ' + str(type) + ' from ' + \
+            print 'Unhandled item type: ' + str(item_type) + ' from ' + \
                   self.audit_id() + ', ' + item.get('item_id')
         return response, response_id
 
-    def get_item_score(self, item, score_property_to_retrieve, combined_score_property_to_retrieve):
+    def get_item_score(self, item):
         """
-        retrieve score property from item. There are three score properties for a given item,
-        each of which may be either combined (score for multiple items, e.g. a section type item) or
-        singular (score representing a single item, e.g. a question field)
-            1. score and combined_score
-            2. max_score or combined_max_score
-            3. score_percentage or combined_score_percentage
+        retrieve score property from item
+
         :param item:    single item in JSON format
-        :param score_property_to_retrieve:  score property to retrieve it it exists
-        :param combined_score_property_to_retrieve: combined_score property to retrieve it it exists
-        :return:    score property or empty string if property does not exist
+        :return:        score property or empty string if property does not exist
         """
-        if isinstance(self.get_json_property(item, 'scoring', score_property_to_retrieve), int):
-            return self.get_json_property(item, 'scoring', score_property_to_retrieve)
-        elif isinstance(self.get_json_property(item, 'scoring', combined_score_property_to_retrieve), int):
-            return self.get_json_property(item, 'scoring', combined_score_property_to_retrieve)
+        if isinstance(self.get_json_property(item, 'scoring', SCORE), int):
+            return self.get_json_property(item, 'scoring', SCORE)
+        elif isinstance(self.get_json_property(item, 'scoring', COMBINED_SCORE), int):
+            return self.get_json_property(item, 'scoring', COMBINED_SCORE)
+        else:
+            return ''
+
+    def get_item_max_score(self, item):
+        """
+        retrieve max score property from item
+
+        :param item:    single item in JSON format
+        :return:        max score property or empty string if property does not exist
+        """
+        if isinstance(self.get_json_property(item, 'scoring', MAX_SCORE), int):
+            return self.get_json_property(item, 'scoring', MAX_SCORE)
+        elif isinstance(self.get_json_property(item, 'scoring', COMBINED_MAX_SCORE), int):
+            return self.get_json_property(item, 'scoring', COMBINED_MAX_SCORE)
+        else:
+            return ''
+
+    def get_item_score_percentage(self, item):
+        """
+        retrieve score percentage property from item
+
+        :param item:    single item in JSON format
+        :return:        score percentage property or empty string if property does not exist
+        """
+        if isinstance(self.get_json_property(item, 'scoring', SCORE_PERCENTAGE), int):
+            return self.get_json_property(item, 'scoring', SCORE_PERCENTAGE)
+        elif isinstance(self.get_json_property(item, 'scoring', COMBINED_SCORE_PERCENTAGE), int):
+            return self.get_json_property(item, 'scoring', COMBINED_SCORE_PERCENTAGE)
         else:
             return ''
 
@@ -331,9 +356,9 @@ class CsvExporter:
         :param item:    single item in JSON format
         :return:        label property
         """
-        label =  ''
-        type = self.get_json_property(item, 'type')
-        if type == 'smartfield':
+        label = ''
+        item_type = self.get_json_property(item, 'type')
+        if item_type == 'smartfield':
             custom_response_id_to_label_map = self.audit_custom_response_id_to_label_map()
             conditional_id = self.get_json_property(item, 'options', 'condition')
             if conditional_id:
@@ -344,9 +369,11 @@ class CsvExporter:
                     label += standard_response_id_map[value]
                 elif value in custom_response_id_to_label_map.keys():
                     label += custom_response_id_to_label_map[value]
+                else:
+                    label += str(value)
                 label += '|'
             return label
-        elif type == 'information' and self.get_json_property(item, 'options', 'type') == 'link':
+        elif item_type == 'information' and self.get_json_property(item, 'options', 'type') == 'link':
             return self.get_json_property(item, LABEL) + '\n' + self.get_json_property(item, 'options', 'link')
         else:
             return self.get_json_property(item, LABEL)
@@ -356,23 +383,24 @@ class CsvExporter:
         :param item:    single item in JSON format
         :return:        item type property
         """
-        type = self.get_json_property(item, 'type')
-        if type == 'information':
-            type += ' - ' + self.get_json_property(item, 'options', 'type')
-        return type
+        item_type = self.get_json_property(item, 'type')
+        if item_type == 'information':
+            item_type += ' - ' + self.get_json_property(item, 'options', 'type')
+        return item_type
 
     def get_item_media(self, item):
         """
         :param item:    single item in JSON format
         :return:        item media href links
         """
-        type = self.get_json_property(item, 'type')
-        if type == 'information' and self.get_json_property(item, 'options', 'type') == 'media':
-            return self.get_json_property(item, 'options' 'media', 'href')
-        elif type in ['drawing', 'signature']:
-            return self.get_json_property(item, 'responses', 'image', 'href')
+        item_type = self.get_json_property(item, 'type')
+        if item_type == 'information' and self.get_json_property(item, 'options', 'type') == 'media':
+            media_href = self.get_json_property(item, 'options', 'media', 'href')
+        elif item_type in ['drawing', 'signature']:
+            media_href = self.get_json_property(item, 'responses', 'image', 'href')
         else:
-            return '\n'.join(image['href'] for image in self.get_json_property(item, 'media'))
+            media_href = '\n'.join(image['href'] for image in self.get_json_property(item, 'media'))
+        return media_href
 
     def item_properties_as_list(self, item):
         """
@@ -382,33 +410,32 @@ class CsvExporter:
         :return:        array of item data, in format that CSV writer can handle
         """
         return [
+            self.get_item_type(item),
             self.get_item_label(item),
             self.get_item_response(item)[0],
             self.get_json_property(item, 'responses', 'text') if item.get('type') not in ['text', 'textsingle'] else '',
             self.get_item_media(item),
-            self.get_item_type(item),
-            self.get_json_property(item, 'inactive'),
-            self.get_item_score(item, SCORE, COMBINED_SCORE),
-            self.get_item_score(item, MAX_SCORE, COMBINED_MAX_SCORE),
-            self.get_item_score(item, SCORE_PERCENTAGE, COMBINED_SCORE_PERCENTAGE),
+            self.get_item_score(item),
+            self.get_item_max_score(item),
+            self.get_item_score_percentage(item),
+            self.get_json_property(item, 'options', 'is_mandatory') or False,
             self.get_json_property(item, 'responses', FAILED),
+            self.get_json_property(item, 'inactive'),
+            self.get_json_property(item, ID),
             self.get_item_response(item)[1],
-            item[ID],
             self.get_json_property(item, PARENT_ID)
         ]
 
 
 def main():
     """
-    Processes the audit JSON file givon on the command line and saves the converted CSV file to a file with the same
-    name with CSV extension
-
-    :param arg:     path to audit json file
+    saves JSON file as CSV. Path to JSON file provided as command line argument
     """
     for arg in sys.argv[1:]:
         audit_json = json.load(open(arg, 'r'))
         csv_exporter = CsvExporter(audit_json)
         csv_exporter.save_converted_audit_to_file(os.path.splitext(arg)[0] + '.csv', allow_overwrite=True)
+
 
 if __name__ == '__main__':
     main()
