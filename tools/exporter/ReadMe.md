@@ -47,7 +47,7 @@ Note:
 ### CSV Export
 #### Bulk Export Mode
 * Audits are grouped by Template. Audits built from the same template are appended to a CSV file named after that templates identification number. 
-* Basic example of the [CSV Export](safetyculture-sdk-python/tools/exporter/tests/csv_test_files/test_convert_single_question_with_standard_yes_no_na_answered_yes_expected_output.csv)
+* Basic example of the [CSV Export](https://github.com/SafetyCulture/safetyculture-sdk-python/blob/INTG-174_CSVExport/tools/exporter/tests/csv_test_files/unit_test_single_question_yes___no___na_answered_yes_expected_output.csv)
 #### Single Audit Export Mode
 To export a single Audit:
 1. First export the Audit in JSON format
