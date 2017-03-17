@@ -85,11 +85,11 @@ smartfield_conditional_id_to_statement_map = {
     '3d346f00-e501-11e1-aff1-0800200c9a66': 'if the switch is on',
     '3d346f01-e501-11e1-aff1-0800200c9a66': 'if the switch is off',
     # conditional statements for text field
-    '7c441470-e501-11e1-aff1-0800200c9a66': 'text is',
-    '7c441471-e501-11e1-aff1-0800200c9a66': 'text is not',
+    '7c441470-e501-11e1-aff1-0800200c9a66': 'if text is',
+    '7c441471-e501-11e1-aff1-0800200c9a66': 'if text is not',
     # conditional statements for textsingle field
-    '6ff300f0-e501-11e1-aff1-0800200c9a66': 'text is',
-    '6ff300f1-e501-11e1-aff1-0800200c9a66': 'text is not',
+    '6ff300f0-e501-11e1-aff1-0800200c9a66': 'if text is',
+    '6ff300f1-e501-11e1-aff1-0800200c9a66': 'if text is not',
     # conditional statements for signature field
     '831f8ff0-e500-11e1-aff1-0800200c9a66': 'if signature exists',
     '831f8ff1-e500-11e1-aff1-0800200c9a66': 'if the signature does not exist',
@@ -418,7 +418,7 @@ class CsvExporter:
             self.get_item_score(item),
             self.get_item_max_score(item),
             self.get_item_score_percentage(item),
-            self.get_json_property(item, 'options', 'is_mandatory') or False,
+            self.get_json_property(item, 'options', 'is_mandatory'),
             self.get_json_property(item, 'responses', FAILED),
             self.get_json_property(item, 'inactive'),
             self.get_json_property(item, ID),
@@ -434,7 +434,7 @@ def main():
     for arg in sys.argv[1:]:
         audit_json = json.load(open(arg, 'r'))
         csv_exporter = CsvExporter(audit_json)
-        csv_exporter.save_converted_audit_to_file(os.path.splitext(arg)[0] + '.csv', allow_overwrite=True)
+        csv_exporter.save_converted_audit_to_file(os.path.splitext(arg.split('/')[-1])[0] + '.csv', allow_overwrite=True)
 
 
 if __name__ == '__main__':
