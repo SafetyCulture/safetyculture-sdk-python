@@ -45,18 +45,27 @@ Note:
 * Up to 1000 audits will be exported each time the software checks for new audits. If more than 1000 audits exist on the SafetyCulture platform, they will be retrieved automatically in subsequent sync cycles.
 
 ### CSV Export
-#### Bulk Export Mode
-* Audits that are built off a common Template will be appended one after the other into the same CSV file. 
-* For a basic example of the CSV format, open the file: 
-```
-https://github.com/SafetyCulture/safetyculture-sdk-python/blob/INTG-174_CSVExport/tools/exporter/tests/csv_test_files/unit_test_single_question_yes___no___na_answered_yes_expected_output.csv
-```
 #### Single Audit Export Mode
-* To export a single Audit, first export the Audit in JSON format, then call csvExporter.py with the Audit JSON sent as an argument:
+To export a single Audit:
+1. First export the Audit in JSON format
+2. Call csvExporter.py with the Audit JSON sent as an argument. 
 ```
 python exporter.py --format json
 python csvExporter.py path/to/audit_file.json
 ```
+* Basic example of the [CSV Export](https://github.com/SafetyCulture/safetyculture-sdk-python/blob/INTG-174_CSVExport/tools/exporter/tests/csv_test_files/unit_test_single_question_yes___no___na_answered_yes_expected_output.csv)
+
+#### Bulk Export Mode
+* Each Audit is the same format as the single Audit CSV export
+* Audits are grouped by Template. Audits built from the same template are appended to a CSV file named after that templates identification number. 
+
+#### CSV values that don't match underlying JSON value
+##### Date/Time field
+* JSON: 2017-03-03T03:45:58.090Z
+* CSV:  03 March 2017 at 03:45AM
+##### Checkbox field
+* JSON: 1 or 0
+* CSV: True or False
 
 
 ## Export settings
