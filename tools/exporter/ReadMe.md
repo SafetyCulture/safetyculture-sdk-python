@@ -44,28 +44,34 @@ Note:
 * Only audits that are owned by or shared with the SafetyCulture user account that generated the API token will be exported
 * Up to 1000 audits will be exported each time the software checks for new audits. If more than 1000 audits exist on the SafetyCulture platform, they will be retrieved automatically in subsequent sync cycles.
 
-### CSV Export
-#### Single Audit Export Mode
+## CSV Export
+### Single Audit CSV Export
 To export a single Audit:
 1. First export the Audit in JSON format
-2. Call csvExporter.py with the Audit JSON sent as an argument. 
+2. Execute csvExporter.py with the Audit JSON sent as an argument. 
 ```
 python exporter.py --format json
 python csvExporter.py path/to/audit_file.json
 ```
-* Basic example of the [CSV Export](https://github.com/SafetyCulture/safetyculture-sdk-python/blob/INTG-174_CSVExport/tools/exporter/tests/csv_test_files/unit_test_single_question_yes___no___na_answered_yes_expected_output.csv)
+* Basic example of [CSV Export Format](https://github.com/SafetyCulture/safetyculture-sdk-python/blob/INTG-174_CSVExport/tools/exporter/tests/csv_test_files/unit_test_single_question_yes___no___na_answered_yes_expected_output.csv)
 
-#### Bulk Export Mode
+### Bulk CSV Export
 * Each Audit is the same format as the single Audit CSV export
-* Audits are grouped by Template. Audits built from the same template are appended to a CSV file named after that templates identification number. 
+* Audits are grouped by Template. Audits built from the same template are appended to a CSV file named using the templates unique identification number. 
 
-#### CSV values that don't match underlying JSON value
-##### Date/Time field
-* JSON: 2017-03-03T03:45:58.090Z
-* CSV:  03 March 2017 at 03:45AM
-##### Checkbox field
-* JSON: 1 or 0
-* CSV: True or False
+### CSV values whose format does not match JSON properties
+#### Date/Time field
+* JSON: `2017-03-03T03:45:58.090Z`
+* CSV:  Date Value: `03 March 2017` and Time Value: `03:45AM7`
+#### Checkbox field
+* JSON: `1` or `0`
+* CSV:  `True` or `False`
+#### Media List, Multiple Choice Responses
+* JSON: List Object
+* CSV:  Newline separated values in single cell
+###Bulk CSV Export Gotchas
+* If you update an Audit that has already been exported, it may be appended to the CSV file a second time.
+* If you update a template, Audits with the new format will be appended to the same CSV file.
 
 
 ## Export settings
