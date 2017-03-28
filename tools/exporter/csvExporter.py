@@ -320,7 +320,7 @@ class CsvExporter:
             response = self.get_json_property(item, 'evaluation')
         elif item_type == 'datetime':
             response = self.format_date(self.get_json_property(item, RESPONSES, 'datetime'))
-            response = response + 'at ' + self.format_time(self.get_json_property(item, RESPONSES, 'datetime'))
+            response = response + ' at ' + self.format_time(self.get_json_property(item, RESPONSES, 'datetime'))
         elif item_type == 'text' or item_type == 'textsingle':
             response = self.get_json_property(item, RESPONSES, 'text')
         elif item_type == INFORMATION and self.get_json_property(item, 'options', TYPE) == 'link':
@@ -332,7 +332,6 @@ class CsvExporter:
             print 'Unhandled item type: ' + str(item_type) + ' from ' + \
                   self.audit_id() + ', ' + item.get(ID)
         return response
-
 
     def get_item_response_id(self, item):
         """
@@ -467,7 +466,8 @@ class CsvExporter:
             self.get_item_type(item),
             self.get_item_label(item),
             self.get_item_response(item),
-            self.get_json_property(item, RESPONSES, 'text') if item.get(TYPE) not in ['text', 'textsingle'] else EMPTY_RESPONSE,
+            self.get_json_property(item, RESPONSES, 'text') if item.get(TYPE) not in ['text',
+                                                                                      'textsingle'] else EMPTY_RESPONSE,
             self.get_item_media(item),
             self.get_item_location_coordinates(item),
             self.get_item_score(item),
@@ -489,7 +489,8 @@ def main():
     for arg in sys.argv[1:]:
         audit_json = json.load(open(arg, 'r'))
         csv_exporter = CsvExporter(audit_json)
-        csv_exporter.save_converted_audit_to_file(os.path.splitext(arg.split('/')[-1])[0] + '.csv', allow_overwrite=True)
+        csv_exporter.save_converted_audit_to_file(os.path.splitext(arg.split('/')[-1])[0] + '.csv',
+                                                  allow_overwrite=True)
 
 
 if __name__ == '__main__':
