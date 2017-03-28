@@ -1,0 +1,197 @@
+{
+    "template_id": "template_5759212c5e924fb2b9ba1c1701d50da0", 
+    "audit_id": "audit_D9C2769509DE471183D7707A35D6E9E6", 
+    "created_at": "2017-03-04T10:17:57.024Z", 
+    "modified_at": "2017-03-04T10:17:57.024Z", 
+    "audit_data": {
+        "score": 0, 
+        "total_score": 1, 
+        "score_percentage": 0, 
+        "name": "Switched off", 
+        "duration": 10, 
+        "authorship": {
+            "device_id": "E45DD9BB-B483-4731-B15D-C163A4E83F5E", 
+            "owner": "Tony Oreglia", 
+            "owner_id": "user_fdd054fbf4ef4a069dfc86ff004e7a67", 
+            "author": "Tony Oreglia", 
+            "author_id": "user_fdd054fbf4ef4a069dfc86ff004e7a67"
+        }, 
+        "date_completed": "2017-03-04T10:13:14.000Z", 
+        "date_modified": "2017-03-04T10:13:14.000Z", 
+        "date_started": "2017-03-04T10:13:03.000Z"
+    }, 
+    "template_data": {
+        "authorship": {
+            "device_id": "8a582619-95e9-43e8-b671-5f316745b254", 
+            "owner": "Tony Oreglia", 
+            "owner_id": "user_fdd054fbf4ef4a069dfc86ff004e7a67", 
+            "author": "Tony Oreglia", 
+            "author_id": "user_fdd054fbf4ef4a069dfc86ff004e7a67"
+        }, 
+        "metadata": {
+            "description": "", 
+            "name": "single switch field"
+        }, 
+        "response_sets": {}
+    }, 
+    "header_items": [
+        {
+            "item_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Title Page", 
+            "type": "section", 
+            "children": [
+                "f3245d46-ea77-11e1-aff1-0800200c9a66", 
+                "f3245d40-ea77-11e1-aff1-0800200c9a66", 
+                "f3245d41-ea77-11e1-aff1-0800200c9a66", 
+                "f3245d42-ea77-11e1-aff1-0800200c9a66", 
+                "f3245d43-ea77-11e1-aff1-0800200c9a66", 
+                "f3245d44-ea77-11e1-aff1-0800200c9a66", 
+                "f3245d45-ea77-11e1-aff1-0800200c9a66"
+            ]
+        }, 
+        {
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d46-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Document No.", 
+            "type": "textsingle", 
+            "options": {
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": "000002"
+            }
+        }, 
+        {
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d40-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Audit Title", 
+            "type": "textsingle", 
+            "options": {
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": "Switched off"
+            }
+        }, 
+        {
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d41-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Client / Site", 
+            "type": "textsingle", 
+            "options": {
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": ""
+            }
+        }, 
+        {
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d42-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Conducted on", 
+            "type": "datetime", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false, 
+                "enable_date": true, 
+                "enable_time": true
+            }, 
+            "responses": {
+                "datetime": "2017-03-04T10:13:03.000Z"
+            }
+        }, 
+        {
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d43-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Prepared by", 
+            "type": "textsingle", 
+            "options": {
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": "Tony Oreglia"
+            }
+        }, 
+        {
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d44-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Location", 
+            "type": "address", 
+            "options": {
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "location_text": "7 Gilbert Street\nDover Heights NSW 2030\nAustralia\n(-33.8707769, 151.278377)", 
+                "location": {
+                    "administrative_area": "NSW", 
+                    "country": "Australia", 
+                    "formatted_address": [
+                        "7 Gilbert Street", 
+                        "Dover Heights NSW 2030", 
+                        "Australia"
+                    ], 
+                    "geometry": {
+                        "coordinates": [
+                            151.278377, 
+                            -33.8707769
+                        ], 
+                        "type": "Point"
+                    }, 
+                    "iso_country_code": "AU", 
+                    "locality": "Dover Heights", 
+                    "name": "7 Gilbert Street", 
+                    "postal_code": "2030", 
+                    "sub_administrative_area": "", 
+                    "sub_locality": "Sydney", 
+                    "sub_thoroughfare": "7", 
+                    "thoroughfare": "Gilbert Street"
+                }
+            }
+        }, 
+        {
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d45-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Personnel", 
+            "type": "text", 
+            "options": {
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": ""
+            }
+        }
+    ], 
+    "items": [
+        {
+            "item_id": "67857280-81f0-4b5a-8fd9-3d08db14e78f", 
+            "label": "Audit", 
+            "type": "section", 
+            "scoring": {
+                "combined_score": 0, 
+                "combined_max_score": 1, 
+                "combined_score_percentage": 0
+            }, 
+            "children": [
+                "15210736-e75f-42a2-ae26-391027e5a0f0"
+            ]
+        }, 
+        {
+            "parent_id": "67857280-81f0-4b5a-8fd9-3d08db14e78f", 
+            "item_id": "15210736-e75f-42a2-ae26-391027e5a0f0", 
+            "label": "are you switched on? ", 
+            "type": "switch", 
+            "scoring": {
+                "score": 0, 
+                "max_score": 1, 
+                "score_percentage": 0
+            }, 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "value": false
+            }
+        }
+    ]
+}

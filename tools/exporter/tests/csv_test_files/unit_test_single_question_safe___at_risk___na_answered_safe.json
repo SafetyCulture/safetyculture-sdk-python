@@ -1,0 +1,158 @@
+{
+    "template_id": "template_2f88c01ddcfd4d4489ce86adf9e72c0a", 
+    "audit_id": "audit_c77b58771c64408da992758a870dafb3", 
+    "created_at": "2017-03-04T09:46:52.749Z", 
+    "modified_at": "2017-03-04T09:50:09.816Z", 
+    "audit_data": {
+        "score": 1, 
+        "total_score": 1, 
+        "score_percentage": 100, 
+        "name": "answered safe", 
+        "duration": 0, 
+        "authorship": {
+            "device_id": "8a582619-95e9-43e8-b671-5f316745b254", 
+            "owner": "Tony Oreglia", 
+            "owner_id": "user_fdd054fbf4ef4a069dfc86ff004e7a67", 
+            "author": "Tony Oreglia", 
+            "author_id": "user_fdd054fbf4ef4a069dfc86ff004e7a67"
+        }, 
+        "date_completed": "2017-03-04T09:50:09.431Z", 
+        "date_modified": "2017-03-04T09:50:09.432Z", 
+        "date_started": "2017-03-04T09:46:52.744Z"
+    }, 
+    "template_data": {
+        "authorship": {
+            "device_id": "8a582619-95e9-43e8-b671-5f316745b254", 
+            "owner": "Tony Oreglia", 
+            "owner_id": "user_fdd054fbf4ef4a069dfc86ff004e7a67", 
+            "author": "Tony Oreglia", 
+            "author_id": "user_fdd054fbf4ef4a069dfc86ff004e7a67"
+        }, 
+        "metadata": {
+            "description": "", 
+            "name": "single question safe - at risk - na"
+        }, 
+        "response_sets": {}
+    }, 
+    "header_items": [
+        {
+            "item_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Title Page", 
+            "type": "section", 
+            "children": [
+                "f3245d46-ea77-11e1-aff1-0800200c9a66", 
+                "f3245d40-ea77-11e1-aff1-0800200c9a66", 
+                "f3245d41-ea77-11e1-aff1-0800200c9a66", 
+                "f3245d42-ea77-11e1-aff1-0800200c9a66", 
+                "f3245d43-ea77-11e1-aff1-0800200c9a66", 
+                "f3245d44-ea77-11e1-aff1-0800200c9a66", 
+                "f3245d45-ea77-11e1-aff1-0800200c9a66"
+            ]
+        }, 
+        {
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d46-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Document No.", 
+            "type": "textsingle", 
+            "responses": {
+                "text": "000001"
+            }
+        }, 
+        {
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d40-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Audit Title", 
+            "type": "textsingle", 
+            "responses": {
+                "text": "answered safe"
+            }
+        }, 
+        {
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d41-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Client / Site", 
+            "type": "textsingle"
+        }, 
+        {
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d42-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Conducted on", 
+            "type": "datetime", 
+            "options": {
+                "weighting": 1, 
+                "enable_date": true, 
+                "enable_time": true
+            }, 
+            "responses": {
+                "datetime": "2017-03-04T09:46:56.000Z"
+            }
+        }, 
+        {
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d43-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Prepared by", 
+            "type": "textsingle", 
+            "responses": {
+                "text": "Tony Oreglia"
+            }
+        }, 
+        {
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d44-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Location", 
+            "type": "address", 
+            "responses": {}
+        }, 
+        {
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d45-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Personnel", 
+            "type": "text"
+        }
+    ], 
+    "items": [
+        {
+            "item_id": "ab5e052c-3943-4f18-98dc-3a3733aaec7e", 
+            "label": "Audit", 
+            "type": "section", 
+            "scoring": {
+                "combined_score": 1, 
+                "combined_max_score": 1, 
+                "combined_score_percentage": 100
+            }, 
+            "children": [
+                "986db6ce-cde9-4838-89fd-231498009d81"
+            ]
+        }, 
+        {
+            "parent_id": "ab5e052c-3943-4f18-98dc-3a3733aaec7e", 
+            "item_id": "986db6ce-cde9-4838-89fd-231498009d81", 
+            "type": "question", 
+            "scoring": {
+                "score": 1, 
+                "max_score": 1, 
+                "score_percentage": 100
+            }, 
+            "options": {
+                "weighting": 1, 
+                "response_set": "7bb1cb11-7020-11e2-bcfd-0800200c9a66", 
+                "failed_responses": []
+            }, 
+            "responses": {
+                "selected": [
+                    {
+                        "id": "b5c92350-e11b-11e1-9b23-0800200c9a66", 
+                        "type": "text", 
+                        "label": "Safe", 
+                        "short_label": "S", 
+                        "colour": "162,182,58", 
+                        "image": "", 
+                        "enable_score": true, 
+                        "score": 1
+                    }
+                ]
+            }, 
+            "label": ""
+        }
+    ]
+}

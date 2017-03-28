@@ -1,0 +1,1187 @@
+{
+    "audit_data": {
+        "date_completed": "2016-09-14T01:31:43.000Z", 
+        "name": "", 
+        "date_modified": "2016-09-14T01:32:11.000Z", 
+        "total_score": 38, 
+        "score": 25, 
+        "score_percentage": 65.789, 
+        "duration": 93, 
+        "authorship": {
+            "owner": "Safety Culture", 
+            "author_id": "user_28fed4d4b6bc4959b6295b5fe5dd9b3d", 
+            "owner_id": "user_28fed4d4b6bc4959b6295b5fe5dd9b3d", 
+            "author": "Safety Culture", 
+            "device_id": "f56eeb62086255c"
+        }, 
+        "date_started": "2016-09-14T01:30:08.000Z"
+    }, 
+    "assets": [], 
+    "audit_id": "audit_d941a829155642a5bcd49896f299be99", 
+    "items": [
+        {
+            "scoring": {
+                "combined_score": 10, 
+                "combined_score_percentage": 66.667, 
+                "combined_max_score": 15
+            }, 
+            "children": [
+                "0C770769-3D42-406B-8B7D-BA6710CD3FB2", 
+                "55E582D3-EEE4-46AD-A2B1-0B764ABCA583"
+            ], 
+            "label": "Audit", 
+            "reference_item_profile_ids": [], 
+            "item_id": "34f9b536-4927-4da7-9635-7f72bcce61ff", 
+            "type": "section", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "label": "", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "34f9b536-4927-4da7-9635-7f72bcce61ff", 
+            "item_id": "0C770769-3D42-406B-8B7D-BA6710CD3FB2", 
+            "type": "information", 
+            "options": {
+                "is_mandatory": false, 
+                "media": {
+                    "date_created": "2016-08-25T01:50:20.000Z", 
+                    "file_ext": "jpg", 
+                    "href": "https://api.safetyculture.io/audits/audit_d941a829155642a5bcd49896f299be99/media/54D1A9F5-F430-43E3-942E-712DD9352258", 
+                    "media_id": "54D1A9F5-F430-43E3-942E-712DD9352258", 
+                    "label": "no label"
+                }, 
+                "weighting": 1, 
+                "visible_in_report": true, 
+                "visible_in_audit": true, 
+                "type": "media"
+            }
+        }, 
+        {
+            "scoring": {
+                "combined_score_percentage": 66.667, 
+                "combined_score": 10, 
+                "score": 1, 
+                "score_percentage": 100, 
+                "max_score": 1, 
+                "combined_max_score": 15
+            }, 
+            "responses": {
+                "value": 1
+            }, 
+            "children": [
+                "170F56DA-0216-4330-A19B-05D4AC63732D"
+            ], 
+            "label": "SafetyCulture iAuditor is the worlds smartest checklist app", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "34f9b536-4927-4da7-9635-7f72bcce61ff", 
+            "item_id": "55E582D3-EEE4-46AD-A2B1-0B764ABCA583", 
+            "type": "checkbox", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "scoring": {
+                "combined_score": 9, 
+                "combined_score_percentage": 64.286, 
+                "combined_max_score": 14
+            }, 
+            "evaluation": true, 
+            "children": [
+                "ABEE1DD5-7BD4-4E72-8AE8-CA2B0BEAEA1B"
+            ], 
+            "label": "", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "55E582D3-EEE4-46AD-A2B1-0B764ABCA583", 
+            "item_id": "170F56DA-0216-4330-A19B-05D4AC63732D", 
+            "type": "smartfield", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false, 
+                "condition": "4e671f40-e4ff-11e1-aff1-0800200c9a66"
+            }
+        }, 
+        {
+            "scoring": {
+                "combined_score_percentage": 64.286, 
+                "combined_score": 9, 
+                "score": 1, 
+                "score_percentage": 100, 
+                "max_score": 1, 
+                "combined_max_score": 14
+            }, 
+            "responses": {
+                "value": 1
+            }, 
+            "children": [
+                "BB410F6B-BC54-4C72-A00F-4DD0845C6688"
+            ], 
+            "label": "It is FREE to download on iOS, Android and Windows", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "170F56DA-0216-4330-A19B-05D4AC63732D", 
+            "item_id": "ABEE1DD5-7BD4-4E72-8AE8-CA2B0BEAEA1B", 
+            "type": "checkbox", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "scoring": {
+                "combined_score": 8, 
+                "combined_score_percentage": 61.538, 
+                "combined_max_score": 13
+            }, 
+            "evaluation": true, 
+            "children": [
+                "DCF4997B-2C07-468B-AE4B-22EE42797DF4", 
+                "13090497-c0dd-4c16-9e2b-efb28d01392f"
+            ], 
+            "label": "", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "ABEE1DD5-7BD4-4E72-8AE8-CA2B0BEAEA1B", 
+            "item_id": "BB410F6B-BC54-4C72-A00F-4DD0845C6688", 
+            "type": "smartfield", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false, 
+                "values": [
+                    "8bcfbf00-e11b-11e1-9b23-0800200c9a66"
+                ], 
+                "condition": "4e671f40-e4ff-11e1-aff1-0800200c9a66"
+            }
+        }, 
+        {
+            "label": "Build a customizable checklist with these features", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "BB410F6B-BC54-4C72-A00F-4DD0845C6688", 
+            "item_id": "DCF4997B-2C07-468B-AE4B-22EE42797DF4", 
+            "type": "category", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "scoring": {
+                "combined_score_percentage": 61.538, 
+                "combined_score": 8, 
+                "score": 1, 
+                "score_percentage": 100, 
+                "max_score": 1, 
+                "combined_max_score": 13
+            }, 
+            "responses": {
+                "value": 1
+            }, 
+            "children": [
+                "630103E3-A14C-423B-80CF-C4CB4B31D517"
+            ], 
+            "label": "Check Box", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "BB410F6B-BC54-4C72-A00F-4DD0845C6688", 
+            "item_id": "13090497-c0dd-4c16-9e2b-efb28d01392f", 
+            "type": "checkbox", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "scoring": {
+                "combined_score": 7, 
+                "combined_score_percentage": 58.333, 
+                "combined_max_score": 12
+            }, 
+            "evaluation": true, 
+            "children": [
+                "8375B38E-A957-48ED-9C32-5CAE85794EE6"
+            ], 
+            "label": "", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "13090497-c0dd-4c16-9e2b-efb28d01392f", 
+            "item_id": "630103E3-A14C-423B-80CF-C4CB4B31D517", 
+            "type": "smartfield", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false, 
+                "condition": "4e671f40-e4ff-11e1-aff1-0800200c9a66"
+            }
+        }, 
+        {
+            "scoring": {
+                "combined_score_percentage": 58.333, 
+                "combined_score": 7, 
+                "score": 1, 
+                "score_percentage": 100, 
+                "max_score": 1, 
+                "combined_max_score": 12
+            }, 
+            "responses": {
+                "value": 1
+            }, 
+            "children": [
+                "3D244A26-A21A-46D3-84B0-3DA74FAA9947"
+            ], 
+            "label": "Switch", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "630103E3-A14C-423B-80CF-C4CB4B31D517", 
+            "item_id": "8375B38E-A957-48ED-9C32-5CAE85794EE6", 
+            "type": "switch", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "scoring": {
+                "combined_score": 6, 
+                "combined_score_percentage": 54.545, 
+                "combined_max_score": 11
+            }, 
+            "evaluation": true, 
+            "children": [
+                "19F6267C-4E1F-4386-849E-30FF6569E2BA"
+            ], 
+            "label": "", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "8375B38E-A957-48ED-9C32-5CAE85794EE6", 
+            "item_id": "3D244A26-A21A-46D3-84B0-3DA74FAA9947", 
+            "type": "smartfield", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false, 
+                "condition": "3d346f00-e501-11e1-aff1-0800200c9a66"
+            }
+        }, 
+        {
+            "scoring": {
+                "combined_score_percentage": 54.545, 
+                "combined_score": 6, 
+                "score": 5, 
+                "score_percentage": 50, 
+                "max_score": 10, 
+                "combined_max_score": 11
+            }, 
+            "responses": {
+                "value": 5
+            }, 
+            "children": [
+                "E17F47CB-AFF1-449F-9CDF-27D12869DD3E"
+            ], 
+            "label": "Slider", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "3D244A26-A21A-46D3-84B0-3DA74FAA9947", 
+            "item_id": "19F6267C-4E1F-4386-849E-30FF6569E2BA", 
+            "type": "slider", 
+            "options": {
+                "weighting": 1, 
+                "min": 0, 
+                "is_mandatory": false, 
+                "increment": 1, 
+                "max": 10
+            }
+        }, 
+        {
+            "scoring": {
+                "combined_score": 1, 
+                "combined_score_percentage": 100, 
+                "combined_max_score": 1
+            }, 
+            "evaluation": true, 
+            "children": [
+                "11D94EDC-79A8-45FF-8FED-5493278B7273"
+            ], 
+            "label": "", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "19F6267C-4E1F-4386-849E-30FF6569E2BA", 
+            "item_id": "E17F47CB-AFF1-449F-9CDF-27D12869DD3E", 
+            "type": "smartfield", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false, 
+                "values": [
+                    "5"
+                ], 
+                "condition": "cda7c332-e500-11e1-aff1-0800200c9a66"
+            }
+        }, 
+        {
+            "scoring": {
+                "combined_score": 1, 
+                "combined_score_percentage": 100, 
+                "combined_max_score": 1
+            }, 
+            "responses": {
+                "text": "", 
+                "selected": [
+                    {
+                        "colour": "61,192,139", 
+                        "short_label": "", 
+                        "label": "Yes", 
+                        "score": 0, 
+                        "type": "text", 
+                        "id": "8670D1A8-D0E4-4BB1-8DAB-7BA562086179", 
+                        "enable_score": false
+                    }
+                ]
+            }, 
+            "children": [
+                "95F5A194-ED71-4956-9649-6E0C7225A4EE"
+            ], 
+            "label": "Question", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "E17F47CB-AFF1-449F-9CDF-27D12869DD3E", 
+            "item_id": "11D94EDC-79A8-45FF-8FED-5493278B7273", 
+            "type": "question", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false, 
+                "response_set": "242B31FE-0FEE-42F8-8DAD-7B3B70CC2E2D"
+            }
+        }, 
+        {
+            "scoring": {
+                "combined_score": 1, 
+                "combined_score_percentage": 100, 
+                "combined_max_score": 1
+            }, 
+            "evaluation": true, 
+            "children": [
+                "8190B200-A0A1-402A-A309-CCAFC97E53EC"
+            ], 
+            "label": "", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "11D94EDC-79A8-45FF-8FED-5493278B7273", 
+            "item_id": "95F5A194-ED71-4956-9649-6E0C7225A4EE", 
+            "type": "smartfield", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false, 
+                "values": [
+                    "8670D1A8-D0E4-4BB1-8DAB-7BA562086179"
+                ], 
+                "condition": "3f206182-e4f6-11e1-aff1-0800200c9a66"
+            }
+        }, 
+        {
+            "scoring": {
+                "combined_score": 1, 
+                "combined_score_percentage": 100, 
+                "combined_max_score": 1
+            }, 
+            "responses": {
+                "text": "Text here"
+            }, 
+            "children": [
+                "3C6BDFB7-FAAD-4AAA-9647-98DF7DDD2A8C"
+            ], 
+            "label": "Text Input", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "95F5A194-ED71-4956-9649-6E0C7225A4EE", 
+            "item_id": "8190B200-A0A1-402A-A309-CCAFC97E53EC", 
+            "type": "textsingle", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "scoring": {
+                "combined_score": 1, 
+                "combined_score_percentage": 100, 
+                "combined_max_score": 1
+            }, 
+            "evaluation": true, 
+            "children": [
+                "253E5EDC-2369-4388-8BCE-275CA6244FFC"
+            ], 
+            "label": "", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "8190B200-A0A1-402A-A309-CCAFC97E53EC", 
+            "item_id": "3C6BDFB7-FAAD-4AAA-9647-98DF7DDD2A8C", 
+            "type": "smartfield", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false, 
+                "condition": "6ff300f1-e501-11e1-aff1-0800200c9a66"
+            }
+        }, 
+        {
+            "scoring": {
+                "combined_score": 1, 
+                "combined_score_percentage": 100, 
+                "combined_max_score": 1
+            }, 
+            "children": [
+                "17A2C56D-AF79-4486-90DE-53025E95ABF5"
+            ], 
+            "label": "Barcode Scanner", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "3C6BDFB7-FAAD-4AAA-9647-98DF7DDD2A8C", 
+            "item_id": "253E5EDC-2369-4388-8BCE-275CA6244FFC", 
+            "type": "scanner", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false, 
+                "secure": false, 
+                "hide_barcode": false
+            }
+        }, 
+        {
+            "scoring": {
+                "combined_score": 1, 
+                "combined_score_percentage": 100, 
+                "combined_max_score": 1
+            }, 
+            "evaluation": true, 
+            "children": [
+                "67D51987-2353-441E-AA1D-9BDBA4C05D8E"
+            ], 
+            "label": "", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "253E5EDC-2369-4388-8BCE-275CA6244FFC", 
+            "item_id": "17A2C56D-AF79-4486-90DE-53025E95ABF5", 
+            "type": "smartfield", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false, 
+                "values": [
+                    "j"
+                ], 
+                "condition": "8259d901-12e3-11e4-9191-0800200c9a66"
+            }
+        }, 
+        {
+            "scoring": {
+                "combined_score": 1, 
+                "combined_score_percentage": 100, 
+                "combined_max_score": 1
+            }, 
+            "responses": {
+                "selected": [
+                    {
+                        "colour": "217,91,93", 
+                        "short_label": "", 
+                        "label": "Option A", 
+                        "score": 0, 
+                        "type": "text", 
+                        "id": "988199DA-C2E1-4E54-AD91-D45DAD552BD4", 
+                        "enable_score": false
+                    }, 
+                    {
+                        "colour": "61,192,139", 
+                        "short_label": "", 
+                        "label": "Option B", 
+                        "score": 0, 
+                        "type": "text", 
+                        "id": "A426EA0E-9F47-4ABF-B7EE-C95582D559F9", 
+                        "enable_score": false
+                    }, 
+                    {
+                        "colour": "42,148,229", 
+                        "short_label": "", 
+                        "label": "Option D", 
+                        "score": 0, 
+                        "type": "text", 
+                        "id": "A02A0173-C937-4A48-A8CA-2DAD72FDD619", 
+                        "enable_score": false
+                    }
+                ]
+            }, 
+            "children": [
+                "5CEED14D-0BBF-4213-B57C-1419FD343C5E"
+            ], 
+            "label": "Multiple Choice", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "17A2C56D-AF79-4486-90DE-53025E95ABF5", 
+            "item_id": "67D51987-2353-441E-AA1D-9BDBA4C05D8E", 
+            "type": "list", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false, 
+                "response_set": "53B23A5F-A7BE-4C8D-AA52-8A07420CF57C", 
+                "multiple_selection": true
+            }
+        }, 
+        {
+            "scoring": {
+                "combined_score": 1, 
+                "combined_score_percentage": 100, 
+                "combined_max_score": 1
+            }, 
+            "evaluation": true, 
+            "children": [
+                "D1D461A7-8A11-41CB-9B13-2E40063A5907"
+            ], 
+            "label": "", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "67D51987-2353-441E-AA1D-9BDBA4C05D8E", 
+            "item_id": "5CEED14D-0BBF-4213-B57C-1419FD343C5E", 
+            "type": "smartfield", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false, 
+                "condition": "35f6c130-e500-11e1-aff1-0800200c9a66"
+            }
+        }, 
+        {
+            "scoring": {
+                "combined_score": 1, 
+                "combined_score_percentage": 100, 
+                "combined_max_score": 1
+            }, 
+            "children": [
+                "592F9490-7212-43E3-A6F9-FEFEB59DBF18"
+            ], 
+            "label": "Smart fields ", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "5CEED14D-0BBF-4213-B57C-1419FD343C5E", 
+            "item_id": "D1D461A7-8A11-41CB-9B13-2E40063A5907", 
+            "type": "category", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "scoring": {
+                "score": 1, 
+                "max_score": 1, 
+                "score_percentage": 100
+            }, 
+            "responses": {
+                "value": 1
+            }, 
+            "children": [
+                "230E6A6D-8D00-4BB3-8173-6DF7824FE4A5"
+            ], 
+            "label": "Check this box", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "D1D461A7-8A11-41CB-9B13-2E40063A5907", 
+            "item_id": "592F9490-7212-43E3-A6F9-FEFEB59DBF18", 
+            "type": "checkbox", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "type": "smartfield", 
+            "children": [
+                "E3228369-2950-438A-9FD9-03F34CE972B6"
+            ], 
+            "label": "", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "592F9490-7212-43E3-A6F9-FEFEB59DBF18", 
+            "item_id": "230E6A6D-8D00-4BB3-8173-6DF7824FE4A5", 
+            "evaluation": true, 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false, 
+                "condition": "4e671f40-e4ff-11e1-aff1-0800200c9a66"
+            }
+        }, 
+        {
+            "label": "This message appeared because the checkbox above has been checked", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "230E6A6D-8D00-4BB3-8173-6DF7824FE4A5", 
+            "item_id": "E3228369-2950-438A-9FD9-03F34CE972B6", 
+            "type": "information", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false, 
+                "type": "text", 
+                "visible_in_report": true, 
+                "visible_in_audit": true
+            }
+        }, 
+        {
+            "scoring": {
+                "combined_score": 14, 
+                "combined_score_percentage": 63.636, 
+                "combined_max_score": 22
+            }, 
+            "children": [
+                "FDE8AAEA-EA83-46B6-8710-AC96548A1CBA"
+            ], 
+            "label": "Dynamic Fields", 
+            "reference_item_profile_ids": [], 
+            "item_id": "6A2E3685-7E27-49D5-BFA9-9CD5E42E2FC8", 
+            "type": "section", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "scoring": {
+                "combined_score": 14, 
+                "combined_score_percentage": 63.636, 
+                "combined_max_score": 22
+            }, 
+            "children": [
+                "8B656C95-EABF-4E15-A77A-7A00CF8D8E9B"
+            ], 
+            "label": "Dynamic Fields", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "6A2E3685-7E27-49D5-BFA9-9CD5E42E2FC8", 
+            "item_id": "FDE8AAEA-EA83-46B6-8710-AC96548A1CBA", 
+            "type": "category", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "scoring": {
+                "combined_score": 14, 
+                "combined_score_percentage": 63.636, 
+                "combined_max_score": 22
+            }, 
+            "children": [
+                "033ca376-25cb-45ef-a037-066dc999632a", 
+                "2bffc5b4-ac10-4785-86bb-c56f7cd76a74", 
+                "a8716501-dfca-4fcd-9e39-526b6c775d25"
+            ], 
+            "label": "Dynamic Group", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "FDE8AAEA-EA83-46B6-8710-AC96548A1CBA", 
+            "item_id": "8B656C95-EABF-4E15-A77A-7A00CF8D8E9B", 
+            "type": "dynamicfield", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false, 
+                "element": "Dynamic Group"
+            }
+        }, 
+        {
+            "children": [
+                "1E37C9B5-2947-4AC9-B64E-3AB2121E86A7", 
+                "D4F05FE8-7C33-48A4-B174-97145657D914"
+            ], 
+            "label": "", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "8B656C95-EABF-4E15-A77A-7A00CF8D8E9B", 
+            "item_id": "033ca376-25cb-45ef-a037-066dc999632a", 
+            "type": "primeelement", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "responses": {
+                "value": 0
+            }, 
+            "label": "Check Box", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "033ca376-25cb-45ef-a037-066dc999632a", 
+            "item_id": "1E37C9B5-2947-4AC9-B64E-3AB2121E86A7", 
+            "type": "checkbox", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "label": "Slider ", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "033ca376-25cb-45ef-a037-066dc999632a", 
+            "item_id": "D4F05FE8-7C33-48A4-B174-97145657D914", 
+            "type": "slider", 
+            "options": {
+                "weighting": 1, 
+                "min": 0, 
+                "is_mandatory": false, 
+                "increment": 1, 
+                "max": 10
+            }
+        }, 
+        {
+            "scoring": {
+                "combined_score": 5, 
+                "combined_score_percentage": 45.455, 
+                "combined_max_score": 11
+            }, 
+            "children": [
+                "182f5acc-2e8a-493d-b81a-5fa342684cae", 
+                "8cbae27e-da7f-48b1-a5a1-7790b86e3dcb"
+            ], 
+            "label": "", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "8B656C95-EABF-4E15-A77A-7A00CF8D8E9B", 
+            "item_id": "2bffc5b4-ac10-4785-86bb-c56f7cd76a74", 
+            "type": "element", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "scoring": {
+                "score": 1, 
+                "max_score": 1, 
+                "score_percentage": 100
+            }, 
+            "responses": {
+                "value": 1
+            }, 
+            "label": "Check Box", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "2bffc5b4-ac10-4785-86bb-c56f7cd76a74", 
+            "item_id": "182f5acc-2e8a-493d-b81a-5fa342684cae", 
+            "type": "checkbox", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "scoring": {
+                "score": 4, 
+                "max_score": 10, 
+                "score_percentage": 40
+            }, 
+            "responses": {
+                "value": 4
+            }, 
+            "label": "Slider ", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "2bffc5b4-ac10-4785-86bb-c56f7cd76a74", 
+            "item_id": "8cbae27e-da7f-48b1-a5a1-7790b86e3dcb", 
+            "type": "slider", 
+            "options": {
+                "weighting": 1, 
+                "min": 0, 
+                "is_mandatory": false, 
+                "increment": 1, 
+                "max": 10
+            }
+        }, 
+        {
+            "scoring": {
+                "combined_score": 9, 
+                "combined_score_percentage": 81.818, 
+                "combined_max_score": 11
+            }, 
+            "children": [
+                "6a15a529-dc99-4158-bcd8-db86e6d94fc1", 
+                "18c43a95-e868-4684-a2c9-c6be3f2834ba"
+            ], 
+            "label": "", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "8B656C95-EABF-4E15-A77A-7A00CF8D8E9B", 
+            "item_id": "a8716501-dfca-4fcd-9e39-526b6c775d25", 
+            "type": "element", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "scoring": {
+                "score": 1, 
+                "max_score": 1, 
+                "score_percentage": 100
+            }, 
+            "responses": {
+                "value": 1
+            }, 
+            "label": "Check Box", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "a8716501-dfca-4fcd-9e39-526b6c775d25", 
+            "item_id": "6a15a529-dc99-4158-bcd8-db86e6d94fc1", 
+            "type": "checkbox", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "scoring": {
+                "score": 8, 
+                "max_score": 10, 
+                "score_percentage": 80
+            }, 
+            "responses": {
+                "value": 8
+            }, 
+            "label": "Slider ", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "a8716501-dfca-4fcd-9e39-526b6c775d25", 
+            "item_id": "18c43a95-e868-4684-a2c9-c6be3f2834ba", 
+            "type": "slider", 
+            "options": {
+                "weighting": 1, 
+                "min": 0, 
+                "is_mandatory": false, 
+                "increment": 1, 
+                "max": 10
+            }
+        }, 
+        {
+            "scoring": {
+                "combined_score": 1, 
+                "combined_score_percentage": 100, 
+                "combined_max_score": 1
+            }, 
+            "children": [
+                "DEE9D334-8069-4C07-8199-03C4EF5B8B97", 
+                "E5C1133A-B95B-4388-94E5-26064692C48B", 
+                "C22F76DF-85CF-4709-8353-A113F786AA16", 
+                "327EF359-1805-4E27-84EA-0411DE241506", 
+                "529B279B-5A91-4B76-B0F4-4EAD75856541", 
+                "7A7B1D48-F670-4B7C-AC26-2CF69348764A", 
+                "7F503BF7-4823-4AF6-8F9F-C9D28FFB5816"
+            ], 
+            "label": "Extras", 
+            "reference_item_profile_ids": [], 
+            "item_id": "74E9FBAA-4F78-4E21-974C-02B1E9911D8D", 
+            "type": "section", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "label": "A few other cool features", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "74E9FBAA-4F78-4E21-974C-02B1E9911D8D", 
+            "item_id": "DEE9D334-8069-4C07-8199-03C4EF5B8B97", 
+            "type": "category", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "label": "Media", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "74E9FBAA-4F78-4E21-974C-02B1E9911D8D", 
+            "item_id": "E5C1133A-B95B-4388-94E5-26064692C48B", 
+            "type": "media", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "responses": {
+                "image": {
+                    "date_created": "2016-09-14T01:31:40.000Z", 
+                    "file_ext": "jpg", 
+                    "href": "https://api.safetyculture.io/audits/audit_d941a829155642a5bcd49896f299be99/media/fb6dd152-7423-463c-8300-f3f244115d15", 
+                    "media_id": "fb6dd152-7423-463c-8300-f3f244115d15", 
+                    "label": "B6632195-F27C-4959-8274-31640D7A126F"
+                }
+            }, 
+            "label": "Drawing", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "74E9FBAA-4F78-4E21-974C-02B1E9911D8D", 
+            "item_id": "C22F76DF-85CF-4709-8353-A113F786AA16", 
+            "type": "drawing", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "responses": {
+                "datetime": "2016-09-14T01:31:25.000Z"
+            }, 
+            "label": "Date and Time Picker", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "74E9FBAA-4F78-4E21-974C-02B1E9911D8D", 
+            "item_id": "327EF359-1805-4E27-84EA-0411DE241506", 
+            "type": "datetime", 
+            "options": {
+                "enable_time": true, 
+                "weighting": 1, 
+                "is_mandatory": false, 
+                "enable_date": true
+            }
+        }, 
+        {
+            "responses": {
+                "location_text": "221 Sturt Street\nTownsville City QLD 4810\nAustralia\n(-19.2608387, 146.8138903)", 
+                "location": {
+                    "iso_country_code": "AU", 
+                    "administrative_area": "Queensland", 
+                    "name": "221", 
+                    "thoroughfare": "Sturt Street", 
+                    "locality": null, 
+                    "geometry": {
+                        "type": "Point", 
+                        "coordinates": [
+                            146.8138903, 
+                            -19.2608387
+                        ]
+                    }, 
+                    "country": "Australia", 
+                    "sub_administrative_area": null, 
+                    "postal_code": "4810", 
+                    "sub_locality": null, 
+                    "sub_thoroughfare": "221"
+                }
+            }, 
+            "label": "Location Picker", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "74E9FBAA-4F78-4E21-974C-02B1E9911D8D", 
+            "item_id": "529B279B-5A91-4B76-B0F4-4EAD75856541", 
+            "type": "address", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "scoring": {
+                "score": 1, 
+                "max_score": 1, 
+                "score_percentage": 100
+            }, 
+            "responses": {
+                "value": 1
+            }, 
+            "label": "Mandatory Field", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "74E9FBAA-4F78-4E21-974C-02B1E9911D8D", 
+            "item_id": "7A7B1D48-F670-4B7C-AC26-2CF69348764A", 
+            "type": "checkbox", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": true
+            }
+        }, 
+        {
+            "responses": {
+                "timestamp": "2016-09-14T01:31:39.000Z", 
+                "image": {
+                    "date_created": "2016-09-14T01:31:40.000Z", 
+                    "file_ext": "png", 
+                    "href": "https://api.safetyculture.io/audits/audit_d941a829155642a5bcd49896f299be99/media/ad16dbde-9992-4230-9e51-2261232abc6f", 
+                    "media_id": "ad16dbde-9992-4230-9e51-2261232abc6f", 
+                    "label": "B6632195-F27C-4959-8274-31640D7A126F"
+                }, 
+                "name": ""
+            }, 
+            "label": "Signature", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "74E9FBAA-4F78-4E21-974C-02B1E9911D8D", 
+            "item_id": "7F503BF7-4823-4AF6-8F9F-C9D28FFB5816", 
+            "type": "signature", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false, 
+                "enable_signature_timestamp": true
+            }
+        }
+    ], 
+    "created_at": "2016-09-14T01:42:34.670Z", 
+    "modified_at": "2016-09-14T01:42:34.670Z", 
+    "header_items": [
+        {
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }, 
+            "reference_item_profile_ids": [], 
+            "item_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Information", 
+            "type": "section", 
+            "children": [
+                "f3245d40-ea77-11e1-aff1-0800200c9a66", 
+                "f3245d43-ea77-11e1-aff1-0800200c9a66", 
+                "f3245d42-ea77-11e1-aff1-0800200c9a66"
+            ]
+        }, 
+        {
+            "label": "Audit Title", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d40-ea77-11e1-aff1-0800200c9a66", 
+            "type": "textsingle", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "responses": {
+                "text": "Safety Culture"
+            }, 
+            "label": "Prepared by", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d43-ea77-11e1-aff1-0800200c9a66", 
+            "type": "textsingle", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "responses": {
+                "datetime": "2016-09-14T01:30:08.000Z"
+            }, 
+            "label": "Conducted on", 
+            "reference_item_profile_ids": [], 
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d42-ea77-11e1-aff1-0800200c9a66", 
+            "type": "datetime", 
+            "options": {
+                "enable_time": true, 
+                "weighting": 1, 
+                "is_mandatory": false, 
+                "enable_date": true
+            }
+        }
+    ], 
+    "template_data": {
+        "authorship": {
+            "owner": "Jo Walter", 
+            "author_id": "user_13dc7171247047129a4e00936c9c5da9", 
+            "owner_id": "user_13dc7171247047129a4e00936c9c5da9", 
+            "author": "Jo Walter", 
+            "device_id": "7FDBC7C3-4576-4260-BDCD-42DF12C7C007"
+        }, 
+        "response_sets": {
+            "10019E2D-6124-4611-95A4-1A1A3D21E656": {
+                "type": "question", 
+                "id": "10019E2D-6124-4611-95A4-1A1A3D21E656", 
+                "responses": [
+                    {
+                        "colour": "61,192,139", 
+                        "short_label": "", 
+                        "label": "Excellent", 
+                        "score": 0, 
+                        "type": "text", 
+                        "id": "477F6352-9E56-4384-9A02-CB9C0535ECAD", 
+                        "enable_score": true
+                    }, 
+                    {
+                        "colour": "61,192,139", 
+                        "short_label": "", 
+                        "label": "Good", 
+                        "score": 0, 
+                        "type": "text", 
+                        "id": "C4F027BD-3C69-40C9-829C-7E9853AB307B", 
+                        "enable_score": true
+                    }, 
+                    {
+                        "colour": "253,201,63", 
+                        "short_label": "", 
+                        "label": "Average", 
+                        "score": 1, 
+                        "type": "text", 
+                        "id": "EB0254E6-84A6-42A8-B315-BB168554E9FA", 
+                        "enable_score": true
+                    }, 
+                    {
+                        "colour": "217,91,93", 
+                        "short_label": "", 
+                        "label": "Fair", 
+                        "score": 1, 
+                        "type": "text", 
+                        "id": "EEF76AB8-B462-49FC-B04E-02DBAFD9E1A9", 
+                        "enable_score": true
+                    }, 
+                    {
+                        "colour": "217,91,93", 
+                        "short_label": "", 
+                        "label": "Poor", 
+                        "score": 1, 
+                        "type": "text", 
+                        "id": "A05CB114-4079-4386-BEEC-68092A46D5C2", 
+                        "enable_score": true
+                    }
+                ]
+            }, 
+            "242B31FE-0FEE-42F8-8DAD-7B3B70CC2E2D": {
+                "type": "question", 
+                "id": "242B31FE-0FEE-42F8-8DAD-7B3B70CC2E2D", 
+                "responses": [
+                    {
+                        "colour": "61,192,139", 
+                        "short_label": "", 
+                        "label": "Yes", 
+                        "score": 0, 
+                        "type": "text", 
+                        "id": "8670D1A8-D0E4-4BB1-8DAB-7BA562086179", 
+                        "enable_score": false
+                    }, 
+                    {
+                        "colour": "217,91,93", 
+                        "short_label": "", 
+                        "label": "No", 
+                        "score": 0, 
+                        "type": "text", 
+                        "id": "24C66137-0054-4203-A501-86E9B4C2FD2B", 
+                        "enable_score": false
+                    }, 
+                    {
+                        "colour": "204,204,204", 
+                        "short_label": "", 
+                        "label": "N/A", 
+                        "score": 0, 
+                        "type": "text", 
+                        "id": "E53295FF-D557-4637-96FF-E84A1A37622E", 
+                        "enable_score": false
+                    }
+                ]
+            }, 
+            "53B23A5F-A7BE-4C8D-AA52-8A07420CF57C": {
+                "type": "list", 
+                "id": "53B23A5F-A7BE-4C8D-AA52-8A07420CF57C", 
+                "responses": [
+                    {
+                        "colour": "217,91,93", 
+                        "short_label": "", 
+                        "label": "Option A", 
+                        "score": 0, 
+                        "type": "text", 
+                        "id": "988199DA-C2E1-4E54-AD91-D45DAD552BD4", 
+                        "enable_score": false
+                    }, 
+                    {
+                        "colour": "61,192,139", 
+                        "short_label": "", 
+                        "label": "Option B", 
+                        "score": 0, 
+                        "type": "text", 
+                        "id": "A426EA0E-9F47-4ABF-B7EE-C95582D559F9", 
+                        "enable_score": false
+                    }, 
+                    {
+                        "colour": "253,201,63", 
+                        "short_label": "", 
+                        "label": "Option C", 
+                        "score": 0, 
+                        "type": "text", 
+                        "id": "699B744E-EA54-4631-8437-E7735DA42996", 
+                        "enable_score": false
+                    }, 
+                    {
+                        "colour": "42,148,229", 
+                        "short_label": "", 
+                        "label": "Option D", 
+                        "score": 0, 
+                        "type": "text", 
+                        "id": "A02A0173-C937-4A48-A8CA-2DAD72FDD619", 
+                        "enable_score": false
+                    }
+                ]
+            }
+        }, 
+        "metadata": {
+            "description": "", 
+            "name": "SafetyCulture iAuditor - The Smartest Checklist App"
+        }
+    }, 
+    "template_id": "template_B6632195F27C4959827431640D7A126F"
+}
