@@ -2,14 +2,17 @@
 
 Python SDK for interacting with the SafetyCulture API
 
-## Installation
+## How to Install
 
+### Mac
  * Install Python 2.7.x (and the pip package manager if your Python is older than 2.7.9, Python 3 is not supported)
  * Clone this repository to a directory on your computer
  * Go to the cloned directory on your computer
  * Execute the following command from the command line to install the package dependencies:
      * ``pip install -r safetypy/requirements.txt``
  * See ReadMe.md in tools/exporter for a usage example
+
+### Windows
 
 ## License
 
