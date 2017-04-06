@@ -39,6 +39,13 @@ Python SDK for interacting with the SafetyCulture API
  * Right click on config.yaml and open with some text editor
  * Replace YOUR_SAFETYCULTURE_API_TOKEN with your generated API token above
  * Save config.yml and exit the text editor 
+#### RUN Exporter.py 
+You are now ready to Run the exporter tool
+ * In the File Explorer open safetyculture-sdk-python\tools\exporter\
+ * Hold SHIFT and right click within the folder, select 'Open command window here' and pressing Enter
+ * Type `python exporter.py` to start the exporter on PDF files
+ * For more information about the exporter tool see https://github.com/SafetyCulture/safetyculture-sdk-python/blob/master/tools/exporter/ReadMe.md
+ 
 ## License
 
 Copyright 2017 SafetyCulture Pty Ltd
