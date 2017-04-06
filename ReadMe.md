@@ -13,7 +13,23 @@ Python SDK for interacting with the SafetyCulture API
  * See ReadMe.md in tools/exporter for a usage example
 
 ### Windows
-
+#### Install Python 
+ * Install Latest Python 2 Release at https://www.python.org/downloads/windows/
+ * Open the download, and follow the prompts to install Python
+#### Install SafetyCulture Python SDK and Export tool
+ * Open this link in your browser: https://github.com/SafetyCulture/safetyculture-sdk-python
+ * Click the green button on the right that says 'Clone or download', this will produce a popdown menu
+ * Click 'Download ZIP' from the popdown menu
+ * Extract this download and move the folder to an appropriate location
+#### Install Requirements
+ * Open the Command Prompt (search 'Command Prompt' from the home screen)
+ * Open Windoes file explorer and navigate into the safetyculture-sdk-python folder
+ * Hold SHIFT and right click within the folder, select 'Open command window here' and pressing Enter
+ * In the Command Prompt type `python -m pip install safetypy\requirements.txt` and press Enter to install the needed packages for safetypy.py to run
+ * Navigate to the tools\exporter directory by typing `cd tools\exporter\` and pressing Enter
+ * Type `python -m pip install requirements.txt` and press Enter to install the packages needed for exporter.py to run
+#### Generate API Token 
+ * 
 ## License
 
 Copyright 2017 SafetyCulture Pty Ltd
