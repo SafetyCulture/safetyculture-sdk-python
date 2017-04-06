@@ -1,9 +1,8 @@
 API:
-    token: e40c9502d89c63796b41dfe1e32b550b2237be9dbfdd5eec1172e1314c6d483f
+    token: <API token here>
 export_options:
     export_path:
     timezone:
-    filename: f3245d40-ea77-11e1-aff1-0800200c9a66
-    allow_overwrite: True
+    filename: 
 export_profiles:
 sync_delay_in_seconds:
