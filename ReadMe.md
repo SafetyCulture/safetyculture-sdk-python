@@ -29,7 +29,16 @@ Python SDK for interacting with the SafetyCulture API
  * Navigate to the tools\exporter directory by typing `cd tools\exporter\` and pressing Enter
  * Type `python -m pip install requirements.txt` and press Enter to install the packages needed for exporter.py to run
 #### Generate API Token 
- * 
+ * Open https://app.safetyculture.io/ in your browser
+ * Open your personal profile by clicking on the icon on the top of the left hand side menu
+ * Click 'Edit details'
+ * Scroll to the bottom of the page
+ * Enter your SafetyCulture password and click the 'Generate' button 
+ * Copy the API access token generated 
+ * In the File Explorer open safetyculture-sdk-python\tools\exporter\
+ * Right click on config.yaml and open with some text editor
+ * Replace YOUR_SAFETYCULTURE_API_TOKEN with your generated API token above
+ * Save config.yml and exit the text editor 
 ## License
 
 Copyright 2017 SafetyCulture Pty Ltd
