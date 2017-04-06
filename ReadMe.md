@@ -16,7 +16,7 @@ Python SDK for interacting with the SafetyCulture API
 #### Install Python 
  * Install Latest Python 2 Release at https://www.python.org/downloads/windows/
  * Open the download, and start the installation
- * **IMPORTANT: During the Installation Process, when you see the page 'Customize Python 2.7.13', make sure to 'Add python.exe to Path' before clicking Next. This will ensure you can run python executable files without including the Path to your Python installation.** 
+ * **IMPORTANT: During the Installation Process, when you see the page 'Customize Python', make sure to 'Add python.exe to Path' before clicking Next is set to 'Will be installed on local hard drive'. This will ensure you can run python executable files without including the Path to your Python installation. See [here](http://docs.platformio.org/en/latest/_images/python-installer-add-path.png) for clarification** 
  * Proceed with installation, click 'Finish' when complete.
 #### Install SafetyCulture Python SDK and Export tool
  * Open this link in your browser: https://github.com/SafetyCulture/safetyculture-sdk-python
