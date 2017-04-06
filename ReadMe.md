@@ -45,7 +45,7 @@ Python SDK for interacting with the SafetyCulture API
 You are now ready to Run the exporter tool
  * In the File Explorer open safetyculture-sdk-python\tools\exporter\
  * Hold SHIFT and right click within the folder, select 'Open command window here' and pressing Enter
- * Type `python exporter.py` to start the exporter on PDF files
+ * Type `python exporter.py` to start a bulk export of Audits to PDF files
  * For more information about the exporter tool see https://github.com/SafetyCulture/safetyculture-sdk-python/blob/master/tools/exporter/ReadMe.md
  
 ## License
