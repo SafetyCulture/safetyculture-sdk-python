@@ -27,9 +27,9 @@ Python SDK for interacting with the SafetyCulture API
  * Open the Command Prompt (search 'Command Prompt' from the home screen)
  * Open Windoes file explorer and navigate into the safetyculture-sdk-python folder
  * Hold SHIFT and right click within the folder, select 'Open command window here' and pressing Enter
- * In the Command Prompt type `python -m pip install safetypy\requirements.txt` and press Enter to install the needed packages for safetypy.py to run
+ * In the Command Prompt type `python -m pip install -r safetypy\requirements.txt` and press Enter to install the needed packages for safetypy.py to run
  * Navigate to the tools\exporter directory by typing `cd tools\exporter\` and pressing Enter
- * Type `python -m pip install requirements.txt` and press Enter to install the packages needed for exporter.py to run
+ * Type `python -m pip install -r requirements.txt` and press Enter to install the packages needed for exporter.py to run
 #### Generate API Token 
  * Open https://app.safetyculture.io/ in your browser
  * Open your personal profile by clicking on the icon on the top of the left hand side menu
