@@ -65,6 +65,12 @@ python csvExporter.py path/to/audit_file.json
 * Each Audit is the same format as the single Audit CSV export
 * Audits are grouped by Template. Audits built from the same template are appended to a CSV file named using the templates unique ID number. 
 
+To export Multiple Audits to Bulk CSV file:
+1. Execute Exporter.py with the format option set to CSV 
+```
+python exporter.py --format csv
+```
+
 #### CSV values whose format does not match JSON properties
 ##### Date/Time field
 * JSON: `2017-03-03T03:45:58.090Z`
