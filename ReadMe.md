@@ -4,13 +4,39 @@ Python SDK for interacting with the SafetyCulture API
 
 ## How to Install
 
+#### Generate API Token 
+ * Open https://app.safetyculture.io/ in your browser
+ * Open your personal profile by clicking on the icon on the top of the left hand side menu
+ * Click 'Edit details'
+ * Scroll to the bottom of the page
+ * Enter your SafetyCulture password and click the 'Generate' button 
+ * Copy the API access token generated 
+ * In the File Explorer open safetyculture-sdk-python/tools/exporter/
+ * Right click on config.yaml and open with some text editor
+ * Replace YOUR_SAFETYCULTURE_API_TOKEN with your generated API token above
+ * Save config.yml and exit the text editor 
+
 ### Mac
- * Install Python 2.7.x (and the pip package manager if your Python is older than 2.7.9, Python 3 is not supported)
- * Clone this repository to a directory on your computer
- * Go to the cloned directory on your computer
- * Execute the following command from the command line to install the package dependencies:
-     * ``pip install -r safetypy/requirements.txt``
- * See ReadMe.md in tools/exporter for a usage example
+#### Install Python 
+ * Install Latest Python 2 Release at https://www.python.org/downloads/mac-osx/
+ * Open the download, and install Python 
+#### Install SafetyCulture Python SDK and Export tool
+ * Open this link in your browser: https://github.com/SafetyCulture/safetyculture-sdk-python
+ * Click the green button on the right that says 'Clone or download', this will produce a popdown menu
+ * Click 'Download ZIP' from the popdown menu
+ * Extract this download and move the folder to an appropriate location
+#### Install Requirements
+ * Open the Terminal
+ * Navigate into the safetyculture-sdk-python folder using [cd command](http://guides.macrumors.com/cd)
+ * In ther Terminal type `pip install -r safetypy/requirements.txt` and press Enter to install the needed packages for safetypy.py to run
+ * Navigate to the tools/exporter directory by typing `cd tools/exporter/` and pressing Enter
+ * Type `pip install -r requirements.txt` and press Enter to install the packages needed for exporter.py to run
+#### Generate API Token 
+ * See Guide at top of the README
+#### RUN Exporter.py 
+You are now ready to Run the exporter tool
+ * Open Terminal to the tools/exporter/ folder. Type `python exporter.py` to start a bulk export of Audits to PDF files
+ * For more information about the exporter tool see https://github.com/SafetyCulture/safetyculture-sdk-python/blob/master/tools/exporter/ReadMe.md
 
 ### Windows
 #### Install Python 
@@ -31,16 +57,7 @@ Python SDK for interacting with the SafetyCulture API
  * Navigate to the tools\exporter directory by typing `cd tools\exporter\` and pressing Enter
  * Type `python -m pip install -r requirements.txt` and press Enter to install the packages needed for exporter.py to run
 #### Generate API Token 
- * Open https://app.safetyculture.io/ in your browser
- * Open your personal profile by clicking on the icon on the top of the left hand side menu
- * Click 'Edit details'
- * Scroll to the bottom of the page
- * Enter your SafetyCulture password and click the 'Generate' button 
- * Copy the API access token generated 
- * In the File Explorer open safetyculture-sdk-python\tools\exporter\
- * Right click on config.yaml and open with some text editor
- * Replace YOUR_SAFETYCULTURE_API_TOKEN with your generated API token above
- * Save config.yml and exit the text editor 
+ * See Guide at top of the README
 #### RUN Exporter.py 
 You are now ready to Run the exporter tool
  * In the File Explorer open safetyculture-sdk-python\tools\exporter\
