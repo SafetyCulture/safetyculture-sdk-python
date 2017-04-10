@@ -4,18 +4,6 @@ Python SDK for interacting with the SafetyCulture API
 
 ## How to Install
 
-#### Generate API Token 
- * Open https://app.safetyculture.io/ in your browser
- * Open your personal profile by clicking on the icon on the top of the left hand side menu
- * Click 'Edit details'
- * Scroll to the bottom of the page
- * Enter your SafetyCulture password and click the 'Generate' button 
- * Copy the API access token generated 
- * In the File Explorer open safetyculture-sdk-python/tools/exporter/
- * Right click on config.yaml and open with some text editor
- * Replace YOUR_SAFETYCULTURE_API_TOKEN with your generated API token above
- * Save config.yml and exit the text editor 
-
 ### Mac
 #### Install Python 
  * Install Latest Python 2 Release at https://www.python.org/downloads/mac-osx/
@@ -32,7 +20,7 @@ Python SDK for interacting with the SafetyCulture API
  * Navigate to the tools/exporter directory by typing `cd tools/exporter/` and pressing Enter
  * Type `pip install -r requirements.txt` and press Enter to install the packages needed for exporter.py to run
 #### Generate API Token 
- * See Guide at top of the README
+ * See Guide at bottom of the README
 #### RUN Exporter.py 
 You are now ready to Run the exporter tool
  * Open Terminal to the tools/exporter/ folder. Type `python exporter.py` to start a bulk export of Audits to PDF files
@@ -57,7 +45,7 @@ You are now ready to Run the exporter tool
  * Navigate to the tools\exporter directory by typing `cd tools\exporter\` and pressing Enter
  * Type `python -m pip install -r requirements.txt` and press Enter to install the packages needed for exporter.py to run
 #### Generate API Token 
- * See Guide at top of the README
+ * See Guide at bottom of the README
 #### RUN Exporter.py 
 You are now ready to Run the exporter tool
  * In the File Explorer open safetyculture-sdk-python\tools\exporter\
@@ -65,6 +53,19 @@ You are now ready to Run the exporter tool
  * Type `python exporter.py` to start a bulk export of Audits to PDF files
  * For more information about the exporter tool see https://github.com/SafetyCulture/safetyculture-sdk-python/blob/master/tools/exporter/ReadMe.md
  
+
+### Generate API Token 
+ * Open https://app.safetyculture.io/ in your browser
+ * Open your personal profile by clicking on the icon on the top of the left hand side menu
+ * Click 'Edit details'
+ * Scroll to the bottom of the page
+ * Enter your SafetyCulture password and click the 'Generate' button 
+ * Copy the API access token generated 
+ * In the File Explorer open safetyculture-sdk-python/tools/exporter/
+ * Right click on config.yaml and open with some text editor
+ * Replace YOUR_SAFETYCULTURE_API_TOKEN with your generated API token above
+ * Save config.yml and exit the text editor 
+
 ## License
 
 Copyright 2017 SafetyCulture Pty Ltd
