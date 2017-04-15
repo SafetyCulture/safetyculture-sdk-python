@@ -31,6 +31,9 @@ DEFAULT_SYNC_DELAY_IN_SECONDS = 900
 # The file that stores the "date modified" of the last successfully synced audit
 SYNC_MARKER_FILENAME = 'last_successful.txt'
 
+# Whether to only search completed audits. 'true' indicates to only search only completed audits
+DEFAULT_COMPLETED = 'true'
+
 
 def log_critical_error(logger, ex, message):
     """
@@ -43,7 +46,6 @@ def log_critical_error(logger, ex, message):
     if logger is not None:
         logger.critical(message)
         logger.critical(ex)
-
 
 def load_setting_api_access_token(logger, config_settings):
     """
@@ -66,6 +68,23 @@ def load_setting_api_access_token(logger, config_settings):
         log_critical_error(logger, ex, 'Exception parsing API token from config.yaml')
         return None
 
+def load_completed(logger, config_settings):
+    """
+    
+    :param logger: 
+    :param config_settings: 
+    :return: 
+    """
+    try:
+        completed = str(config_settings['export_options']['completed']).lower()
+        if completed not in ['true', 'false', 'both']:
+            logger.info('Invalid completed value from configuration file, defaulting to true')
+            completed = DEFAULT_COMPLETED
+        return completed
+    except Exception as ex:
+        log_critical_error(logger, ex,
+                           'Exception parsing completed from the configuration file, defaulting to {0}'.format(str(DEFAULT_COMPLETED)))
+        return DEFAULT_COMPLETED
 
 def load_setting_sync_delay(logger, config_settings):
     """
@@ -320,10 +339,12 @@ def load_config_settings(logger, path_to_config_file):
         'timezone': load_setting_export_timezone(logger, config_settings),
         'export_profiles': load_setting_export_profile_mapping(logger, config_settings),
         'filename_item_id': get_filename_item_id(logger, config_settings),
-        'sync_delay_in_seconds': load_setting_sync_delay(logger, config_settings)
+        'sync_delay_in_seconds': load_setting_sync_delay(logger, config_settings),
+        'completed': load_completed(logger, config_settings)
     }
 
     return settings
+
 
 
 def configure(logger, path_to_config_file, export_formats):
@@ -441,7 +462,7 @@ def sync_exports(logger, sc_client, settings):
     timezone = settings['timezone']
 
     last_successful = get_last_successful(logger)
-    results = sc_client.discover_audits(modified_after=last_successful)
+    results = sc_client.discover_audits(modified_after=last_successful, completed=settings['completed'])
 
     if results is not None:
         logger.info(str(results['total']) + ' audits discovered')

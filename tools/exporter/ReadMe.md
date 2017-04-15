@@ -9,7 +9,6 @@ Supported export formats: PDF, MS WORD (docx), JSON
   - First install the Python SDK (see top-level Readme)
   - Switch to this directory (safetyculture-sdk-python/tools/exporter)
   - Execute the following command from the command line:
-
     ``pip install -r requirements.txt``
   - Edit config.yaml and replace ``YOUR_SAFETYCULTURE_API_TOKEN`` with your SafetyCulture API token
 
@@ -85,7 +84,6 @@ python exporter.py --format csv
 * If you update an Audit that has already been exported, it may be appended to the CSV file a second time.
 * If you update a template, Audits with the new format will be appended to the same CSV file.
 
-
 ## Export settings
 
 To override default export settings edit config.yaml in this directory.
@@ -99,6 +97,7 @@ Things you can configure:
 | filename  |  an audit item ID whose response is going to be used to name the files of exported audit reports. Can only be an item with a response type of `text` from the header section of the audit such as Audit Title, Document No., Client / Site, Prepared By, Personnel, or any custom header item which has a 'text' type response |
 | export_profiles  | to apply an export profile transformation to particular templates, give here a list of export profile ids
 | sync_delay_in_seconds | time in seconds to wait after completing one export run, before running again
+| completed | Whether to search completed audits. Valid values are true (search only completed audits), false (do not search completed audits) or both (search all audits including those completed). The default is true.
 
 Here is an example customised config.yaml:
 
@@ -109,6 +108,7 @@ export_options:
     export_path: /Users/Monty/Dropbox
     timezone: America/Chicago
     filename: f3245d40-ea77-11e1-aff1-0800200c9a66
+    completed: both
 export_profiles:
     template_3E631E46F466411B9C09AD804886A8B4:E15A6525-EFA5-4835-92F0-D11CA9F364F3
     template_3E631E46F466411B9C09AD804886A8B4:E50645A1-2851-4E92-B4EA-60C5CE7981BE
