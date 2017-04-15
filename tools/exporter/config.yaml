@@ -4,5 +4,6 @@ export_options:
     export_path:
     timezone:
     filename: 
+    completed: 
 export_profiles:
 sync_delay_in_seconds:
