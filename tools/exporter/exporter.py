@@ -70,10 +70,12 @@ def load_setting_api_access_token(logger, config_settings):
 
 def load_completed(logger, config_settings):
     """
-    
-    :param logger: 
-    :param config_settings: 
-    :return: 
+    Attempt to parse completed value from config settings. Completed value controls whether to search completed audits. 
+    Valid values are true (search only completed audits), false (do not search completed audits) or 
+    both (search all audits including those completed).
+    :param logger:           the logger
+    :param config_settings:  config settings loaded from config file
+    :return:                 value of completed if valid, else DEFAULT_COMPLETED 
     """
     try:
         completed = str(config_settings['export_options']['completed']).lower()
