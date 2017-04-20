@@ -130,14 +130,16 @@ class CsvExporter:
         audit_table(list): the audit data converted to a table
     """
 
-    def __init__(self, audit_json):
+    def __init__(self, audit_json, export_inactive_items=True):
         """
         Constructor
 
         :param audit_json:      audit in JSON format to be converted to CSV
         """
         self.audit_json = audit_json
+        self.export_inactive_items = export_inactive_items
         self.audit_table = self.convert_audit_to_table()
+
 
     def audit_id(self):
         """
@@ -223,6 +225,8 @@ class CsvExporter:
         self.audit_table = []
         for item in self.audit_items():
             row_array = self.item_properties_as_list(item) + self.common_audit_data()
+            if self.get_json_property(item, INACTIVE) and not self.export_inactive_items:
+                continue
             self.audit_table.append(row_array)
         return self.audit_table
 

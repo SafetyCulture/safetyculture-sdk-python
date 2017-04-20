@@ -1,9 +1,11 @@
 API:
-    token: YOUR_SAFETYCULTURE_API_TOKEN
+    token: 17cda381286a70c190d796b9cbcc372d4a9d70b45c0c628d04167cb7aaac8a70
 export_options:
     export_path:
     timezone:
     filename: 
-    completed: 
+    completed: true
+    csv_options:
+        export_inactive_items: false
 export_profiles:
 sync_delay_in_seconds:

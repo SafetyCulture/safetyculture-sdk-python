@@ -98,7 +98,7 @@ Things you can configure:
 | export_profiles  | to apply an export profile transformation to particular templates, give here a list of export profile ids
 | sync_delay_in_seconds | time in seconds to wait after completing one export run, before running again
 | completed | Whether to search completed audits. Valid values are true (search only completed audits), false (do not search completed audits) or both (search all audits including those completed). The default is true.
-
+| export_inactive_items | This setting only applies when exporting to CSV. Valid values are true (export all items) or false (do not export inactive items). Items that are nested under [Smart Field](https://support.safetyculture.com/templates/smart-fields/) may be inactive.
 Here is an example customised config.yaml:
 
 ```
@@ -109,6 +109,8 @@ export_options:
     timezone: America/Chicago
     filename: f3245d40-ea77-11e1-aff1-0800200c9a66
     completed: both
+    csv:
+        export_inactive_items: false
 export_profiles:
     template_3E631E46F466411B9C09AD804886A8B4:E15A6525-EFA5-4835-92F0-D11CA9F364F3
     template_3E631E46F466411B9C09AD804886A8B4:E50645A1-2851-4E92-B4EA-60C5CE7981BE
