@@ -99,6 +99,7 @@ Things you can configure:
 | sync_delay_in_seconds | time in seconds to wait after completing one export run, before running again
 | completed | Whether to search completed audits. Valid values are true (search only completed audits), false (do not search completed audits) or both (search all audits including those completed). The default is true.
 | export_inactive_items | This setting only applies when exporting to CSV. Valid values are true (export all items) or false (do not export inactive items). Items that are nested under [Smart Field](https://support.safetyculture.com/templates/smart-fields/) may be inactive.
+
 Here is an example customised config.yaml:
 
 ```
