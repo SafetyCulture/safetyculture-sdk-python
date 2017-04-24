@@ -6,64 +6,64 @@ Python SDK for interacting with the SafetyCulture API
 
 ### Mac
 #### Install Python 
- * Download and install the latest Python 2 release at https://www.python.org/downloads/mac-osx/
+ 1. Download and install the latest Python 2 release at https://www.python.org/downloads/mac-osx/
 #### Install SafetyCulture Python SDK and Export tool
- * Open this link in your browser: https://github.com/SafetyCulture/safetyculture-sdk-python
- * Click the green button on the right that says 'Clone or download', this will produce a popdown menu
- * Click 'Download ZIP' from the popdown menu
- * Extract this download and move the folder to an appropriate location
+ 2. Open this link in your browser: https://github.com/SafetyCulture/safetyculture-sdk-python
+ 3. Click the green button on the right that says 'Clone or download', this will produce a popdown menu
+ 4. Click 'Download ZIP' from the popdown menu
+ 5. Extract this download and move the folder to an appropriate location
 #### Install Requirements
- * Open the Terminal
- * Navigate into the safetyculture-sdk-python folder using [cd command](http://guides.macrumors.com/cd)
- * In ther Terminal type `pip install -r safetypy/requirements.txt` and press Enter to install the needed packages for safetypy.py to run
- * Navigate to the tools/exporter directory by typing `cd tools/exporter/` and pressing Enter
- * Type `pip install -r requirements.txt` and press Enter to install the packages needed for exporter.py to run
+ 6. Open the Terminal
+ 7. Navigate into the safetyculture-sdk-python folder using [cd command](http://guides.macrumors.com/cd)
+ 8. In ther Terminal type `pip install -r safetypy/requirements.txt` and press Enter to install the needed packages for safetypy.py to run
+ 9. Navigate to the tools/exporter directory by typing `cd tools/exporter/` and pressing Enter
+ 10. Type `pip install -r requirements.txt` and press Enter to install the packages needed for exporter.py to run
 #### Generate API Token 
- * See [Generate API Token](https://github.com/SafetyCulture/safetyculture-sdk-python/blob/master/ReadMe.md#generate-api-token-2) section below
+ 11. See [Generate API Token](https://github.com/SafetyCulture/safetyculture-sdk-python/blob/master/ReadMe.md#generate-api-token-2) section below
 #### RUN Exporter.py 
 You are now ready to Run the exporter tool
- * Open Terminal to the tools/exporter/ folder. Type `python exporter.py` to start a bulk export of Audits to PDF files
- * For more information about the exporter tool see https://github.com/SafetyCulture/safetyculture-sdk-python/blob/master/tools/exporter/ReadMe.md
+ 12. Open Terminal to the tools/exporter/ folder. Type `python exporter.py` to start a bulk export of Audits to PDF files
+ 13. For more information about the exporter tool see https://github.com/SafetyCulture/safetyculture-sdk-python/blob/master/tools/exporter/ReadMe.md
 
 ### Windows
 #### Install Python 
- * Download latest Python 2 release at https://www.python.org/downloads/windows/
- * Open the download, and start the installation
- * **IMPORTANT: During the Installation Process, when you see the page 'Customize Python', make sure to 'Add python.exe to Path' before clicking Next is set to 'Will be installed on local hard drive'. This will ensure you can run python executable files without including the Path to your Python installation. See [here](http://docs.platformio.org/en/latest/_images/python-installer-add-path.png) for clarification** 
- * Proceed with installation, click 'Finish' when complete.
+ 1. Download latest Python 2 release at https://www.python.org/downloads/windows/
+ 2. Open the download, and start the installation
+ 3. **IMPORTANT: During the Installation Process, when you see the page 'Customize Python', make sure to 'Add python.exe to Path'  before clicking Next is set to 'Will be installed on local hard drive'. This will ensure you can run python executable files without including the Path to your Python installation. See [here](http://docs.platformio.org/en/latest/_images/python-installer-add-path.png) for clarification** 
+ 4. Proceed with installation, click 'Finish' when complete.
 #### Install SafetyCulture Python SDK and Export tool
- * Open this link in your browser: https://github.com/SafetyCulture/safetyculture-sdk-python
- * Click the green button on the right that says 'Clone or download', this will produce a popdown menu
- * Click 'Download ZIP' from the popdown menu
- * Extract this download and move the folder to an appropriate location
+ 5. Open this link in your browser: https://github.com/SafetyCulture/safetyculture-sdk-python
+ 6. Click the green button on the right that says 'Clone or download', this will produce a popdown menu
+ 7. Click 'Download ZIP' from the popdown menu
+ 8. Extract this download and move the folder to an appropriate location
 #### Install Requirements
- * Open the Command Prompt (search 'Command Prompt' from the home screen)
- * Open Windoes file explorer and navigate into the safetyculture-sdk-python folder
- * Hold SHIFT and right click within the folder, select 'Open command window here' and pressing Enter
- * In the Command Prompt type `python -m pip install -r safetypy\requirements.txt` and press Enter to install the needed packages for safetypy.py to run
- * Navigate to the tools\exporter directory by typing `cd tools\exporter\` and pressing Enter
- * Type `python -m pip install -r requirements.txt` and press Enter to install the packages needed for exporter.py to run
+ 9. Open the Command Prompt (search 'Command Prompt' from the home screen)
+ 10. Open Windoes file explorer and navigate into the safetyculture-sdk-python folder
+ 11. Hold SHIFT and right click within the folder, select 'Open command window here' and pressing Enter
+ 12. In the Command Prompt type `python -m pip install -r safetypy\requirements.txt` and press Enter to install the needed packages for safetypy.py to run
+ 13. Navigate to the tools\exporter directory by typing `cd tools\exporter\` and pressing Enter
+ 14. Type `python -m pip install -r requirements.txt` and press Enter to install the packages needed for exporter.py to run
 #### Generate API Token 
- * See [Generate API Token](https://github.com/SafetyCulture/safetyculture-sdk-python/blob/master/ReadMe.md#generate-api-token-2) section below
+ 15. See [Generate API Token](https://github.com/SafetyCulture/safetyculture-sdk-python/blob/master/ReadMe.md#generate-api-token-2) section below
 #### RUN Exporter.py 
 You are now ready to Run the exporter tool
- * In the File Explorer open safetyculture-sdk-python\tools\exporter\
- * Hold SHIFT and right click within the folder, select 'Open command window here' and pressing Enter
- * Type `python exporter.py` to start a bulk export of Audits to PDF files
- * For more information about the exporter tool see https://github.com/SafetyCulture/safetyculture-sdk-python/blob/master/tools/exporter/ReadMe.md
+ 16. In the File Explorer open safetyculture-sdk-python\tools\exporter\
+ 17. Hold SHIFT and right click within the folder, select 'Open command window here' and pressing Enter
+ 18. Type `python exporter.py` to start a bulk export of Audits to PDF files
+ 19. For more information about the exporter tool see https://github.com/SafetyCulture/safetyculture-sdk-python/blob/master/tools/exporter/ReadMe.md
  
 
 ### Generate API Token 
- * Open https://app.safetyculture.io/ in your browser
- * Open your personal profile by clicking on the icon on the top of the left hand side menu
- * Click 'Edit details'
- * Scroll to the bottom of the page
- * Enter your SafetyCulture password and click the 'Generate' button 
- * Copy the API access token generated 
- * In the File Explorer open safetyculture-sdk-python/tools/exporter/
- * Right click on config.yaml and open with some text editor
- * Replace YOUR_SAFETYCULTURE_API_TOKEN with your generated API token above
- * Save config.yml and exit the text editor 
+ 1. Open https://app.safetyculture.io/ in your browser
+ 2. Open your personal profile by clicking on the icon on the top of the left hand side menu
+ 3. Click 'Edit details'
+ 4. Scroll to the bottom of the page
+ 5. Enter your SafetyCulture password and click the 'Generate' button 
+ 6. Copy the API access token generated 
+ 7. In the File Explorer open safetyculture-sdk-python/tools/exporter/
+ 8. Right click on config.yaml and open with some text editor
+ 9. Replace YOUR_SAFETYCULTURE_API_TOKEN with your generated API token above
+ 10. Save config.yml and exit the text editor 
 
 ## License
 
