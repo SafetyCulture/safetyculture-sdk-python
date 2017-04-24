@@ -46,7 +46,6 @@ You are now ready to Run the exporter tool
 #### Generate API Token 
  15. See [Generate API Token](https://github.com/SafetyCulture/safetyculture-sdk-python/blob/master/ReadMe.md#generate-api-token-2) section below
 #### RUN Exporter.py 
-You are now ready to Run the exporter tool
  16. In the File Explorer open safetyculture-sdk-python\tools\exporter\
  17. Hold SHIFT and right click within the folder, select 'Open command window here' and pressing Enter
  18. Type `python exporter.py` to start a bulk export of Audits to PDF files
