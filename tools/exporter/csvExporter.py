@@ -21,6 +21,7 @@ CSV_HEADER_ROW = [
     'Item ID',
     'Response ID',
     'Parent ID',
+    'Completed',
     'Audit Owner',
     'Audit Author',
     'Audit Name',
@@ -167,7 +168,9 @@ class CsvExporter:
         """
         audit_data_property = self.audit_json['audit_data']
         template_data_property = self.audit_json['template_data']
+        audit_date_completed = audit_data_property['date_completed']
         audit_data_as_list = list()
+        audit_data_as_list.append(True if audit_date_completed else False)
         audit_data_as_list.append(audit_data_property['authorship']['owner'])
         audit_data_as_list.append(audit_data_property['authorship']['author'])
         audit_data_as_list.append(audit_data_property['name'])
@@ -177,8 +180,8 @@ class CsvExporter:
         audit_data_as_list.append(audit_data_property['duration'])
         audit_data_as_list.append(self.format_date(audit_data_property['date_started']))
         audit_data_as_list.append(self.format_time(audit_data_property['date_started']))
-        audit_data_as_list.append(self.format_date(audit_data_property['date_completed']))
-        audit_data_as_list.append(self.format_time(audit_data_property['date_completed']))
+        audit_data_as_list.append(self.format_date(audit_date_completed))
+        audit_data_as_list.append(self.format_time(audit_date_completed))
         audit_data_as_list.append(self.audit_id())
         audit_data_as_list.append(self.audit_json['template_id'])
         audit_data_as_list.append(template_data_property['metadata']['name'])

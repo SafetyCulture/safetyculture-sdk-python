@@ -115,14 +115,14 @@ class SafetyCulture:
                 self.log_critical_error(ex, 'An error happened trying to create ' + path)
                 raise
 
-    def discover_audits(self, template_id=None, modified_after=None, completed=True):
+    def discover_audits(self, template_id=None, modified_after=None, completed='true'):
         """
         Return IDs of all completed audits if no parameters are passed, otherwise restrict search
         based on parameter values
 
         :param template_id:     Restrict discovery to this template_id
         :param modified_after:  Restrict discovery to audits modified after this UTC timestamp
-        :param completed:       Restrict discovery to audits marked as completed, default to False
+        :param completed:       Restrict discovery to audits marked as completed, default to 'true'
         :return:                JSON object containing IDs of all audits returned by API
         """
 
@@ -137,11 +137,9 @@ class SafetyCulture:
         log_string += 'modified_after = ' + str(last_modified) + '\n'
         log_string += 'completed      = ' + str(completed) + '\n'
         logger.info(log_string)
-
         if template_id is not None:
             search_url += '&template=' + template_id
-        if completed is not False:
-            search_url += '&completed=true'
+        search_url += '&completed=' + completed
 
         response = self.authenticated_request_get(search_url)
         result = response.json() if response.status_code == requests.codes.ok else None
