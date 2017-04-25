@@ -75,6 +75,5 @@ class ExporterTestCase(unittest.TestCase):
         config_setting = {'sync_delay_in_seconds': 500}
         self.assertEqual(exp.load_setting_sync_delay(logger, config_setting), config_setting['sync_delay_in_seconds'])
 
-
 if __name__ == '__main__':
     unittest.main()
