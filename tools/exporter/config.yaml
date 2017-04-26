@@ -6,3 +6,4 @@ export_options:
     filename: 
 export_profiles:
 sync_delay_in_seconds:
+media_sync_offset_in_seconds:
