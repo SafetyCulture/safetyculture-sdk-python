@@ -246,11 +246,11 @@ def get_last_successful(logger):
         with open(SYNC_MARKER_FILENAME, 'r+') as last_run:
             last_successful = last_run.readlines()[0]
     else:
-        beginning_of_time = '2000-01-01T00:00:00.000Z'
-        last_successful = beginning_of_time
+        current_time = datetime.now().isoformat()[:-3]+'Z'
+        last_successful = current_time
         with open(SYNC_MARKER_FILENAME, 'w') as last_run:
             last_run.write(last_successful)
-        logger.info('Searching for audits since the beginning of time: ' + beginning_of_time)
+        logger.info('Searching for audits since the beginning of time: ' + current_time)
 
     return last_successful
 
