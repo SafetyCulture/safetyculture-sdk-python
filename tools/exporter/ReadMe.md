@@ -66,7 +66,7 @@ python csvExporter.py path/to/audit_file.json
 * Audits are grouped by Template. Audits built from the same template are appended to a CSV file named using the templates unique ID number.
 
 To export Multiple Audits to Bulk CSV file:
-1. Execute Exporter.py with the format option set to CSV 
+1. Execute Exporter.py with the format option set to CSV
 ```
 python exporter.py --format csv
 ```
@@ -99,8 +99,8 @@ Things you can configure:
 | filename  |  an audit item ID whose response is going to be used to name the files of exported audit reports. Can only be an item with a response type of `text` from the header section of the audit such as Audit Title, Document No., Client / Site, Prepared By, Personnel, or any custom header item which has a 'text' type response |
 | export_profiles  | to apply an export profile transformation to particular templates, give here a list of export profile ids
 | sync_delay_in_seconds | time in seconds to wait after completing one export run, before running again
-
-Here is an example customised config.yaml:
+| media_sync_delay | time in seconds to offset syncing - a value of 600 results in only audits with a modified_at value older than 10 minutes being downloaded - this gives time for media to finish syncing
+Here is an example of a customised config.yaml:
 
 ```
 API:
@@ -115,6 +115,7 @@ export_profiles:
     ...
     ...
 sync_delay_in_seconds: 36000
+media_sync_delay: 600
 ```
 
 Note: Templates for which there is no export profile id listed in the config file will be exported without a profile applied
