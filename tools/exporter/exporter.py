@@ -463,10 +463,10 @@ def sync_exports(logger, sc_client, settings):
     filename_item_id = settings['filename_item_id']
     export_path = settings['export_path']
     timezone = settings['timezone']
-    sync_offset = settings['media_sync_offset_in_seconds']
+    media_sync_offset = settings['media_sync_offset_in_seconds']
 
     last_successful = get_last_successful(logger)
-    offset_last_successful = dateutil.parser.parse(last_successful) + datetime.timedelta(seconds=sync_offset)
+    offset_last_successful = dateutil.parser.parse(last_successful) + datetime.timedelta(seconds=media_sync_offset)
     modified_after = offset_last_successful.isoformat()[:-9]+'Z'
     results = sc_client.discover_audits(modified_after=modified_after)
 
