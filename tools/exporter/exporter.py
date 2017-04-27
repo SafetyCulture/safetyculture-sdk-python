@@ -169,14 +169,14 @@ def load_setting_media_sync_offset(logger, config_settings):
     """
     Load sync offset value from config settings, if value is not found
     return default value defined as module level constant
-    
+
     :param logger:           the logger
     :param config_settings:  config settings loaded from config file
     :return:                 offset in seconds if valid, else default value defined as global constant
     """
     try:
         media_sync_offset = config_settings['media_sync_offset_in_seconds']
-        if media_sync_offset is None:
+        if media_sync_offset is None or media_sync_offset < 0 or not isinstance(media_sync_offset, int):
             media_sync_offset = DEFAULT_MEDIA_SYNC_OFFSET
         return media_sync_offset
     except Exception as ex:
