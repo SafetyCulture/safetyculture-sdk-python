@@ -10,9 +10,10 @@ import os
 import re
 import sys
 import time
-from datetime import datetime
+import datetime
 import yaml
 import pytz
+import dateutil.parser
 from tzlocal import get_localzone
 import csvExporter as csv
 
@@ -27,6 +28,9 @@ DEFAULT_CONFIG_FILENAME = 'config.yaml'
 
 # Wait 15 minutes by default between sync attempts
 DEFAULT_SYNC_DELAY_IN_SECONDS = 900
+
+# Only download audits older than 10 minutes old by default
+DEFAULT_MEDIA_SYNC_OFFSET = 600
 
 # The file that stores the "date modified" of the last successfully synced audit
 SYNC_MARKER_FILENAME = 'last_successful.txt'
@@ -161,6 +165,25 @@ def load_setting_export_timezone(logger, config_settings):
         return str(timezone)
 
 
+def load_setting_media_sync_offset(logger, config_settings):
+    """
+    Load sync offset value from config settings, if value is not found
+    return default value defined as module level constant
+
+    :param logger:           the logger
+    :param config_settings:  config settings loaded from config file
+    :return:                 offset in seconds if valid, else default value defined as global constant
+    """
+    try:
+        media_sync_offset = config_settings['media_sync_offset_in_seconds']
+        if media_sync_offset is None or media_sync_offset < 0 or not isinstance(media_sync_offset, int):
+            media_sync_offset = DEFAULT_MEDIA_SYNC_OFFSET
+        return media_sync_offset
+    except Exception as ex:
+        log_critical_error(logger, ex, 'Exception parsing media sync offset from config file')
+        return DEFAULT_MEDIA_SYNC_OFFSET
+
+
 def configure_logging(path_to_log_directory):
     """
     Configure logger
@@ -168,7 +191,7 @@ def configure_logging(path_to_log_directory):
     :param path_to_log_directory:  path to directory to write log file in
     :return:
     """
-    log_filename = datetime.now().strftime('%Y-%m-%d') + '.log'
+    log_filename = datetime.datetime.now().strftime('%Y-%m-%d') + '.log'
     exporter_logger = logging.getLogger('exporter_logger')
     exporter_logger.setLevel(LOG_LEVEL)
     formatter = logging.Formatter('%(asctime)s : %(levelname)s : %(message)s')
@@ -246,11 +269,11 @@ def get_last_successful(logger):
         with open(SYNC_MARKER_FILENAME, 'r+') as last_run:
             last_successful = last_run.readlines()[0]
     else:
-        beginning_of_time = '2000-01-01T00:00:00.000Z'
-        last_successful = beginning_of_time
+        current_time = datetime.datetime.now().isoformat()[:-3]+'Z'
+        last_successful = current_time
         with open(SYNC_MARKER_FILENAME, 'w') as last_run:
             last_run.write(last_successful)
-        logger.info('Searching for audits since the beginning of time: ' + beginning_of_time)
+        logger.info('Searching for audits since the beginning of time: ' + current_time)
 
     return last_successful
 
@@ -320,7 +343,8 @@ def load_config_settings(logger, path_to_config_file):
         'timezone': load_setting_export_timezone(logger, config_settings),
         'export_profiles': load_setting_export_profile_mapping(logger, config_settings),
         'filename_item_id': get_filename_item_id(logger, config_settings),
-        'sync_delay_in_seconds': load_setting_sync_delay(logger, config_settings)
+        'sync_delay_in_seconds': load_setting_sync_delay(logger, config_settings),
+        'media_sync_offset_in_seconds': load_setting_media_sync_offset(logger, config_settings)
     }
 
     return settings
@@ -439,9 +463,12 @@ def sync_exports(logger, sc_client, settings):
     filename_item_id = settings['filename_item_id']
     export_path = settings['export_path']
     timezone = settings['timezone']
+    media_sync_offset = settings['media_sync_offset_in_seconds']
 
     last_successful = get_last_successful(logger)
-    results = sc_client.discover_audits(modified_after=last_successful)
+    offset_last_successful = dateutil.parser.parse(last_successful) + datetime.timedelta(seconds=media_sync_offset)
+    modified_after = offset_last_successful.isoformat()[:-9]+'Z'
+    results = sc_client.discover_audits(modified_after=modified_after)
 
     if results is not None:
         logger.info(str(results['total']) + ' audits discovered')
