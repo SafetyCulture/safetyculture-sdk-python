@@ -53,7 +53,7 @@ Note:
 #### Single Audit CSV Export
 To export a single Audit:
 1. First export the Audit in JSON format
-2. Execute csvExporter.py with the Audit JSON sent as an argument. 
+2. Execute csvExporter.py with the Audit JSON sent as an argument.
 ```
 python exporter.py --format json
 python csvExporter.py path/to/audit_file.json
@@ -62,7 +62,7 @@ python csvExporter.py path/to/audit_file.json
 
 #### Bulk CSV Export
 * Each Audit is the same format as the single Audit CSV export
-* Audits are grouped by Template. Audits built from the same template are appended to a CSV file named using the templates unique ID number. 
+* Audits are grouped by Template. Audits built from the same template are appended to a CSV file named using the templates unique ID number.
 
 To export Multiple Audits to Bulk CSV file:
 1. Execute Exporter.py with the format option set to CSV 
@@ -148,7 +148,7 @@ export_options:
     filename: f3245d40-ea77-11e1-aff1-0800200c9a66
 ```
 
-will result in all exported files named after the `Conducted On` date field.
+will result in all exported files named after the `Audit Title` field.
 
 ## Advanced usage
 
@@ -160,7 +160,7 @@ python exporter.py --list_export_profiles
 ```
 To list export profile IDs associated with specific templates:
 ```
-python exporter.py --list_export_profiles template_3E631E46F466411B9C09AD804886A8B4 
+python exporter.py --list_export_profiles template_3E631E46F466411B9C09AD804886A8B4
 ```
 
 Multiple template_ids can be passed, separated by a space
