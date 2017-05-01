@@ -99,6 +99,7 @@ Things you can configure:
 | filename  |  an audit item ID whose response is going to be used to name the files of exported audit reports. Can only be an item with a response type of `text` from the header section of the audit such as Audit Title, Document No., Client / Site, Prepared By, Personnel, or any custom header item which has a 'text' type response |
 | export_profiles  | to apply an export profile transformation to particular templates, give here a list of export profile ids
 | sync_delay_in_seconds | time in seconds to wait after completing one export run, before running again
+| media_sync_offset_in_seconds | time in seconds since an audit has been modified before it will by synced
 
 Here is an example customised config.yaml:
 
@@ -115,6 +116,7 @@ export_profiles:
     ...
     ...
 sync_delay_in_seconds: 36000
+media_sync_offset_in_seconds: 600
 ```
 
 Note: Templates for which there is no export profile id listed in the config file will be exported without a profile applied
@@ -183,6 +185,10 @@ Your API key may be missing or has expired. Generate a new API token from the iA
 ### Some audits failed to transfer
 
 If an audit failed to transfer the export process will not stop, it will simply record the failure in the log file and continue. You can find the log files under the log/ directory. To retry a failed audit export you can reset the export start date as shown in "Setting the export start date" below.
+
+### pdf documents have placeholder images, or docx documents won't open
+
+Sometimes media on an audit can take longer to sync than the rest of the data.  Increasing the value of the media_sync_offset_in_seconds config setting can improve this.
 
 ### Re-setting the export start date
 

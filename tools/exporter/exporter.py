@@ -10,7 +10,8 @@ import os
 import re
 import sys
 import time
-from datetime import datetime
+import datetime
+import dateutil.parser
 import yaml
 import pytz
 from tzlocal import get_localzone
@@ -27,6 +28,9 @@ DEFAULT_CONFIG_FILENAME = 'config.yaml'
 
 # Wait 15 minutes by default between sync attempts
 DEFAULT_SYNC_DELAY_IN_SECONDS = 900
+
+# Only download audits older than 10 minutes
+DEFAULT_MEDIA_SYNC_OFFSET_IN_SECONDS = 600
 
 # The file that stores the "date modified" of the last successfully synced audit
 SYNC_MARKER_FILENAME = 'last_successful.txt'
@@ -161,6 +165,24 @@ def load_setting_export_timezone(logger, config_settings):
         return str(timezone)
 
 
+def load_setting_media_sync_offset(logger, config_settings):
+    """
+
+    :param logger:           the logger
+    :param config_settings:  config settings loaded from config file
+    :return:                 media sync offset parsed from file, else default media sync offset
+                             defined as global constant
+    """
+    try:
+        media_sync_offset = config_settings['media_sync_offset_in_seconds']
+        if media_sync_offset is None or media_sync_offset < 0 or not isinstance(media_sync_offset, int):
+            media_sync_offset = DEFAULT_MEDIA_SYNC_OFFSET_IN_SECONDS
+        return media_sync_offset
+    except Exception as ex:
+        log_critical_error(logger, ex, 'Exception parsing media sync offset from config file')
+        return DEFAULT_MEDIA_SYNC_OFFSET_IN_SECONDS
+
+
 def configure_logging(path_to_log_directory):
     """
     Configure logger
@@ -168,7 +190,7 @@ def configure_logging(path_to_log_directory):
     :param path_to_log_directory:  path to directory to write log file in
     :return:
     """
-    log_filename = datetime.now().strftime('%Y-%m-%d') + '.log'
+    log_filename = datetime.datetime.now().strftime('%Y-%m-%d') + '.log'
     exporter_logger = logging.getLogger('exporter_logger')
     exporter_logger.setLevel(LOG_LEVEL)
     formatter = logging.Formatter('%(asctime)s : %(levelname)s : %(message)s')
@@ -311,7 +333,7 @@ def load_config_settings(logger, path_to_config_file):
     :return:                    settings dictionary containing values for:
                                 api_token, export_path, timezone, export_profiles,
                                 filename_item_id, sync_delay_in_seconds loaded from
-                                config file
+                                config file, media_sync_offset_in_seconds
     """
     config_settings = yaml.safe_load(open(path_to_config_file))
     settings = {
@@ -320,7 +342,8 @@ def load_config_settings(logger, path_to_config_file):
         'timezone': load_setting_export_timezone(logger, config_settings),
         'export_profiles': load_setting_export_profile_mapping(logger, config_settings),
         'filename_item_id': get_filename_item_id(logger, config_settings),
-        'sync_delay_in_seconds': load_setting_sync_delay(logger, config_settings)
+        'sync_delay_in_seconds': load_setting_sync_delay(logger, config_settings),
+        'media_sync_offset_in_seconds': load_setting_media_sync_offset(logger, config_settings)
     }
 
     return settings
@@ -439,7 +462,7 @@ def sync_exports(logger, sc_client, settings):
     filename_item_id = settings['filename_item_id']
     export_path = settings['export_path']
     timezone = settings['timezone']
-
+    media_sync_offset = settings['media_sync_offset_in_seconds']
     last_successful = get_last_successful(logger)
     results = sc_client.discover_audits(modified_after=last_successful)
 
@@ -450,38 +473,44 @@ def sync_exports(logger, sc_client, settings):
 
         for audit in results['audits']:
             logger.info('Processing audit (' + str(export_count) + '/' + str(export_total) + ')')
-            export_count += 1
-            audit_id = audit['audit_id']
-            logger.info('downloading ' + audit_id)
-            audit_json = sc_client.get_audit(audit_id)
-            template_id = audit_json['template_id']
+            modified_at = dateutil.parser.parse(audit['modified_at'])
+            now = datetime.datetime.now()
+            elapsed_time_difference = (pytz.utc.localize(now) - modified_at)
+            if elapsed_time_difference > datetime.timedelta(seconds=media_sync_offset):
+                export_count += 1
+                audit_id = audit['audit_id']
+                logger.info('downloading ' + audit_id)
+                audit_json = sc_client.get_audit(audit_id)
+                template_id = audit_json['template_id']
 
-            if template_id in export_profiles.keys():
-                export_profile_id = export_profiles[template_id]
-            else:
-                export_profile_id = None
+                if template_id in export_profiles.keys():
+                    export_profile_id = export_profiles[template_id]
+                else:
+                    export_profile_id = None
 
-            if filename_item_id is not None:
-                export_filename = parse_export_filename(audit_json['header_items'], filename_item_id)
-                if export_filename is None:
+                if filename_item_id is not None:
+                    export_filename = parse_export_filename(audit_json['header_items'], filename_item_id)
+                    if export_filename is None:
+                        export_filename = audit_id
+                else:
                     export_filename = audit_id
-            else:
-                export_filename = audit_id
 
-            export_doc = None
-            for export_format in export_formats:
-                if export_format in ['pdf', 'docx']:
-                    export_doc = sc_client.get_export(audit_id, timezone, export_profile_id, export_format)
-                elif export_format == 'json':
-                    export_doc = json.dumps(audit_json, indent=4)
-                elif export_format == 'csv':
-                    csv_exporter = csv.CsvExporter(audit_json)
-                    export_filename = audit_json['template_id']
-                    csv_exporter.append_converted_audit_to_bulk_export_file(os.path.join(export_path, export_filename + '.csv'))
-                    continue
-                save_exported_document(logger, export_path, export_doc, export_filename, export_format)
-            logger.debug('setting last modified to ' + audit['modified_at'])
-            update_sync_marker_file(audit['modified_at'])
+                export_doc = None
+                for export_format in export_formats:
+                    if export_format in ['pdf', 'docx']:
+                        export_doc = sc_client.get_export(audit_id, timezone, export_profile_id, export_format)
+                    elif export_format == 'json':
+                        export_doc = json.dumps(audit_json, indent=4)
+                    elif export_format == 'csv':
+                        csv_exporter = csv.CsvExporter(audit_json)
+                        export_filename = audit_json['template_id']
+                        csv_exporter.append_converted_audit_to_bulk_export_file(os.path.join(export_path, export_filename + '.csv'))
+                        continue
+                    save_exported_document(logger, export_path, export_doc, export_filename, export_format)
+                logger.debug('setting last modified to ' + audit['modified_at'])
+                update_sync_marker_file(audit['modified_at'])
+            else:
+                logger.info('Audit\'s modified_at value is less than {0} seconds in the past, skipping for now!'.format(media_sync_offset))
 
 
 def loop(logger, sc_client, settings):
