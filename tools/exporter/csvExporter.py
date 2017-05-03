@@ -21,7 +21,6 @@ CSV_HEADER_ROW = [
     'Item ID',
     'Response ID',
     'Parent ID',
-    'Completed',
     'Audit Owner',
     'Audit Author',
     'Audit Name',
@@ -172,7 +171,6 @@ class CsvExporter:
         template_data_property = self.audit_json['template_data']
         audit_date_completed = audit_data_property['date_completed']
         audit_data_as_list = list()
-        audit_data_as_list.append(True if audit_date_completed else False)
         audit_data_as_list.append(audit_data_property['authorship']['owner'])
         audit_data_as_list.append(audit_data_property['authorship']['author'])
         audit_data_as_list.append(audit_data_property['name'])

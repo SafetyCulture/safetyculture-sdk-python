@@ -45,7 +45,7 @@ python exporter.py --format pdf docx json csv
 
 Note:
 * Unless you start the tool with the --loop argument, it will sync documents once and terminate
-* Only data of completed audits will be exported
+* Only completed audits will be exported
 * Only audits that are owned by or shared with the SafetyCulture user account that generated the API token will be exported
 * Up to 1000 audits will be exported each time the software checks for new audits. If more than 1000 audits exist on the SafetyCulture platform, they will be retrieved automatically in subsequent sync cycles.
 
@@ -97,7 +97,6 @@ Things you can configure:
 | filename  |  an audit item ID whose response is going to be used to name the files of exported audit reports. Can only be an item with a response type of `text` from the header section of the audit such as Audit Title, Document No., Client / Site, Prepared By, Personnel, or any custom header item which has a 'text' type response |
 | export_profiles  | to apply an export profile transformation to particular templates, give here a list of export profile ids
 | sync_delay_in_seconds | time in seconds to wait after completing one export run, before running again
-| completed | Whether to search completed audits. Valid values are true (search only completed audits), false (do not search completed audits) or both (search all audits including those completed). The default is true.
 | export_inactive_items | This setting only applies when exporting to CSV. Valid values are true (export all items) or false (do not export inactive items). Items that are nested under [Smart Field](https://support.safetyculture.com/templates/smart-fields/) may be inactive.
 
 Here is an example customised config.yaml:
@@ -109,7 +108,6 @@ export_options:
     export_path: /Users/Monty/Dropbox
     timezone: America/Chicago
     filename: f3245d40-ea77-11e1-aff1-0800200c9a66
-    completed: both
     csv:
         export_inactive_items: false
 export_profiles:
