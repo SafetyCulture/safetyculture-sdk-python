@@ -139,7 +139,6 @@ class CsvExporter:
         self.export_inactive_items = export_inactive_items
         self.audit_table = self.convert_audit_to_table()
 
-
     def audit_id(self):
         """
         :return:    The audit ID
