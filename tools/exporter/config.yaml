@@ -1,10 +1,9 @@
 API:
-    token: 17cda381286a70c190d796b9cbcc372d4a9d70b45c0c628d04167cb7aaac8a70
+    token: YOUR_API_TOKEN
 export_options:
     export_path:
     timezone:
     filename: 
-    completed: true
     csv_options:
         export_inactive_items: false
 export_profiles:
