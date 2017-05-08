@@ -6,11 +6,11 @@ Supported export formats: PDF, MS WORD (docx), JSON
 
 ## Installation
 
-  - First install the Python SDK (see top-level Readme)
-  - Switch to this directory (safetyculture-sdk-python/tools/exporter)
-  - Execute the following command from the command line:
+  1. First install the Python SDK (see top-level Readme)
+  2. Switch to this directory (safetyculture-sdk-python/tools/exporter)
+  3. Execute the following command from the command line:
     ``pip install -r requirements.txt``
-  - Edit config.yaml and replace ``YOUR_SAFETYCULTURE_API_TOKEN`` with your SafetyCulture API token
+  4. Edit config.yaml and replace ``YOUR_SAFETYCULTURE_API_TOKEN`` with your SafetyCulture API token
 
 
 ## How to run
