@@ -15,7 +15,6 @@ import yaml
 import pytz
 from tzlocal import get_localzone
 import csvExporter as csv
-
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 from safetypy import safetypy as sp
 
@@ -47,6 +46,7 @@ def log_critical_error(logger, ex, message):
         logger.critical(message)
         logger.critical(ex)
 
+
 def load_setting_api_access_token(logger, config_settings):
     """
     Attempt to parse API token from config settings
@@ -68,6 +68,7 @@ def load_setting_api_access_token(logger, config_settings):
         log_critical_error(logger, ex, 'Exception parsing API token from config.yaml')
         return None
 
+
 def load_export_inactive_items_to_csv(logger, config_settings):
     """
     Attempt to parse export_inactive_items from config settings. Value of true or false is expected. 
@@ -84,8 +85,10 @@ def load_export_inactive_items_to_csv(logger, config_settings):
         return export_inactive_items_to_csv
     except Exception as ex:
         log_critical_error(logger, ex,
-                           'Exception parsing export_inactive_items from the configuration file, defaulting to {0}'.format(str(DEFAULT_EXPORT_INACTIVE_ITEMS_TO_CSV)))
+                           'Exception parsing export_inactive_items from the configuration file, defaulting to {0}'.
+                           format(str(DEFAULT_EXPORT_INACTIVE_ITEMS_TO_CSV)))
         return DEFAULT_EXPORT_INACTIVE_ITEMS_TO_CSV
+
 
 def load_setting_sync_delay(logger, config_settings):
     """
@@ -347,7 +350,6 @@ def load_config_settings(logger, path_to_config_file):
     return settings
 
 
-
 def configure(logger, path_to_config_file, export_formats):
     """
     instantiate and configure logger, load config settings from file, instantiate SafetyCulture SDK
@@ -500,8 +502,9 @@ def sync_exports(logger, sc_client, settings):
                 elif export_format == 'csv':
                     csv_exporter = csv.CsvExporter(audit_json, export_inactive_items_to_csv)
                     export_filename = audit_json['template_id']
-                    csv_exporter.append_converted_audit_to_bulk_export_file(os.path.join(export_path, export_filename + '.csv'))
-                    continue # csv function append_converted_audit_to_bulk_export_file write to file itself
+                    csv_exporter.append_converted_audit_to_bulk_export_file(os.path.join(export_path, export_filename +
+                                                                                         '.csv'))
+                    continue  # csv function append_converted_audit_to_bulk_export_file write to file itself
                 save_exported_document(logger, export_path, export_doc, export_filename, export_format)
             logger.debug('setting last modified to ' + audit['modified_at'])
             update_sync_marker_file(audit['modified_at'])
