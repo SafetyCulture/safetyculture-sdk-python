@@ -367,7 +367,7 @@ def load_config_settings(logger, path_to_config_file):
         'export_profiles': load_setting_export_profile_mapping(logger, config_settings),
         'filename_item_id': get_filename_item_id(logger, config_settings),
         'sync_delay_in_seconds': load_setting_sync_delay(logger, config_settings),
-        'export_inactive_items_to_csv': load_export_inactive_items_to_csv(logger, config_settings)
+        'export_inactive_items_to_csv': load_export_inactive_items_to_csv(logger, config_settings),
         'media_sync_offset_in_seconds': load_setting_media_sync_offset(logger, config_settings)
     }
 
