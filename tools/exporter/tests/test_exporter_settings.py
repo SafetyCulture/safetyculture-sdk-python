@@ -75,6 +75,15 @@ class ExporterTestCase(unittest.TestCase):
         config_setting = {'sync_delay_in_seconds': 500}
         self.assertEqual(exp.load_setting_sync_delay(logger, config_setting), config_setting['sync_delay_in_seconds'])
 
+    def test_use_default_if_media_sync_delay_setting_is_invalid(self):
+        config_settings = [{'media_sync_offset_in_seconds': 'abc'}, {}, {'media_sync_offset_in_seconds': -1}, {'media_sync_offset_in_seconds': ''}]
+        for config_setting in config_settings:
+            self.assertEqual(exp.load_setting_media_sync_offset(logger, config_setting), exp.DEFAULT_MEDIA_SYNC_OFFSET_IN_SECONDS)
+
+    def test_use_user_supplied_media_sync_offset_if_valid(self):
+        config_settings = [{'media_sync_offset_in_seconds': 0}, {'media_sync_offset_in_seconds': 9000}]
+        for config_setting in config_settings:
+            self.assertEqual(exp.load_setting_media_sync_offset(logger, config_setting), config_setting['media_sync_offset_in_seconds'])
 
 if __name__ == '__main__':
     unittest.main()
