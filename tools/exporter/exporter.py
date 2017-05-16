@@ -474,7 +474,7 @@ def sync_exports(logger, sc_client, settings):
         for audit in results['audits']:
             logger.info('Processing audit (' + str(export_count) + '/' + str(export_total) + ')')
             modified_at = dateutil.parser.parse(audit['modified_at'])
-            now = datetime.datetime.now()
+            now = datetime.datetime.utcnow()
             elapsed_time_difference = (pytz.utc.localize(now) - modified_at)
             if elapsed_time_difference > datetime.timedelta(seconds=media_sync_offset):
                 export_count += 1
