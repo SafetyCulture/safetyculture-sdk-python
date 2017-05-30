@@ -4,6 +4,8 @@ export_options:
     export_path:
     timezone:
     filename: 
+    csv_options:
+        export_inactive_items: false
 export_profiles:
 sync_delay_in_seconds:
 media_sync_offset_in_seconds:

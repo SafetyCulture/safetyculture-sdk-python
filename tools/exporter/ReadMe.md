@@ -6,12 +6,11 @@ Supported export formats: PDF, MS WORD (docx), JSON
 
 ## Installation
 
-  - First install the Python SDK (see top-level Readme)
-  - Switch to this directory (safetyculture-sdk-python/tools/exporter)
-  - Execute the following command from the command line:
-
+  1. First install the Python SDK (see top-level Readme)
+  2. Switch to this directory (safetyculture-sdk-python/tools/exporter)
+  3. Execute the following command from the command line:
     ``pip install -r requirements.txt``
-  - Edit config.yaml and replace ``YOUR_SAFETYCULTURE_API_TOKEN`` with your SafetyCulture API token
+  4. Edit config.yaml and replace ``YOUR_SAFETYCULTURE_API_TOKEN`` with your SafetyCulture API token
 
 
 ## How to run
@@ -46,7 +45,7 @@ python exporter.py --format pdf docx json csv
 
 Note:
 * Unless you start the tool with the --loop argument, it will sync documents once and terminate
-* Only data of completed audits will be exported
+* Only completed audits will be exported
 * Only audits that are owned by or shared with the SafetyCulture user account that generated the API token will be exported
 * Up to 1000 audits will be exported each time the software checks for new audits. If more than 1000 audits exist on the SafetyCulture platform, they will be retrieved automatically in subsequent sync cycles.
 
@@ -99,6 +98,7 @@ Things you can configure:
 | filename  |  an audit item ID whose response is going to be used to name the files of exported audit reports. Can only be an item with a response type of `text` from the header section of the audit such as Audit Title, Document No., Client / Site, Prepared By, Personnel, or any custom header item which has a 'text' type response |
 | export_profiles  | to apply an export profile transformation to particular templates, give here a list of export profile ids
 | sync_delay_in_seconds | time in seconds to wait after completing one export run, before running again
+| export_inactive_items | This setting only applies when exporting to CSV. Valid values are true (export all items) or false (do not export inactive items). Items that are nested under [Smart Field](https://support.safetyculture.com/templates/smart-fields/) will be 'inactive' if the smart field condition is not satisfied for these items.
 | media_sync_offset_in_seconds | time in seconds since an audit has been modified before it will by synced
 
 Here is an example customised config.yaml:
@@ -110,6 +110,8 @@ export_options:
     export_path: /Users/Monty/Dropbox
     timezone: America/Chicago
     filename: f3245d40-ea77-11e1-aff1-0800200c9a66
+    csv:
+        export_inactive_items: false
 export_profiles:
     template_3E631E46F466411B9C09AD804886A8B4:E15A6525-EFA5-4835-92F0-D11CA9F364F3
     template_3E631E46F466411B9C09AD804886A8B4:E50645A1-2851-4E92-B4EA-60C5CE7981BE

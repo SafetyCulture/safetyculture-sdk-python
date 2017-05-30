@@ -35,6 +35,9 @@ DEFAULT_MEDIA_SYNC_OFFSET_IN_SECONDS = 600
 # The file that stores the "date modified" of the last successfully synced audit
 SYNC_MARKER_FILENAME = 'last_successful.txt'
 
+# Whether to export inactive items to CSV
+DEFAULT_EXPORT_INACTIVE_ITEMS_TO_CSV = True
+
 
 def log_critical_error(logger, ex, message):
     """
@@ -69,6 +72,27 @@ def load_setting_api_access_token(logger, config_settings):
     except Exception as ex:
         log_critical_error(logger, ex, 'Exception parsing API token from config.yaml')
         return None
+
+
+def load_export_inactive_items_to_csv(logger, config_settings):
+    """
+    Attempt to parse export_inactive_items from config settings. Value of true or false is expected. 
+    True means the CSV exporter will include inactive items. False means the CSV exporter will exclude inactive items. 
+    :param logger:           the logger
+    :param config_settings:  config settings loaded from config file
+    :return:                 value of export_inactive_items_to_csv if valid, else DEFAULT_EXPORT_INACTIVE_ITEMS_TO_CSV 
+    """
+    try:
+        export_inactive_items_to_csv = config_settings['export_options']['csv_options']['export_inactive_items']
+        if not isinstance(export_inactive_items_to_csv, bool):
+            logger.info('Invalid export_inactive_items value from configuration file, defaulting to true')
+            export_inactive_items_to_csv = DEFAULT_EXPORT_INACTIVE_ITEMS_TO_CSV
+        return export_inactive_items_to_csv
+    except Exception as ex:
+        log_critical_error(logger, ex,
+                           'Exception parsing export_inactive_items from the configuration file, defaulting to {0}'.
+                           format(str(DEFAULT_EXPORT_INACTIVE_ITEMS_TO_CSV)))
+        return DEFAULT_EXPORT_INACTIVE_ITEMS_TO_CSV
 
 
 def load_setting_sync_delay(logger, config_settings):
@@ -343,6 +367,7 @@ def load_config_settings(logger, path_to_config_file):
         'export_profiles': load_setting_export_profile_mapping(logger, config_settings),
         'filename_item_id': get_filename_item_id(logger, config_settings),
         'sync_delay_in_seconds': load_setting_sync_delay(logger, config_settings),
+        'export_inactive_items_to_csv': load_export_inactive_items_to_csv(logger, config_settings),
         'media_sync_offset_in_seconds': load_setting_media_sync_offset(logger, config_settings)
     }
 
@@ -462,6 +487,7 @@ def sync_exports(logger, sc_client, settings):
     filename_item_id = settings['filename_item_id']
     export_path = settings['export_path']
     timezone = settings['timezone']
+    export_inactive_items_to_csv = settings['export_inactive_items_to_csv']
     media_sync_offset = settings['media_sync_offset_in_seconds']
     last_successful = get_last_successful(logger)
     results = sc_client.discover_audits(modified_after=last_successful)
@@ -502,7 +528,7 @@ def sync_exports(logger, sc_client, settings):
                     elif export_format == 'json':
                         export_doc = json.dumps(audit_json, indent=4)
                     elif export_format == 'csv':
-                        csv_exporter = csv.CsvExporter(audit_json)
+                        csv_exporter = csv.CsvExporter(audit_json, export_inactive_items_to_csv)
                         export_filename = audit_json['template_id']
                         csv_exporter.append_converted_audit_to_bulk_export_file(os.path.join(export_path, export_filename + '.csv'))
                         continue

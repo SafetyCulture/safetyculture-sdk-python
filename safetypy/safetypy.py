@@ -18,6 +18,7 @@ DEFAULT_EXPORT_FORMAT = 'pdf'
 GUID_PATTERN = '[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}$'
 HTTP_USER_AGENT_ID = 'safetyculture-python-sdk'
 
+
 class SafetyCulture:
     def __init__(self, api_token):
 
@@ -119,10 +120,9 @@ class SafetyCulture:
         """
         Return IDs of all completed audits if no parameters are passed, otherwise restrict search
         based on parameter values
-
         :param template_id:     Restrict discovery to this template_id
         :param modified_after:  Restrict discovery to audits modified after this UTC timestamp
-        :param completed:       Restrict discovery to audits marked as completed, default to False
+        :param completed:       Restrict discovery to audits marked as completed, default to True
         :return:                JSON object containing IDs of all audits returned by API
         """
 

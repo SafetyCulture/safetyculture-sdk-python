@@ -215,6 +215,18 @@ class ExporterTestCase(unittest.TestCase):
         self.assertEqual(open('test 35.csv', 'r').read(), open(os.path.join(self.path_to_test_files, 'unit_test_single_question_yes___no___na_comment_and_images_added_to_question_expected_output.csv'), 'r').read())
         os.remove('test 35.csv')
 
+    def test_export_inactive_fields_true(self):
+        csv_exporter = csv.CsvExporter(json.load(open(os.path.join(self.path_to_test_files, 'export_inactive_fields_true.json'), 'r')), True)
+        csv_exporter.save_converted_audit_to_file('test 36.csv', allow_overwrite=True)
+        self.assertEqual(open('test 36.csv', 'r').read(), open(os.path.join(self.path_to_test_files, 'export_inactive_fields_true_expected_output.csv'), 'r').read())
+        os.remove('test 36.csv')
+
+    def test_do_not_export_inactive_fields(self):
+        csv_exporter = csv.CsvExporter(json.load(open(os.path.join(self.path_to_test_files, 'do_not_export_inactive_fields.json'), 'r')), False)
+        csv_exporter.save_converted_audit_to_file('test 37.csv', allow_overwrite=True)
+        self.assertEqual(open('test 37.csv', 'r').read(), open(os.path.join(self.path_to_test_files, 'do_not_export_inactive_fields_expected_output.csv'), 'r').read())
+        os.remove('test 37.csv')
+
 
 if __name__ == '__main__':
     unittest.main()
