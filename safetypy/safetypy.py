@@ -12,7 +12,6 @@ import time
 import errno
 from datetime import datetime
 import requests
-import shutil
 
 DEFAULT_EXPORT_TIMEZONE = 'Etc/UTC'
 DEFAULT_EXPORT_FORMAT = 'pdf'
@@ -317,6 +316,13 @@ class SafetyCulture:
         return export_content
 
     def get_media(self, audit_id, media_id):
+        """
+        Request media item associated with a specified audit and media ID
+        :param audit_id:    audit ID of document that contains media 
+        :param media_id:    media ID of image to fetch
+        :return:            The Content-Type will be the MIME type associated with the media, 
+                            and the body of the response is the media itself.
+        """
         url = self.audit_url + audit_id + '/media/' + media_id
         response = requests.get(url, headers=self.custom_http_headers, stream=True)
         return response
