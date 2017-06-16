@@ -14,6 +14,7 @@ import datetime
 import dateutil.parser
 import yaml
 import pytz
+import shutil
 from tzlocal import get_localzone
 import csvExporter as csv
 
@@ -248,6 +249,25 @@ def create_directory_if_not_exists(logger, path):
             log_critical_error(logger, ex, 'An error happened trying to create ' + path)
             raise
 
+def save_exported_media_to_file(logger, export_dir, export_doc, filename, extension):
+    """
+    Write exported media item to disk at specified location with specified file name.
+    Any existing file with the same name will be overwritten.
+    :param logger:      the logger
+    :param export_dir:  path to directory for exports
+    :param export_doc:  media file to write to disc
+    :param filename:    filename to give exported image
+    :param extension:   extension to give exported image
+    """
+    file_path = os.path.join(export_dir, filename + '.' + extension)
+    if os.path.isfile(file_path):
+        logger.info('Overwriting existing report at ' + file_path)
+    try:
+        with open(file_path, 'wb') as out_file:
+            shutil.copyfileobj(export_doc.raw, out_file)
+        del export_doc
+    except Exception as ex:
+        log_critical_error(logger, ex, 'Exception while writing' + file_path + ' to file')
 
 def save_exported_document(logger, export_dir, export_doc, filename, extension):
     """
