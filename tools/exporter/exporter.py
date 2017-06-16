@@ -259,6 +259,9 @@ def save_exported_media_to_file(logger, export_dir, export_doc, filename, extens
     :param filename:    filename to give exported image
     :param extension:   extension to give exported image
     """
+    if not os.path.exists(export_dir):
+        logger.info("Creating directory at {0} for media files.".format(export_dir))
+        os.makedirs(export_dir)
     file_path = os.path.join(export_dir, filename + '.' + extension)
     if os.path.isfile(file_path):
         logger.info('Overwriting existing report at ' + file_path)
@@ -553,25 +556,27 @@ def sync_exports(logger, sc_client, settings):
                         csv_exporter.append_converted_audit_to_bulk_export_file(os.path.join(export_path, csv_export_filename + '.csv'))
                         continue
                     elif export_format == 'media':
-                        media_export_path = os.path.join(export_path, audit_id)
+                        media_export_path = os.path.join(export_path, 'media', audit_id)
                         extension = 'jpg'
-                        for item in audit_json['header_items'] + audit_json['items']:
-
-                            media_id = media['media_id']
+                        media_id_list = get_media_from_audit(logger, audit_json)
+                        if len(media_id_list) == 0:
+                            logger.info("No media associated with {0}.".format(audit_id))
+                        for media_id in media_id_list:
+                            logger.info("Saving media_{0} to disc.".format(media_id))
                             media_file = sc_client.get_media(audit_id, media_id)
                             media_export_filename = media_id
                             save_exported_media_to_file(logger, media_export_path, media_file, media_export_filename, extension)
                         continue
-
                     save_exported_document(logger, export_path, export_doc, export_filename, export_format)
                 logger.debug('setting last modified to ' + audit['modified_at'])
                 update_sync_marker_file(audit['modified_at'])
             else:
                 logger.info('Audit\'s modified_at value is less than {0} seconds in the past, skipping for now!'.format(media_sync_offset))
 
-def get_media_from_audit(audit_json):
+def get_media_from_audit(logger, audit_json):
     """
     Retrieve media IDs from a audit JSON
+    :param logger: the logger
     :param audit_json: single audit JSON
     :return: list of media IDs
     """
@@ -587,6 +592,7 @@ def get_media_from_audit(audit_json):
         # Information field. Object, single media.
         if 'options' in item.keys() and 'media' in item['options'].keys():
             media_id_list.append(item['options']['media']['media_id'])
+    logger.info("Discovered {0} media files associated with {1}.".format(len(media_id_list), audit_json['audit_id']))
     return media_id_list
 
 def loop(logger, sc_client, settings):
