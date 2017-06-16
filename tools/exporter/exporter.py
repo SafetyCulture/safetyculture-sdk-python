@@ -430,7 +430,7 @@ def parse_command_line_arguments(logger):
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', help='config file to use, defaults to ' + DEFAULT_CONFIG_FILENAME)
-    parser.add_argument('--format', nargs='*', help='formats to download, valid options are pdf, json, docx')
+    parser.add_argument('--format', nargs='*', help='formats to download, valid options are pdf, json, docx, csv, media')
     parser.add_argument('--list_export_profiles', nargs='*', help='display all export profiles, or restrict to specific'
                                                                   ' template_id if supplied as additional argument')
     parser.add_argument('--loop', nargs='*', help='execute continuously until interrupted')
@@ -447,11 +447,11 @@ def parse_command_line_arguments(logger):
 
     export_formats = ['pdf']
     if args.format is not None and len(args.format) > 0:
-        valid_export_formats = ['json', 'docx', 'pdf', 'csv']
+        valid_export_formats = ['json', 'docx', 'pdf', 'csv', 'media']
         export_formats = []
         for option in args.format:
             if option not in valid_export_formats:
-                print '{0} is not a valid export format.  Valid options are pdf, json, or docx'.format(option)
+                print '{0} is not a valid export format.  Valid options are pdf, json, docx, csv, or media'.format(option)
                 logger.info('invalid export format argument: {0}'.format(option))
             else:
                 export_formats.append(option)
@@ -549,15 +549,45 @@ def sync_exports(logger, sc_client, settings):
                         export_doc = json.dumps(audit_json, indent=4)
                     elif export_format == 'csv':
                         csv_exporter = csv.CsvExporter(audit_json, export_inactive_items_to_csv)
-                        export_filename = audit_json['template_id']
-                        csv_exporter.append_converted_audit_to_bulk_export_file(os.path.join(export_path, export_filename + '.csv'))
+                        csv_export_filename = audit_json['template_id']
+                        csv_exporter.append_converted_audit_to_bulk_export_file(os.path.join(export_path, csv_export_filename + '.csv'))
                         continue
+                    elif export_format == 'media':
+                        media_export_path = os.path.join(export_path, audit_id)
+                        extension = 'jpg'
+                        for item in audit_json['header_items'] + audit_json['items']:
+
+                            media_id = media['media_id']
+                            media_file = sc_client.get_media(audit_id, media_id)
+                            media_export_filename = media_id
+                            save_exported_media_to_file(logger, media_export_path, media_file, media_export_filename, extension)
+                        continue
+
                     save_exported_document(logger, export_path, export_doc, export_filename, export_format)
                 logger.debug('setting last modified to ' + audit['modified_at'])
                 update_sync_marker_file(audit['modified_at'])
             else:
                 logger.info('Audit\'s modified_at value is less than {0} seconds in the past, skipping for now!'.format(media_sync_offset))
 
+def get_media_from_audit(audit_json):
+    """
+    Retrieve media IDs from a audit JSON
+    :param audit_json: single audit JSON
+    :return: list of media IDs
+    """
+    media_id_list = []
+    for item in audit_json['header_items'] + audit_json['items']:
+        # media field, question field. List of media
+        if 'media' in item.keys():
+            for media in item['media']:
+                media_id_list.append(media['media_id'])
+        # Signature field, drawing field. Object, single media
+        if 'responses' in item.keys() and 'image' in item['responses'].keys():
+            media_id_list.append(item['responses']['image']['media_id'])
+        # Information field. Object, single media.
+        if 'options' in item.keys() and 'media' in item['options'].keys():
+            media_id_list.append(item['options']['media']['media_id'])
+    return media_id_list
 
 def loop(logger, sc_client, settings):
     """
