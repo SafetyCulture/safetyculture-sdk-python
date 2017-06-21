@@ -448,7 +448,6 @@ class CsvExporter:
 
     def get_item_location_coordinates(self, item):
         """
-
         :param item:    single item in JSON format
         :return:        comma separated longitude and latitude coordinates
         """
@@ -462,7 +461,6 @@ class CsvExporter:
     def item_properties_as_list(self, item):
         """
         Returns selected properties of the audit item JSON as a list
-
         :param item:    single item in JSON format
         :return:        array of item data, in format that CSV writer can handle
         """

@@ -556,7 +556,7 @@ def sync_exports(logger, sc_client, settings):
                         csv_exporter.append_converted_audit_to_bulk_export_file(os.path.join(export_path, csv_export_filename + '.csv'))
                         continue
                     elif export_format == 'media':
-                        media_export_path = os.path.join(export_path, 'media', audit_id)
+                        media_export_path = os.path.join(export_path, 'media', export_filename)
                         extension = 'jpg'
                         media_id_list = get_media_from_audit(logger, audit_json)
                         if len(media_id_list) == 0:
