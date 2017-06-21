@@ -58,7 +58,7 @@ To export a single Audit:
 python exporter.py --format json
 python csvExporter.py path/to/audit_file.json
 ```
-* Basic example of [CSV Export Format](https://github.com/SafetyCulture/safetyculture-sdk-python/blob/INTG-174_CSVExport/tools/exporter/tests/csv_test_files/unit_test_single_question_yes___no___na_answered_yes_expected_output.csv)
+* Basic example of [CSV Export Format](https://github.com/SafetyCulture/safetyculture-sdk-python/blob/master/tools/exporter/tests/csv_test_files/unit_test_single_question_yes___no___na_answered_no_expected_output.csv)
 
 #### Bulk CSV Export
 * Each Audit is the same format as the single Audit CSV export
