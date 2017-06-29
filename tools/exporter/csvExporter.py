@@ -35,7 +35,14 @@ CSV_HEADER_ROW = [
     'Audit ID',
     'Template ID',
     'Template Name',
-    'Template Author'
+    'Template Author',
+    'ItemCategory',
+    'DocumentNo',
+    'ConductedOn',
+    'PreparedBy',
+    'Location',
+    'Personnel',
+    'ClientSite'
 ]
 
 # audit item empty response 
@@ -119,6 +126,16 @@ standard_response_id_map = {
     'b5c92352-e11b-11e1-9b23-0800200c9a66': 'N/A'
 }
 
+# maps header fields to their static IDs
+header_field_id = {
+    'DocumentNo': 'f3245d46-ea77-11e1-aff1-0800200c9a66',
+    'ConductedOn': 'f3245d42-ea77-11e1-aff1-0800200c9a66',
+    'PreparedBy': 'f3245d43-ea77-11e1-aff1-0800200c9a66',
+    'Location': 'f3245d44-ea77-11e1-aff1-0800200c9a66',
+    'Personnel': 'f3245d45-ea77-11e1-aff1-0800200c9a66',
+    'ClientSite': 'f3245d41-ea77-11e1-aff1-0800200c9a66'
+}
+
 
 class CsvExporter:
     """
@@ -169,6 +186,7 @@ class CsvExporter:
         audit_data_property = self.audit_json['audit_data']
         template_data_property = self.audit_json['template_data']
         audit_date_completed = audit_data_property['date_completed']
+        header_data = self.audit_json['header']
         audit_data_as_list = list()
         audit_data_as_list.append(audit_data_property['authorship']['owner'])
         audit_data_as_list.append(audit_data_property['authorship']['author'])
@@ -185,7 +203,33 @@ class CsvExporter:
         audit_data_as_list.append(self.audit_json['template_id'])
         audit_data_as_list.append(template_data_property['metadata']['name'])
         audit_data_as_list.append(template_data_property['authorship']['author'])
+        audit_data_as_list.append(self.get_item_category())
+        audit_data_as_list.append(self.get_header_item(header_data, 'DocumentNo'))
+        audit_data_as_list.append(self.get_header_item(header_data, 'ConductedOn'))
+        audit_data_as_list.append(self.get_header_item(header_data, 'PreparedBy'))
+        audit_data_as_list.append(self.get_header_item(header_data, 'Location'))
+        audit_data_as_list.append(self.get_header_item(header_data, 'Personnel'))
+        audit_data_as_list.append(self.get_header_item(header_data, 'ClientSite'))
         return audit_data_as_list
+
+    def get_header_item(self, header_data, header_item_type):
+        """
+        
+        :param header_data: 
+        :param header_item_type: 
+        :return: 
+        """
+        for item in header_data:
+            if item['item_id'] == header_field_id[header_item_type]:
+                if 'response' not in item.keys():
+                    return EMPTY_RESPONSE
+                if 'text' in item['responses'].keys():
+                    return self.get_json_property(item, 'responses', 'text')
+                if 'datetime' in item['responses'].keys():
+                    return self.get_json_property(item, 'responses', 'datetime')
+                if 'location_text' in item['responses'].keys():
+                    return self.get_json_property(item, 'responses', 'location_text')
+        return EMPTY_RESPONSE
 
     @staticmethod
     def format_date(date):

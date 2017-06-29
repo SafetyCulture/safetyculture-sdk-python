@@ -589,7 +589,7 @@ def get_media_from_audit(logger, audit_json):
         # This condition checks for media attached to signature and drawing type fields.
         if 'responses' in item.keys() and 'image' in item['responses'].keys():
             media_id_list.append(item['responses']['image']['media_id'])
-        # This condition checks for media attached to information type fields. 
+        # This condition checks for media attached to information type fields.
         if 'options' in item.keys() and 'media' in item['options'].keys():
             media_id_list.append(item['options']['media']['media_id'])
     logger.info("Discovered {0} media files associated with {1}.".format(len(media_id_list), audit_json['audit_id']))
