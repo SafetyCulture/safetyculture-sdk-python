@@ -582,14 +582,14 @@ def get_media_from_audit(logger, audit_json):
     """
     media_id_list = []
     for item in audit_json['header_items'] + audit_json['items']:
-        # media field, question field. List of media
+        # This condition checks for media attached to question and media type fields.
         if 'media' in item.keys():
             for media in item['media']:
                 media_id_list.append(media['media_id'])
-        # Signature field, drawing field. Object, single media
+        # This condition checks for media attached to signature and drawing type fields.
         if 'responses' in item.keys() and 'image' in item['responses'].keys():
             media_id_list.append(item['responses']['image']['media_id'])
-        # Information field. Object, single media.
+        # This condition checks for media attached to information type fields. 
         if 'options' in item.keys() and 'media' in item['options'].keys():
             media_id_list.append(item['options']['media']['media_id'])
     logger.info("Discovered {0} media files associated with {1}.".format(len(media_id_list), audit_json['audit_id']))

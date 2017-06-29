@@ -2,7 +2,7 @@
 
 Allows you to export audit data from the SafetyCulture Platform and save them anywhere on your computer.
 
-Supported export formats: PDF, MS WORD (docx), JSON, and CSV. Media exporting are also supported.
+Supported export formats: PDF, MS WORD (docx), JSON, and CSV. Media exporting is also supported.
 
 ## Installation
 
@@ -65,7 +65,7 @@ python csvExporter.py path/to/audit_file.json
 * Audits are grouped by Template. Audits built from the same template are appended to a CSV file named using the templates unique ID number.
 
 To export Multiple Audits to Bulk CSV file:
-* Execute Exporter.py with the format option set to CSV
+* Execute exporter.py with the format option set to CSV
 ```
 python exporter.py --format csv
 ```
