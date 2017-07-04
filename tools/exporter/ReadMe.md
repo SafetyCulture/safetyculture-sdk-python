@@ -2,7 +2,7 @@
 
 Allows you to export audit data from the SafetyCulture Platform and save them anywhere on your computer.
 
-Supported export formats: PDF, MS WORD (docx), JSON
+Supported export formats: PDF, MS WORD (docx), JSON, and CSV. Media exporting is also supported.
 
 ## Installation
 
@@ -40,7 +40,7 @@ python exporter.py --format pdf
 More than one supported formats can be exported at once e.g.
 
 ```
-python exporter.py --format pdf docx json csv
+python exporter.py --format pdf docx json csv media
 ```
 
 Note:
@@ -58,14 +58,14 @@ To export a single Audit:
 python exporter.py --format json
 python csvExporter.py path/to/audit_file.json
 ```
-* Basic example of [CSV Export Format](https://github.com/SafetyCulture/safetyculture-sdk-python/blob/INTG-174_CSVExport/tools/exporter/tests/csv_test_files/unit_test_single_question_yes___no___na_answered_yes_expected_output.csv)
+* Basic example of [CSV Export Format](https://github.com/SafetyCulture/safetyculture-sdk-python/blob/master/tools/exporter/tests/csv_test_files/unit_test_single_question_yes___no___na_answered_no_expected_output.csv)
 
 #### Bulk CSV Export
 * Each Audit is the same format as the single Audit CSV export
 * Audits are grouped by Template. Audits built from the same template are appended to a CSV file named using the templates unique ID number.
 
 To export Multiple Audits to Bulk CSV file:
-1. Execute Exporter.py with the format option set to CSV 
+* Execute exporter.py with the format option set to CSV
 ```
 python exporter.py --format csv
 ```
@@ -83,6 +83,9 @@ python exporter.py --format csv
 #### Bulk CSV Export Gotchas
 * If you update an Audit that has already been exported, it may be appended to the CSV file a second time.
 * If you update a template, Audits with the new format will be appended to the same CSV file.
+
+### Media Export
+* Executing ```python exporter.py --format media``` will export all audit media files for each audit (images, attachments, signature, and drawings) to a folder named after the audit ID.
 
 
 ## Export settings
