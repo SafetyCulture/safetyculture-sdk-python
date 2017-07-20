@@ -317,7 +317,7 @@ class SafetyCulture:
 
     def get_media(self, audit_id, media_id):
         """
-        Request media item associated with a specified audit and media ID
+        Get media item associated with a specified audit and media ID
         :param audit_id:    audit ID of document that contains media 
         :param media_id:    media ID of image to fetch
         :return:            The Content-Type will be the MIME type associated with the media, 
@@ -326,6 +326,21 @@ class SafetyCulture:
         url = self.audit_url + audit_id + '/media/' + media_id
         response = requests.get(url, headers=self.custom_http_headers, stream=True)
         return response
+
+    def get_web_report(self, audit_id):
+        """
+        Generate Web Report link associated with a specified audit
+        :param audit_id:   Audit ID
+        :return:           Web Report link
+        """
+        url = self.audit_url + audit_id + '/web_report_link'
+        response = self.authenticated_request_get(url)
+        result = self.parse_json(response.content) if response.status_code == requests.codes.ok else None
+        self.log_http_status(response.status_code, 'on GET web report for ' + audit_id)
+        if result:
+            return result.get('url')
+        else:
+            return None
 
     def get_audit(self, audit_id):
         """
