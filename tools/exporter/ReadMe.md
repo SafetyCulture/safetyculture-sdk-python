@@ -40,7 +40,7 @@ python exporter.py --format pdf
 More than one supported formats can be exported at once e.g.
 
 ```
-python exporter.py --format pdf docx json csv media
+python exporter.py --format pdf docx json csv media web-report-link
 ```
 
 Note:
@@ -87,6 +87,10 @@ python exporter.py --format csv
 ### Media Export
 * Executing ```python exporter.py --format media``` will export all audit media files for each audit (images, attachments, signature, and drawings) to a folder named after the audit ID.
 
+### Web Report Link Export
+* Executing ```python exporter.py --format web-report-link``` will export your Web Report Links to a CSV file named `web-report-links.csv`.
+
+The CSV file includes five columns. Template ID, Template Name, Audit ID, Audit Name, and Web Report Link. 
 
 ## Export settings
 
