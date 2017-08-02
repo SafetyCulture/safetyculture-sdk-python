@@ -591,8 +591,6 @@ def sync_exports(logger, sc_client, settings):
                         media_export_path = os.path.join(export_path, 'media', export_filename)
                         extension = 'jpg'
                         media_id_list = get_media_from_audit(logger, audit_json)
-                        if len(media_id_list) == 0:
-                            logger.info("No media associated with {0}.".format(audit_id))
                         for media_id in media_id_list:
                             logger.info("Saving media_{0} to disc.".format(media_id))
                             media_file = sc_client.get_media(audit_id, media_id)
