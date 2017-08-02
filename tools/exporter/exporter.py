@@ -16,7 +16,7 @@ import yaml
 import pytz
 import shutil
 from tzlocal import get_localzone
-import csvExporter as csv_e
+import csvExporter
 import unicodecsv as csv
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -256,14 +256,14 @@ def save_web_report_link_to_file(logger, export_dir, web_report_data):
     Any existing file with the same name will be appended to
     :param logger:          the logger
     :param export_dir:      path to directory for exports
-    :param web_report_data:     Data to write to CSV: Template ID, Template name, Audit ID, Audit name, web report link
+    :param web_report_data:     Data to write to CSV: Template ID, Template name, Audit ID, Audit name, Web Report link
     """
     if not os.path.exists(export_dir):
-        logger.info("Creating directory at {0} for media files.".format(export_dir))
+        logger.info("Creating directory at {0} for Web Report links.".format(export_dir))
         os.makedirs(export_dir)
     file_path = os.path.join(export_dir, 'web-report-links.csv')
     if os.path.isfile(file_path):
-        logger.info('Appending web report to ' + file_path)
+        logger.info('Appending Web Report link to ' + file_path)
         try:
             with open(file_path, 'a') as web_report_link_csv:
                 wr = csv.writer(web_report_link_csv, dialect='excel', quoting=csv.QUOTE_ALL)
@@ -584,7 +584,7 @@ def sync_exports(logger, sc_client, settings):
                         export_doc = json.dumps(audit_json, indent=4)
                         save_exported_document(logger, export_path, export_doc, export_filename, export_format)
                     elif export_format == 'csv':
-                        csv_exporter = csv_e.CsvExporter(audit_json, export_inactive_items_to_csv)
+                        csv_exporter = csvExporter.CsvExporter(audit_json, export_inactive_items_to_csv)
                         csv_export_filename = audit_json['template_id']
                         csv_exporter.append_converted_audit_to_bulk_export_file(os.path.join(export_path, csv_export_filename + '.csv'))
                     elif export_format == 'media':
@@ -601,34 +601,15 @@ def sync_exports(logger, sc_client, settings):
                     elif export_format == 'web-report-link':
                         web_report_link = sc_client.get_web_report(audit_id)
                         web_report_data = [template_id,
-                               get_json_property(audit_json, 'template_data', 'metadata', 'name'),
+                               csvExporter.get_json_property(audit_json, 'template_data', 'metadata', 'name'),
                                audit_id,
-                               get_json_property(audit_json, 'audit_data', 'name'),
+                               csvExporter.get_json_property(audit_json, 'audit_data', 'name'),
                                web_report_link]
                         save_web_report_link_to_file(logger, export_path, web_report_data)
                 logger.debug('setting last modified to ' + audit['modified_at'])
                 update_sync_marker_file(audit['modified_at'])
             else:
                 logger.info('Audit\'s modified_at value is less than {0} seconds in the past, skipping for now!'.format(media_sync_offset))
-
-
-def get_json_property(obj, *args):
-    """
-    Returns json property if it exists. If it does not exist, returns an empty string
-    :param obj:     JON Object
-    :param args:    target path, list of keys
-    :return:        if path exists, return value, otherwise return empty string
-    """
-    for arg in args:
-        if isinstance(obj, list) and isinstance(arg, int):
-            if len(obj) == 0:
-                return ''
-            obj = obj[arg]
-        elif isinstance(obj, dict) and arg in obj.keys():
-            obj = obj[arg]
-        else:
-            return ''
-    return obj if obj is not None else ''
 
 def get_media_from_audit(logger, audit_json):
     """
