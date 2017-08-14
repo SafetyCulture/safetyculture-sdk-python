@@ -40,7 +40,7 @@ python exporter.py --format pdf
 More than one supported formats can be exported at once e.g.
 
 ```
-python exporter.py --format pdf docx json csv media
+python exporter.py --format pdf docx json csv media web-report-link
 ```
 
 Note:
@@ -70,10 +70,10 @@ To export Multiple Audits to Bulk CSV file:
 python exporter.py --format csv
 ```
 
-#### CSV values whose format does not match JSON properties
+#### CSV values format does not match JSON properties
 ##### Date/Time field
 * JSON: `2017-03-03T03:45:58.090Z`
-* CSV:  Date Value: `03 March 2017` and Time Value: `03:45AM7`
+* CSV:  `03 March 2017 03:45 AM`
 ##### Checkbox field
 * JSON: `1` or `0`
 * CSV:  `True` or `False`
@@ -87,6 +87,10 @@ python exporter.py --format csv
 ### Media Export
 * Executing ```python exporter.py --format media``` will export all audit media files for each audit (images, attachments, signature, and drawings) to a folder named after the audit ID.
 
+### Web Report Link Export
+* Executing ```python exporter.py --format web-report-link``` will export your Web Report Links to a CSV file named `web-report-links.csv`.
+
+The CSV file includes five columns. Template ID, Template Name, Audit ID, Audit Name, and Web Report Link. 
 
 ## Export settings
 
