@@ -16,7 +16,8 @@ import yaml
 import pytz
 import shutil
 from tzlocal import get_localzone
-import csvExporter as csv
+import csvExporter
+import unicodecsv as csv
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 from safetypy import safetypy as sp
@@ -249,13 +250,46 @@ def create_directory_if_not_exists(logger, path):
             log_critical_error(logger, ex, 'An error happened trying to create ' + path)
             raise
 
-def save_exported_media_to_file(logger, export_dir, export_doc, filename, extension):
+def save_web_report_link_to_file(logger, export_dir, web_report_data):
+    """
+    Write Web Report links to 'web-report-links.csv' on disk at specified location 
+    Any existing file with the same name will be appended to
+    :param logger:          the logger
+    :param export_dir:      path to directory for exports
+    :param web_report_data:     Data to write to CSV: Template ID, Template name, Audit ID, Audit name, Web Report link
+    """
+    if not os.path.exists(export_dir):
+        logger.info("Creating directory at {0} for Web Report links.".format(export_dir))
+        os.makedirs(export_dir)
+    file_path = os.path.join(export_dir, 'web-report-links.csv')
+    if os.path.isfile(file_path):
+        logger.info('Appending Web Report link to ' + file_path)
+        try:
+            with open(file_path, 'a') as web_report_link_csv:
+                wr = csv.writer(web_report_link_csv, dialect='excel', quoting=csv.QUOTE_ALL)
+                wr.writerow(web_report_data)
+                web_report_link_csv.close()
+        except Exception as ex:
+            log_critical_error(logger, ex, 'Exception while writing' + file_path + ' to file')
+    else:
+        logger.info('Creating ' + file_path)
+        logger.info('Appending web report to ' + file_path)
+        try:
+            with open(file_path, 'w') as web_report_link_csv:
+                wr = csv.writer(web_report_link_csv, dialect='excel', quoting=csv.QUOTE_ALL)
+                wr.writerow(['Template ID', 'Template Name', 'Audit ID', 'Audit Name',  'Web Report Link'])
+                wr.writerow(web_report_data)
+                web_report_link_csv.close()
+        except Exception as ex:
+            log_critical_error(logger, ex, 'Exception while writing' + file_path + ' to file')
+
+def save_exported_media_to_file(logger, export_dir, media_file, filename, extension):
     """
     Write exported media item to disk at specified location with specified file name.
     Any existing file with the same name will be overwritten.
     :param logger:      the logger
     :param export_dir:  path to directory for exports
-    :param export_doc:  media file to write to disc
+    :param media_file:  media file to write to disc
     :param filename:    filename to give exported image
     :param extension:   extension to give exported image
     """
@@ -267,8 +301,8 @@ def save_exported_media_to_file(logger, export_dir, export_doc, filename, extens
         logger.info('Overwriting existing report at ' + file_path)
     try:
         with open(file_path, 'wb') as out_file:
-            shutil.copyfileobj(export_doc.raw, out_file)
-        del export_doc
+            shutil.copyfileobj(media_file.raw, out_file)
+        del media_file
     except Exception as ex:
         log_critical_error(logger, ex, 'Exception while writing' + file_path + ' to file')
 
@@ -433,7 +467,7 @@ def parse_command_line_arguments(logger):
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', help='config file to use, defaults to ' + DEFAULT_CONFIG_FILENAME)
-    parser.add_argument('--format', nargs='*', help='formats to download, valid options are pdf, json, docx, csv, media')
+    parser.add_argument('--format', nargs='*', help='formats to download, valid options are pdf, json, docx, csv, media, web-report-link')
     parser.add_argument('--list_export_profiles', nargs='*', help='display all export profiles, or restrict to specific'
                                                                   ' template_id if supplied as additional argument')
     parser.add_argument('--loop', nargs='*', help='execute continuously until interrupted')
@@ -450,11 +484,11 @@ def parse_command_line_arguments(logger):
 
     export_formats = ['pdf']
     if args.format is not None and len(args.format) > 0:
-        valid_export_formats = ['json', 'docx', 'pdf', 'csv', 'media']
+        valid_export_formats = ['json', 'docx', 'pdf', 'csv', 'media', 'web-report-link']
         export_formats = []
         for option in args.format:
             if option not in valid_export_formats:
-                print '{0} is not a valid export format.  Valid options are pdf, json, docx, csv, or media'.format(option)
+                print '{0} is not a valid export format.  Valid options are pdf, json, docx, csv, web-report-link, or media'.format(option)
                 logger.info('invalid export format argument: {0}'.format(option))
             else:
                 export_formats.append(option)
@@ -531,7 +565,6 @@ def sync_exports(logger, sc_client, settings):
                 logger.info('downloading ' + audit_id)
                 audit_json = sc_client.get_audit(audit_id)
                 template_id = audit_json['template_id']
-
                 if template_id in export_profiles.keys():
                     export_profile_id = export_profiles[template_id]
                 else:
@@ -543,31 +576,34 @@ def sync_exports(logger, sc_client, settings):
                         export_filename = audit_id
                 else:
                     export_filename = audit_id
-
-                export_doc = None
                 for export_format in export_formats:
                     if export_format in ['pdf', 'docx']:
                         export_doc = sc_client.get_export(audit_id, timezone, export_profile_id, export_format)
+                        save_exported_document(logger, export_path, export_doc, export_filename, export_format)
                     elif export_format == 'json':
                         export_doc = json.dumps(audit_json, indent=4)
+                        save_exported_document(logger, export_path, export_doc, export_filename, export_format)
                     elif export_format == 'csv':
-                        csv_exporter = csv.CsvExporter(audit_json, export_inactive_items_to_csv)
+                        csv_exporter = csvExporter.CsvExporter(audit_json, export_inactive_items_to_csv)
                         csv_export_filename = audit_json['template_id']
                         csv_exporter.append_converted_audit_to_bulk_export_file(os.path.join(export_path, csv_export_filename + '.csv'))
-                        continue
                     elif export_format == 'media':
                         media_export_path = os.path.join(export_path, 'media', export_filename)
                         extension = 'jpg'
                         media_id_list = get_media_from_audit(logger, audit_json)
-                        if len(media_id_list) == 0:
-                            logger.info("No media associated with {0}.".format(audit_id))
                         for media_id in media_id_list:
                             logger.info("Saving media_{0} to disc.".format(media_id))
                             media_file = sc_client.get_media(audit_id, media_id)
                             media_export_filename = media_id
                             save_exported_media_to_file(logger, media_export_path, media_file, media_export_filename, extension)
-                        continue
-                    save_exported_document(logger, export_path, export_doc, export_filename, export_format)
+                    elif export_format == 'web-report-link':
+                        web_report_link = sc_client.get_web_report(audit_id)
+                        web_report_data = [template_id,
+                               csvExporter.get_json_property(audit_json, 'template_data', 'metadata', 'name'),
+                               audit_id,
+                               csvExporter.get_json_property(audit_json, 'audit_data', 'name'),
+                               web_report_link]
+                        save_web_report_link_to_file(logger, export_path, web_report_data)
                 logger.debug('setting last modified to ' + audit['modified_at'])
                 update_sync_marker_file(audit['modified_at'])
             else:
