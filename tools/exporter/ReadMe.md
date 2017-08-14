@@ -71,7 +71,7 @@ To export Multiple Audits to Bulk CSV file:
 python exporter.py --format csv
 ```
 
-#### CSV values format does not match JSON properties
+#### The format of the following CSV values do not match the format used by the SafetyCulture API Audit JSON 
 ##### Date/Time field
 * JSON: `2017-03-03T03:45:58.090Z`
 * CSV:  `03 March 2017 03:45 AM`
