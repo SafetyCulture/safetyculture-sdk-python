@@ -1,14 +1,44 @@
-"Item Type","Label","Response","Comment","Media Hypertext Reference","Location Coordinates","Item Score","Item Max Score","Item Score Percentage","Mandatory","Failed Response","Inactive","Item ID","Response ID","Parent ID","Audit Owner","Audit Author","Audit Name","Audit Score","Audit Max Score","Audit Score Percentage","Audit Duration (seconds)","Date Started","Time Started","Date Completed","Time Completed","Audit ID","Template ID","Template Name","Template Author"
-"section","Title Page","","","","","","","","","","","f3245d39-ea77-11e1-aff1-0800200c9a66","","","Tony Oreglia","Tony Oreglia","Answered frog","0","0","0","27","04 March 2017","10:09AM","04 March 2017","10:10AM","audit_B1EEF47495EB4E2983BF2D3A9409F7A7","template_2356571de2784089bb05b03a91039e8f","single multiple choice field - single response","Tony Oreglia"
-"textsingle","Document No.","000001","","","","","","","False","","","f3245d46-ea77-11e1-aff1-0800200c9a66","","f3245d39-ea77-11e1-aff1-0800200c9a66","Tony Oreglia","Tony Oreglia","Answered frog","0","0","0","27","04 March 2017","10:09AM","04 March 2017","10:10AM","audit_B1EEF47495EB4E2983BF2D3A9409F7A7","template_2356571de2784089bb05b03a91039e8f","single multiple choice field - single response","Tony Oreglia"
-"textsingle","Audit Title","Answered frog","","","","","","","False","","","f3245d40-ea77-11e1-aff1-0800200c9a66","","f3245d39-ea77-11e1-aff1-0800200c9a66","Tony Oreglia","Tony Oreglia","Answered frog","0","0","0","27","04 March 2017","10:09AM","04 March 2017","10:10AM","audit_B1EEF47495EB4E2983BF2D3A9409F7A7","template_2356571de2784089bb05b03a91039e8f","single multiple choice field - single response","Tony Oreglia"
-"textsingle","Client / Site","","","","","","","","False","","","f3245d41-ea77-11e1-aff1-0800200c9a66","","f3245d39-ea77-11e1-aff1-0800200c9a66","Tony Oreglia","Tony Oreglia","Answered frog","0","0","0","27","04 March 2017","10:09AM","04 March 2017","10:10AM","audit_B1EEF47495EB4E2983BF2D3A9409F7A7","template_2356571de2784089bb05b03a91039e8f","single multiple choice field - single response","Tony Oreglia"
-"datetime","Conducted on","04 March 2017 at 10:09AM","","","","","","","False","","","f3245d42-ea77-11e1-aff1-0800200c9a66","","f3245d39-ea77-11e1-aff1-0800200c9a66","Tony Oreglia","Tony Oreglia","Answered frog","0","0","0","27","04 March 2017","10:09AM","04 March 2017","10:10AM","audit_B1EEF47495EB4E2983BF2D3A9409F7A7","template_2356571de2784089bb05b03a91039e8f","single multiple choice field - single response","Tony Oreglia"
-"textsingle","Prepared by","Tony Oreglia","","","","","","","False","","","f3245d43-ea77-11e1-aff1-0800200c9a66","","f3245d39-ea77-11e1-aff1-0800200c9a66","Tony Oreglia","Tony Oreglia","Answered frog","0","0","0","27","04 March 2017","10:09AM","04 March 2017","10:10AM","audit_B1EEF47495EB4E2983BF2D3A9409F7A7","template_2356571de2784089bb05b03a91039e8f","single multiple choice field - single response","Tony Oreglia"
+"Item Type","Label","Response","Comment","Media Hypertext Reference","Latitude","Longitude","Item Score","Item Max Score","Item Score Percentage","Mandatory","Failed Response","Inactive","Item ID","Response ID","Parent ID","Audit Owner","Audit Author","Audit Name","Audit Score","Audit Max Score","Audit Score Percentage","Audit Duration (seconds)","Date Started","Date Completed","Date Modified","Audit ID","Template ID","Template Name","Template Author","ItemCategory","DocumentNo","ConductedOn","PreparedBy","Location","Personnel","ClientSite"
+"section","Title Page","","","","","","","","","False","False","False","f3245d39-ea77-11e1-aff1-0800200c9a66","","","Tony Oreglia","Tony Oreglia","Answered frog","0","0","0","27","04 March 2017 10:09 AM","04 March 2017 10:10 AM","04 March 2017 10:10 AM","audit_B1EEF47495EB4E2983BF2D3A9409F7A7","template_2356571de2784089bb05b03a91039e8f","single multiple choice field - single response","Tony Oreglia","","000001","2017-03-04T10:09:33.000Z","Tony Oreglia","7 Gilbert Street
+Dover Heights NSW 2030
+Australia
+(-33.8707769, 151.278377)","",""
+"textsingle","Document No.","000001","","","","","","","","False","False","False","f3245d46-ea77-11e1-aff1-0800200c9a66","","f3245d39-ea77-11e1-aff1-0800200c9a66","Tony Oreglia","Tony Oreglia","Answered frog","0","0","0","27","04 March 2017 10:09 AM","04 March 2017 10:10 AM","04 March 2017 10:10 AM","audit_B1EEF47495EB4E2983BF2D3A9409F7A7","template_2356571de2784089bb05b03a91039e8f","single multiple choice field - single response","Tony Oreglia","Title Page","000001","2017-03-04T10:09:33.000Z","Tony Oreglia","7 Gilbert Street
+Dover Heights NSW 2030
+Australia
+(-33.8707769, 151.278377)","",""
+"textsingle","Audit Title","Answered frog","","","","","","","","False","False","False","f3245d40-ea77-11e1-aff1-0800200c9a66","","f3245d39-ea77-11e1-aff1-0800200c9a66","Tony Oreglia","Tony Oreglia","Answered frog","0","0","0","27","04 March 2017 10:09 AM","04 March 2017 10:10 AM","04 March 2017 10:10 AM","audit_B1EEF47495EB4E2983BF2D3A9409F7A7","template_2356571de2784089bb05b03a91039e8f","single multiple choice field - single response","Tony Oreglia","Title Page","000001","2017-03-04T10:09:33.000Z","Tony Oreglia","7 Gilbert Street
+Dover Heights NSW 2030
+Australia
+(-33.8707769, 151.278377)","",""
+"textsingle","Client / Site","","","","","","","","","False","False","False","f3245d41-ea77-11e1-aff1-0800200c9a66","","f3245d39-ea77-11e1-aff1-0800200c9a66","Tony Oreglia","Tony Oreglia","Answered frog","0","0","0","27","04 March 2017 10:09 AM","04 March 2017 10:10 AM","04 March 2017 10:10 AM","audit_B1EEF47495EB4E2983BF2D3A9409F7A7","template_2356571de2784089bb05b03a91039e8f","single multiple choice field - single response","Tony Oreglia","Title Page","000001","2017-03-04T10:09:33.000Z","Tony Oreglia","7 Gilbert Street
+Dover Heights NSW 2030
+Australia
+(-33.8707769, 151.278377)","",""
+"datetime","Conducted on","04 March 2017 10:09 AM","","","","","","","","False","False","False","f3245d42-ea77-11e1-aff1-0800200c9a66","","f3245d39-ea77-11e1-aff1-0800200c9a66","Tony Oreglia","Tony Oreglia","Answered frog","0","0","0","27","04 March 2017 10:09 AM","04 March 2017 10:10 AM","04 March 2017 10:10 AM","audit_B1EEF47495EB4E2983BF2D3A9409F7A7","template_2356571de2784089bb05b03a91039e8f","single multiple choice field - single response","Tony Oreglia","Title Page","000001","2017-03-04T10:09:33.000Z","Tony Oreglia","7 Gilbert Street
+Dover Heights NSW 2030
+Australia
+(-33.8707769, 151.278377)","",""
+"textsingle","Prepared by","Tony Oreglia","","","","","","","","False","False","False","f3245d43-ea77-11e1-aff1-0800200c9a66","","f3245d39-ea77-11e1-aff1-0800200c9a66","Tony Oreglia","Tony Oreglia","Answered frog","0","0","0","27","04 March 2017 10:09 AM","04 March 2017 10:10 AM","04 March 2017 10:10 AM","audit_B1EEF47495EB4E2983BF2D3A9409F7A7","template_2356571de2784089bb05b03a91039e8f","single multiple choice field - single response","Tony Oreglia","Title Page","000001","2017-03-04T10:09:33.000Z","Tony Oreglia","7 Gilbert Street
+Dover Heights NSW 2030
+Australia
+(-33.8707769, 151.278377)","",""
 "address","Location","7 Gilbert Street
 Dover Heights NSW 2030
 Australia
-(-33.8707769, 151.278377)","","","151.278377, -33.8707769","","","","False","","","f3245d44-ea77-11e1-aff1-0800200c9a66","","f3245d39-ea77-11e1-aff1-0800200c9a66","Tony Oreglia","Tony Oreglia","Answered frog","0","0","0","27","04 March 2017","10:09AM","04 March 2017","10:10AM","audit_B1EEF47495EB4E2983BF2D3A9409F7A7","template_2356571de2784089bb05b03a91039e8f","single multiple choice field - single response","Tony Oreglia"
-"text","Personnel","","","","","","","","False","","","f3245d45-ea77-11e1-aff1-0800200c9a66","","f3245d39-ea77-11e1-aff1-0800200c9a66","Tony Oreglia","Tony Oreglia","Answered frog","0","0","0","27","04 March 2017","10:09AM","04 March 2017","10:10AM","audit_B1EEF47495EB4E2983BF2D3A9409F7A7","template_2356571de2784089bb05b03a91039e8f","single multiple choice field - single response","Tony Oreglia"
-"section","Audit","","","","","","","","","","","7a0c5233-2133-4405-ace3-17eabc96cc93","","","Tony Oreglia","Tony Oreglia","Answered frog","0","0","0","27","04 March 2017","10:09AM","04 March 2017","10:10AM","audit_B1EEF47495EB4E2983BF2D3A9409F7A7","template_2356571de2784089bb05b03a91039e8f","single multiple choice field - single response","Tony Oreglia"
-"list","what kind of animal are you most like? ","frog","","","","","","","False","","","dce6adb4-bf40-47c8-baa7-d4bdfd19c340","658eb4eb-8b4c-4fdf-b8f1-95d119376667","7a0c5233-2133-4405-ace3-17eabc96cc93","Tony Oreglia","Tony Oreglia","Answered frog","0","0","0","27","04 March 2017","10:09AM","04 March 2017","10:10AM","audit_B1EEF47495EB4E2983BF2D3A9409F7A7","template_2356571de2784089bb05b03a91039e8f","single multiple choice field - single response","Tony Oreglia"
+(-33.8707769, 151.278377)","",""," -33.8707769","151.278377","","","","False","False","False","f3245d44-ea77-11e1-aff1-0800200c9a66","","f3245d39-ea77-11e1-aff1-0800200c9a66","Tony Oreglia","Tony Oreglia","Answered frog","0","0","0","27","04 March 2017 10:09 AM","04 March 2017 10:10 AM","04 March 2017 10:10 AM","audit_B1EEF47495EB4E2983BF2D3A9409F7A7","template_2356571de2784089bb05b03a91039e8f","single multiple choice field - single response","Tony Oreglia","Title Page","000001","2017-03-04T10:09:33.000Z","Tony Oreglia","7 Gilbert Street
+Dover Heights NSW 2030
+Australia
+(-33.8707769, 151.278377)","",""
+"text","Personnel","","","","","","","","","False","False","False","f3245d45-ea77-11e1-aff1-0800200c9a66","","f3245d39-ea77-11e1-aff1-0800200c9a66","Tony Oreglia","Tony Oreglia","Answered frog","0","0","0","27","04 March 2017 10:09 AM","04 March 2017 10:10 AM","04 March 2017 10:10 AM","audit_B1EEF47495EB4E2983BF2D3A9409F7A7","template_2356571de2784089bb05b03a91039e8f","single multiple choice field - single response","Tony Oreglia","Title Page","000001","2017-03-04T10:09:33.000Z","Tony Oreglia","7 Gilbert Street
+Dover Heights NSW 2030
+Australia
+(-33.8707769, 151.278377)","",""
+"section","Audit","","","","","","","","","False","False","False","7a0c5233-2133-4405-ace3-17eabc96cc93","","","Tony Oreglia","Tony Oreglia","Answered frog","0","0","0","27","04 March 2017 10:09 AM","04 March 2017 10:10 AM","04 March 2017 10:10 AM","audit_B1EEF47495EB4E2983BF2D3A9409F7A7","template_2356571de2784089bb05b03a91039e8f","single multiple choice field - single response","Tony Oreglia","","000001","2017-03-04T10:09:33.000Z","Tony Oreglia","7 Gilbert Street
+Dover Heights NSW 2030
+Australia
+(-33.8707769, 151.278377)","",""
+"list","what kind of animal are you most like? ","frog","","","","","","","","False","False","False","dce6adb4-bf40-47c8-baa7-d4bdfd19c340","658eb4eb-8b4c-4fdf-b8f1-95d119376667","7a0c5233-2133-4405-ace3-17eabc96cc93","Tony Oreglia","Tony Oreglia","Answered frog","0","0","0","27","04 March 2017 10:09 AM","04 March 2017 10:10 AM","04 March 2017 10:10 AM","audit_B1EEF47495EB4E2983BF2D3A9409F7A7","template_2356571de2784089bb05b03a91039e8f","single multiple choice field - single response","Tony Oreglia","Audit","000001","2017-03-04T10:09:33.000Z","Tony Oreglia","7 Gilbert Street
+Dover Heights NSW 2030
+Australia
+(-33.8707769, 151.278377)","",""
