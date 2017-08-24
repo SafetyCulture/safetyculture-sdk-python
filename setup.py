@@ -11,7 +11,7 @@ setup(name = 'safetyculture-sdk-python',
       # scripts = ['tools/exporter/exporter.py', 'tools/exporter/csvExporter.py'],
       entry_points = {
             'console_scripts': [
-                  'exporter = tools.exporter.exporter:main',
+                  'safetyculture_audit_exporter = tools.exporter.exporter:main',
             ],
       },
       long_description=open('ReadMe.md', 'r').read(),

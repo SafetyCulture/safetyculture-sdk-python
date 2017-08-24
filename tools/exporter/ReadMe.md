@@ -5,7 +5,6 @@ Supported export formats: PDF, MS WORD (docx), JSON, and CSV. Media and Web Repo
 ## Installation
 
   1. See [top level ReadMe.md](https://github.com/SafetyCulture/safetyculture-sdk-python/blob/master/ReadMe.md)
-  2. Create a config.yaml file and replace ``YOUR_SAFETYCULTURE_API_TOKEN`` with your SafetyCulture API token
 
 ## How to run
 ### Common usage
@@ -13,27 +12,25 @@ Supported export formats: PDF, MS WORD (docx), JSON, and CSV. Media and Web Repo
 To export in PDF format all audit reports owned by your SafetyCulture account including those shared with you by other SafetyCulture users open a command line prompt and run:
 
 ```
-python exporter.py
+safetyculture_audit_exporter --config=/path/to/config.yaml
 ```
-
-or simply double click exporter.py
 
 To enable app to run continuously until interrupted, use the loop command line argument:
 
 ```
-python exporter.py --loop
+safetyculture_audit_exporter --config=/path/to/config.yaml --loop
 ```
 
 To specify the export format explicitly run:
 
 ```
-python exporter.py --format pdf
+safetyculture_audit_exporter --config=/path/to/config.yaml --format pdf
 ```
 
 More than one supported formats can be exported at once e.g.
 
 ```
-python exporter.py --format pdf docx json csv media web-report-link
+safetyculture_audit_exporter --config=/path/to/config.yaml --format pdf docx json csv media web-report-link
 ```
 
 Note:
@@ -43,16 +40,6 @@ Note:
 * Up to 1000 audits will be exported each time the software checks for new audits. If more than 1000 audits exist on the SafetyCulture platform, they will be retrieved automatically in subsequent sync cycles.
 
 ### CSV Export
-#### Single Audit CSV Export
-To export a single Audit:
-1. First export the Audit in JSON format
-2. Execute csvExporter.py with the Audit JSON sent as an argument.
-```
-python exporter.py --format json
-python csvExporter.py path/to/audit_file.json
-```
-* Basic example of [CSV Export Format](https://github.com/SafetyCulture/safetyculture-sdk-python/blob/master/tools/exporter/tests/csv_test_files/unit_test_single_question_yes___no___na_answered_no_expected_output.csv)
-
 #### Bulk CSV Export
 * Each Audit is the same format as the single Audit CSV export
 * Audits are grouped by Template. Audits built from the same template are appended to a CSV file named using the templates unique ID number.
@@ -60,13 +47,13 @@ python csvExporter.py path/to/audit_file.json
 To export Multiple Audits to Bulk CSV file:
 * Execute exporter.py with the format option set to CSV
 ```
-python exporter.py --format csv
+safetyculture_audit_exporter --config=/path/to/config.yaml --format csv
 ```
 
-#### CSV values whose format does not match JSON properties
+#### The format of the following CSV values do not match the format used by the SafetyCulture API Audit JSON 
 ##### Date/Time field
 * JSON: `2017-03-03T03:45:58.090Z`
-* CSV:  Date Value: `03 March 2017` and Time Value: `03:45AM7`
+* CSV:  `03 March 2017 03:45 AM`
 ##### Checkbox field
 * JSON: `1` or `0`
 * CSV:  `True` or `False`
@@ -157,11 +144,11 @@ will result in all exported files named after the `Audit Title` field.
 To list all available export profile IDs and their associated templates:
 
 ```
-python exporter.py --list_export_profiles
+safetyculture_audit_exporter --config=/path/to/config.yaml --list_export_profiles
 ```
 To list export profile IDs associated with specific templates:
 ```
-python exporter.py --list_export_profiles template_3E631E46F466411B9C09AD804886A8B4
+safetyculture_audit_exporter --config=/path/to/config.yaml --list_export_profiles template_3E631E46F466411B9C09AD804886A8B4
 ```
 
 Multiple template_ids can be passed, separated by a space
@@ -171,7 +158,7 @@ Multiple template_ids can be passed, separated by a space
 You may want to maintain multiple export configurations in different YAML configuration files. To use a specific configuration file (other than config.yaml) do
 
 ```
-python exporter.py --config=/path/to/alternate_config.yaml
+safetyculture_audit_exporter --config=/path/to/config.yaml --config=/path/to/alternate_config.yaml
 ```
 
 Note that you can supply a relative or absolute path to alternate_config.yaml if it is in another directory

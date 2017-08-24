@@ -6,10 +6,8 @@ Python SDK for interacting with the SafetyCulture API
 $ `pip install safetyculture-sdk-python`
 
 This will install
-* The SafetyCulture Python SDK
-* The SafetyCulture CSV Exporter
+* SafetyCulture Python SDK
 * SafetyCulture Exporter Script
-* Example config.yaml file
 * README files
 
 
@@ -17,7 +15,7 @@ This will install
 1. Import `safetypy` in a python module: `import safetpy`
 2. Create an instance of safetypy.SafetyCulture class: `sc = safetypy.SafetyCulture(YOUR_SAFETYCULTURE_API_TOKEN)`
 
-#### For more information regarding the Pyton SDK functionality
+#### For more information regarding the Python SDK functionality
 1. Open the Python interpreter by typing `python`
 2. type `import safetypy`
 3. type `help(safetypy.SafetyCulture)`
@@ -37,9 +35,8 @@ export_profiles:
 sync_delay_in_seconds:
 media_sync_offset_in_seconds:
 ```
-2. Update `config.yaml` with your API Token. See how to generate an API token [here](https://support.safetyculture.com/integrations/how-to-get-an-api-token/).
-3. Type the command `exporter --config=/path/to/config.yaml` with the full path to your config.yaml file.
-
+2. Replace YOUR_SAFETYCULTURE_API_TOKEN with your API Token. See how to generate an API token [here](https://support.safetyculture.com/integrations/how-to-get-an-api-token/).
+3. Type the command `safetyculture_audit_exporter --config=/path/to/config.yaml` with the full path to your config.yaml file to start exporting audits in PDF format.
 4. See [here](https://github.com/SafetyCulture/safetyculture-sdk-python/blob/INTG-539-pip_install/tools/exporter/ReadMe.md) for more information about how to use the exporter tool.
 
 

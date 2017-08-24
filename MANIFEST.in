@@ -1,3 +1,2 @@
 include ReadMe.md
 include tools/exporter/ReadMe.md
-include tools/exporter/config.yaml
