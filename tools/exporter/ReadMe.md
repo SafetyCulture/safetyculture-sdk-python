@@ -1,20 +1,13 @@
 # Audit exporter tool
-
 Allows you to export audit data from the SafetyCulture Platform and save them anywhere on your computer.
-
-Supported export formats: PDF, MS WORD (docx), JSON, and CSV. Media exporting is also supported.
+Supported export formats: PDF, MS WORD (docx), JSON, and CSV. Media and Web Report Link exporting is also supported.
 
 ## Installation
 
-  1. First install the Python SDK (see top-level Readme)
-  2. Switch to this directory (safetyculture-sdk-python/tools/exporter)
-  3. Execute the following command from the command line:
-    ``pip install -r requirements.txt``
-  4. Edit config.yaml and replace ``YOUR_SAFETYCULTURE_API_TOKEN`` with your SafetyCulture API token
-
+  1. See [top level ReadMe.md](https://github.com/SafetyCulture/safetyculture-sdk-python/blob/master/ReadMe.md)
+  2. Create a config.yaml file and replace ``YOUR_SAFETYCULTURE_API_TOKEN`` with your SafetyCulture API token
 
 ## How to run
-
 ### Common usage
 
 To export in PDF format all audit reports owned by your SafetyCulture account including those shared with you by other SafetyCulture users open a command line prompt and run:

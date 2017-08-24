@@ -2,11 +2,19 @@ from setuptools import setup
 
 setup(name = 'safetyculture-sdk-python',
       version = '1.4.0',
-      description = 'SafetyCulture Python SDK and export tools',
+      description = 'SafetyCulture Python SDK and export toolsb',
       url = 'https://github.com/SafetyCulture/safetyculture-sdk-python',
       author = 'SafetyCulture',
       author_email = 'integrations@safetyculture.io',
+      include_package_data=True,
       packages = ['safetypy', 'tools', 'tools/exporter'],
+      # scripts = ['tools/exporter/exporter.py', 'tools/exporter/csvExporter.py'],
+      entry_points = {
+            'console_scripts': [
+                  'exporter = tools.exporter.exporter:main',
+            ],
+      },
+      long_description=open('ReadMe.md', 'r').read(),
       install_requires = [
             'python-dateutil>=2.5.0',
             'pytz>=2015.7',
