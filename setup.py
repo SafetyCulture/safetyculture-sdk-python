@@ -8,13 +8,12 @@ setup(name = 'safetyculture-sdk-python',
       author_email = 'integrations@safetyculture.io',
       include_package_data=True,
       packages = ['safetypy', 'tools', 'tools/exporter'],
-      # scripts = ['tools/exporter/exporter.py', 'tools/exporter/csvExporter.py'],
       entry_points = {
             'console_scripts': [
                   'safetyculture_audit_exporter = tools.exporter.exporter:main',
             ],
       },
-      long_description=open('ReadMe.md', 'r').read(),
+      long_description=open('README.md', 'r').read(),
       install_requires = [
             'python-dateutil>=2.5.0',
             'pytz>=2015.7',

@@ -2,6 +2,10 @@
 
 Python SDK for interacting with the SafetyCulture API
 
+Supports [Python 2](https://www.python.org/downloads/mac-osx/).
+This SDK is not compatible with Python 3. 
+
+
 ## Installation
 $ `pip install safetyculture-sdk-python`
 
