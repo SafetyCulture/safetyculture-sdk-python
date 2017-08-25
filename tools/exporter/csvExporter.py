@@ -561,6 +561,7 @@ def main():
         csv_exporter = CsvExporter(audit_json)
         csv_exporter.save_converted_audit_to_file(os.path.splitext(arg.split('/')[-1])[0] + '.csv',
                                                   allow_overwrite=True)
+    print 'Exiting'
 
 
 if __name__ == '__main__':

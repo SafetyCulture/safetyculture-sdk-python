@@ -21,7 +21,6 @@ HTTP_USER_AGENT_ID = 'safetyculture-python-sdk'
 
 class SafetyCulture:
     def __init__(self, api_token):
-
         self.current_dir = os.getcwd()
         self.log_dir = self.current_dir + '/log/'
 

@@ -473,7 +473,7 @@ def parse_command_line_arguments(logger):
     parser.add_argument('--loop', nargs='*', help='execute continuously until interrupted')
     args = parser.parse_args()
 
-    config_filename = DEFAULT_CONFIG_FILENAME
+    config_filename = os.path.join(os.path.dirname(__file__), DEFAULT_CONFIG_FILENAME)
     if args.config is not None:
         if os.path.isfile(args.config):
             config_filename = args.config
