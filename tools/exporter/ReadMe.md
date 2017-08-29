@@ -59,6 +59,7 @@ python exporter.py --format json
 python csvExporter.py path/to/audit_file.json
 ```
 * Basic example of [CSV Export Format](https://github.com/SafetyCulture/safetyculture-sdk-python/blob/master/tools/exporter/tests/csv_test_files/unit_test_single_question_yes___no___na_answered_no_expected_output.csv)
+* [Explanation and details of CSV format](https://support.safetyculture.com/integrations/safetyculture-csv-exporter-tool/#format)
 
 #### Bulk CSV Export
 * Each Audit is the same format as the single Audit CSV export
@@ -70,10 +71,10 @@ To export Multiple Audits to Bulk CSV file:
 python exporter.py --format csv
 ```
 
-#### CSV values whose format does not match JSON properties
+#### The format of the following CSV values do not match the format used by the SafetyCulture API Audit JSON 
 ##### Date/Time field
 * JSON: `2017-03-03T03:45:58.090Z`
-* CSV:  Date Value: `03 March 2017` and Time Value: `03:45AM7`
+* CSV:  `03 March 2017 03:45 AM`
 ##### Checkbox field
 * JSON: `1` or `0`
 * CSV:  `True` or `False`
