@@ -333,7 +333,7 @@ class CsvExporter:
         if file_exists and not allow_overwrite:
             sys.exit(
                 'File already exists at ' + output_csv_path +
-                '\nPlease set allow_overwrite to True in config.yaml file. See ReadMe.md for further instruction')
+                '\nPlease set allow_overwrite to True in config.yaml file. See README.md for further instruction')
         elif file_exists and allow_overwrite:
             print 'Overwriting file at ' + output_csv_path
         elif self.audit_table[0] != CSV_HEADER_ROW:
