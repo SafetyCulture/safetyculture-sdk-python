@@ -318,7 +318,7 @@ class SafetyCulture:
     def get_media(self, audit_id, media_id):
         """
         Get media item associated with a specified audit and media ID
-        :param audit_id:    audit ID of document that contains media 
+        :param audit_id:    audit ID of document that contains media
         :param media_id:    media ID of image to fetch
         :return:            The Content-Type will be the MIME type associated with the media, 
                             and the body of the response is the media itself.
@@ -344,7 +344,7 @@ class SafetyCulture:
 
     def get_audit_actions(self, audit_id):
         actions_url = self.api_url + 'actions/search'
-        payload = "audit_id=audit_ced1e02318cf4b319c5487db3ba1d47e"
+        payload = "audit_id=" + audit_id
         self.custom_http_headers['content-type'] = 'application/x-www-form-urlencoded'
         response = self.authenticated_request_post(actions_url, data=payload)
         del self.custom_http_headers['content-type']
