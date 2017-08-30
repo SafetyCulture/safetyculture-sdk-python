@@ -487,7 +487,7 @@ def parse_command_line_arguments(logger):
                                                                   ' template_id if supplied as additional argument')
     parser.add_argument('--loop', nargs='*', help='execute continuously until interrupted')
     parser.add_argument('--setup', action='store_true', help='Automatically create new directory containing the necessary config file.'
-                        'Directory will be named SafetyCulture Audit Exports, and will be placed in your current directory')
+                        'Directory will be named iAuditor Audit Exports, and will be placed in your current directory')
     args = parser.parse_args()
 
     config_filename = DEFAULT_CONFIG_FILENAME
@@ -521,21 +521,21 @@ def parse_command_line_arguments(logger):
 
 def auto_create_config(logger):
     """
-    Created new directory in current working directory called 'SafetyCulture Audit Exports'. Default config file placed
-    in directory, with user API Token. User is asked for SafetyCulture username and password in order to generate their
+    Created new directory in current working directory called 'iAuditor Audit Exports'. Default config file placed
+    in directory, with user API Token. User is asked for iAuditor username and password in order to generate their
     API token.
     :param logger:  the logger
     """
-    directory = 'SafetyCulture Audit Exports'
+    directory = 'iAuditor Audit Exports'
     current_directoy_path = os.getcwd()
     token = sp.get_user_api_token(logger)
     if token:
         DEFAULT_CONFIG_FILE[1] = '\n    token: ' + str(token)
     else:
         exit()
-    os.makedirs('SafetyCulture Audit Exports')
+    os.makedirs('iAuditor Audit Exports')
     config_file = open(os.path.join(current_directoy_path, directory, 'config.yaml'), 'w')
-    logger.info("'SafetyCulture Audit Exports' directory successfully created.")
+    logger.info("'iAuditor Audit Exports' directory successfully created.")
     config_file.writelines(DEFAULT_CONFIG_FILE)
     logger.info("Default config file ('config.yaml') successfully created.")
     exit()

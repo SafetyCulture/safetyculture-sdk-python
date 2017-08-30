@@ -24,8 +24,8 @@ def get_user_api_token(logger):
     :param logger:  the logger
     :return:        API Token if authenticated else None
     """
-    username = raw_input("What is your SafetyCulture login email: ")
-    password = raw_input("What is your SafetyCulture password: ")
+    username = raw_input("What is your iAuditor login email: ")
+    password = raw_input("What is your iAuditor password: ")
     generate_token_url = "https://api.safetyculture.io/auth"
     payload = "username=" + username + "&password=" + password + "&grant_type=password"
     headers = {
