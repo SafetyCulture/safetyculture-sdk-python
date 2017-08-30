@@ -18,6 +18,27 @@ DEFAULT_EXPORT_FORMAT = 'pdf'
 GUID_PATTERN = '[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}$'
 HTTP_USER_AGENT_ID = 'safetyculture-python-sdk'
 
+def get_user_api_token(logger):
+    """
+    Generate SafetyCulture user API Token
+    :param logger:  the logger
+    :return:        API Token if authenticated else None
+    """
+    username = raw_input("What is your SafetyCulture login email: ")
+    password = raw_input("What is your SafetyCulture password: ")
+    generate_token_url = "https://api.safetyculture.io/auth"
+    payload = "username=" + username + "&password=" + password + "&grant_type=password"
+    headers = {
+        'content-type': "application/x-www-form-urlencoded",
+        'cache-control': "no-cache",
+    }
+    response = requests.request("POST", generate_token_url, data=payload, headers=headers)
+    if response.status_code == requests.codes.ok:
+        return response.json()['access_token']
+    else:
+        logger.error('An error occurred calling ' + generate_token_url + ': ' + str(response.json()))
+        return None
+
 
 class SafetyCulture:
     def __init__(self, api_token):
