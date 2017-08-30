@@ -283,6 +283,37 @@ def save_web_report_link_to_file(logger, export_dir, web_report_data):
         except Exception as ex:
             log_critical_error(logger, ex, 'Exception while writing' + file_path + ' to file')
 
+def save_exported_actions_to_csv_file(logger, export_path, actions_json, audit_id):
+    priority_codes = {0: 'None', 10: 'Low', 20: 'Medium', 30: 'High'}
+    status_codes = {0: 'To Do', 10: 'In Progress', 50: 'Done', 60: 'Cannot Do'}
+    filename = audit_id + '-actions.csv'
+    file_path= os.path.join(export_path, filename)
+    actions_csv = open(file_path, 'w')
+    actions_csv_wr = csv.writer(actions_csv, dialect='excel', quoting=csv.QUOTE_ALL)
+    for action in actions_json:
+        actions_id = action['action_id']
+        description = action['description']
+        assignee_list = []
+        for assignee in action['assignees']:
+            assignee_list.append(assignee['name'])
+        assignees = ", ".join(assignee_list)
+        assignee = action['assignees'][0]['name']
+        priority = priority_codes[action['priority']]
+        priority_code = action['priority']
+        status = status_codes[action['status']]
+        status_code = action['status']
+        due_datetime = action['due_at']
+        audit = action['audit']['name']
+        audit_id = action['audit']['audit_id']
+        linked_to_item = action['item']['label']
+        linked_to_item_id = action['item']['item_id']
+        creator_name = action['created_by']['name']
+        creator_id = action['created_by']['user_id']
+        created_datetime = action['created_at']
+        modified_datetime = action['modified_at']
+        completed_datetime = action['completed_at']
+
+
 def save_exported_media_to_file(logger, export_dir, media_file, filename, extension):
     """
     Write exported media item to disk at specified location with specified file name.
@@ -605,7 +636,8 @@ def sync_exports(logger, sc_client, settings):
                                web_report_link]
                         save_web_report_link_to_file(logger, export_path, web_report_data)
                     elif export_format == 'actions':
-                        pass
+                        actions_json = sc_client.get_audit_actions(audit_id)
+                        save_exported_actions_to_csv_file(logger, export_path, actions_json, audit_id)
                 logger.debug('setting last modified to ' + audit['modified_at'])
                 update_sync_marker_file(audit['modified_at'])
             else:
