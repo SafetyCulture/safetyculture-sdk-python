@@ -10,7 +10,7 @@ setup(name = 'safetyculture-sdk-python',
       packages = ['safetypy', 'tools', 'tools/exporter'],
       entry_points = {
             'console_scripts': [
-                  'iauditor_exporter = tools.exporter.exporter:main',
+                  'safetyculture_audit_exporter = tools.exporter.exporter:main',
             ],
       },
       long_description=open('README.md', 'r').read(),

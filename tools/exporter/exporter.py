@@ -41,7 +41,7 @@ SYNC_MARKER_FILENAME = 'last_successful.txt'
 DEFAULT_EXPORT_INACTIVE_ITEMS_TO_CSV = True
 
 # Used to create a default config file for new users
-DEFAULT_CONFIG_FILE = [
+DEFAULT_CONFIG_FILE_YAML = [
 'API:',
 '\n    token: ',
 '\nexport_options:',
@@ -521,8 +521,8 @@ def parse_command_line_arguments(logger):
 
 def auto_create_config(logger):
     """
-    Created new directory in current working directory called 'iAuditor Audit Exports'. Default config file placed
-    in directory, with user API Token. User is asked for iAuditor username and password in order to generate their
+    Creates a new directory in current working directory called 'iAuditor Audit Exports'. Default config file placed
+    in directory, with user API Token. User is asked for iAuditor credentials in order to generate their
     API token.
     :param logger:  the logger
     """
@@ -530,13 +530,13 @@ def auto_create_config(logger):
     current_directoy_path = os.getcwd()
     token = sp.get_user_api_token(logger)
     if token:
-        DEFAULT_CONFIG_FILE[1] = '\n    token: ' + str(token)
+        DEFAULT_CONFIG_FILE_YAML[1] = '\n    token: ' + str(token)
     else:
         exit()
     os.makedirs('iAuditor Audit Exports')
     config_file = open(os.path.join(current_directoy_path, directory, 'config.yaml'), 'w')
     logger.info("'iAuditor Audit Exports' directory successfully created.")
-    config_file.writelines(DEFAULT_CONFIG_FILE)
+    config_file.writelines(DEFAULT_CONFIG_FILE_YAML)
     logger.info("Default config file ('config.yaml') successfully created.")
     exit()
 

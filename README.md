@@ -11,12 +11,12 @@ $ `pip install safetyculture-sdk-python`
 
 This will install
 * SafetyCulture Python SDK
-* SafetyCulture Exporter Script
+* iAuditor Exporter Script
 * README files
 
 ### Basic Usage of the SafetyCulture Python SDK
 1. Import `safetypy` in a python module: `import safetpy`
-2. Create an instance of safetypy.SafetyCulture class: `sc = safetypy.SafetyCulture(YOUR_SAFETYCULTURE_API_TOKEN)`
+2. Create an instance of safetypy.SafetyCulture class: `sc = safetypy.SafetyCulture(YOUR_IAUDITOR_API_TOKEN)`
 
 #### For more information regarding the Python SDK functionality
 1. Open the Python interpreter by typing 
@@ -34,15 +34,15 @@ $ help(safetypy.SafetyCulture)
 ```
 
 ###  Basic Usage of the Exporter script
-1. To initialize a basic config file, type:  
+1. To initialize a basic configuration file, type:  
 ```
 $ safetyculture_audit_exporter --setup
 ```
-* You will be prompted for a SafetyCulture username and password which will be used to generate an API token. 
-Note that the login information will not be saved in any capacity.
-* A basic config file will be auto-generated. A config file is necessary to run the Exporter script.
-The config file will be named `config.yaml` and be placed in a folder named `SafetyCulture Audit Exports`
-2. Navigate into the `SafetyCulture Audit Exporter` folder
+* You will be prompted for a iAuditor username and password which will be used to generate an API token. 
+Note that your credentials will not be saved in any capacity.
+* A basic configuration file will be auto-generated. A configuration file is necessary to run the Exporter script.
+The configuration file will be named `config.yaml` and be placed in a folder named `iAuditor Audit Exports`
+2. Navigate into the `iAuditor Audit Exporter` folder
 3. To start exporting audits in PDF format, run the following command 
 ```
 $ safetyculture_audit_exporter
