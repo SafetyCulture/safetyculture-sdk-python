@@ -12,6 +12,7 @@ import time
 import errno
 from datetime import datetime
 import requests
+from getpass import getpass
 
 DEFAULT_EXPORT_TIMEZONE = 'Etc/UTC'
 DEFAULT_EXPORT_FORMAT = 'pdf'
@@ -25,7 +26,7 @@ def get_user_api_token(logger):
     :return:        API Token if authenticated else None
     """
     username = raw_input("What is your iAuditor login email: ")
-    password = raw_input("What is your iAuditor password: ")
+    password = getpass()
     generate_token_url = "https://api.safetyculture.io/auth"
     payload = "username=" + username + "&password=" + password + "&grant_type=password"
     headers = {
