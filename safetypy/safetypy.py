@@ -63,7 +63,7 @@ class SafetyCulture:
         :param json_to_parse:  string representation of JSON
         :return:               OrderedDict representation of JSON
         """
-        return json.JSONDecoder(object_pairs_hook=collections.OrderedDict).decode(json_to_parse)
+        return json.JSONDecoder(object_pairs_hook=collections.OrderedDict).decode(json_to_parse.decode('utf-8'))
 
     def log_critical_error(self, ex, message):
         """
