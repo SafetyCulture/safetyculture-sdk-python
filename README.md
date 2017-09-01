@@ -12,7 +12,7 @@ $ `pip install safetyculture-sdk-python`
 This will install
 * SafetyCulture Python SDK
 * iAuditor Exporter Script
-* README files
+* README.md files
 
 ### Basic Usage of the SafetyCulture Python SDK
 1. Import `safetypy` in a python module: `import safetpy`
