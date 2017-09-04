@@ -161,7 +161,7 @@ To list export profile IDs associated with specific templates:
 safetyculture_audit_exporter --config=/path/to/config.yaml --list_export_profiles template_3E631E46F466411B9C09AD804886A8B4
 ```
 
-Multiple template_ids can be passed, separated by a space
+Multiple template IDs can be passed, separated by a space
 
 ### How to maintain multiple configurations
 
