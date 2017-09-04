@@ -6,15 +6,39 @@ Supported export formats: PDF, MS WORD (docx), JSON, and CSV. Media and Web Repo
 
   1. See [top level ReadMe.md](https://github.com/SafetyCulture/safetyculture-sdk-python/blob/master/ReadMe.md)
 
+## Initial Setup
+IMPORTANT: If you have used previous versions of the exporter tool, you should run it from the same folder you have run the tool from in the past.
+Otherwise, the exporter will start exporting from the earliest available audits, rather than from where the last successful export left off. 
+The export tool reads and writes to a file named `last_successful.txt` to keep track of what has already been exported. You'll find this file anywhere that you have run the exporter tool before. 
+Alternatively, you can move the `last_successful.txt` file if you prefer to export from a different location.
+
+If this is your first time using the exporter tool, follow these steps to get set up: 
+1. To automatically create a configuration file (which is needed to run the exporter tool), run:  
+```
+$ safetyculture_audit_exporter --setup
+```
+* You will be prompted for a iAuditor username and password which will be used to generate an API token. 
+Note that your credentials will not be saved in any capacity.
+* A basic configuration file will be auto-generated. A configuration file is necessary to run the Exporter script.
+The configuration file will be named `config.yaml` and be placed in a folder named `iAuditor Audit Exports` which will be created in your current directory. 
+2. Navigate into the `iAuditor Audit Exporter` folder that was just created. 
+3. To start exporting audits in PDF format, run the following command 
+```
+$ safetyculture_audit_exporter
+```
+
 ## How to run
 ### Common usage
+The API token saved in `config.yaml` provides access to data associated with a single account. Namely, the account used to generate the API token.
+Only audits that are owned by or shared with the account associated with the API token in use are available for exporting.
+ 
+All exported data is saved in a folder called  `exports`. The folder will be created in the current working directory if it does not already exist.
 
-To export in all audit reports owned by your SafetyCulture account in PDF format including those shared with you by other SafetyCulture users open a command line prompt and run:
-
+To export all completed audits in PDF format, run:
 ```
 $ safetyculture_audit_exporter --config=/path/to/config.yaml
 ```
-
+  
 To enable the exporter to run continuously until interrupted, use the loop command line argument:
 
 ```
@@ -154,11 +178,11 @@ will result in all exported files named after the `Audit Title` field.
 To list all available export profile IDs and their associated templates:
 
 ```
-safetyculture_audit_exporter --config=/path/to/config.yaml --list_export_profiles
+$ safetyculture_audit_exporter --list_export_profiles
 ```
 To list export profile IDs associated with specific templates:
 ```
-safetyculture_audit_exporter --config=/path/to/config.yaml --list_export_profiles template_3E631E46F466411B9C09AD804886A8B4
+$ safetyculture_audit_exporter --list_export_profiles template_3E631E46F466411B9C09AD804886A8B4
 ```
 
 Multiple template IDs can be passed, separated by a space
@@ -168,12 +192,14 @@ Multiple template IDs can be passed, separated by a space
 You may want to maintain multiple export configurations in different YAML configuration files. To use a specific configuration file (other than config.yaml) do
 
 ```
-safetyculture_audit_exporter --config=/path/to/config.yaml --config=/path/to/alternate_config.yaml
+$ safetyculture_audit_exporter --config=/path/to/alternate_config.yaml
 ```
+Note that you can supply a relative or absolute path to an alternate_config.yaml if it is in another directory
 
-Note that you can supply a relative or absolute path to alternate_config.yaml if it is in another directory
-
-Arguments can be combined e.g. - `python exporter.py --config=alternate_config.yaml --format pdf json`
+Arguments can be combined e.g. - 
+```
+$ safetyculture_audit_exporter --config=alternate_config.yaml --format pdf json
+```
 
 ## Troubleshooting
 

@@ -37,21 +37,8 @@ $ python
 >>> help(safetypy.SafetyCulture)
 ```
 
-###  Basic Usage of the Exporter script
-1. To automatically create a configuration file (which is needed to run the exporter tool), run:  
-```
-$ safetyculture_audit_exporter --setup
-```
-* You will be prompted for a iAuditor username and password which will be used to generate an API token. 
-Note that your credentials will not be saved in any capacity.
-* A basic configuration file will be auto-generated. A configuration file is necessary to run the Exporter script.
-The configuration file will be named `config.yaml` and be placed in a folder named `iAuditor Audit Exports` which will be created in your current directory. 
-2. Navigate into the `iAuditor Audit Exporter` folder that was just created. 
-3. To start exporting audits in PDF format, run the following command 
-```
-$ safetyculture_audit_exporter
-```
-4. See [here](https://github.com/SafetyCulture/safetyculture-sdk-python/blob/INTG-539-pip_install/tools/exporter/ReadMe.md) for a complete guide on the audit exporter tool.
+###  SafetyCulture Audit Exporter
+See [here](https://github.com/SafetyCulture/safetyculture-sdk-python/blob/INTG-539-pip_install/tools/exporter/ReadMe.md) for a complete guide on the audit exporter tool.
 
 #### Windows Users
 The location of `safetyculture_audit_exporter.exe` must be included in the system PATH variable in order to execute from the command line (without including the full path to the .exe file).  

@@ -369,7 +369,6 @@ def get_last_successful(logger):
         with open(SYNC_MARKER_FILENAME, 'w') as last_run:
             last_run.write(last_successful)
         logger.info('Searching for audits since the beginning of time: ' + beginning_of_time)
-
     return last_successful
 
 
