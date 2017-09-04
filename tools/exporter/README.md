@@ -15,7 +15,7 @@ To export in all audit reports owned by your SafetyCulture account in PDF format
 $ safetyculture_audit_exporter --config=/path/to/config.yaml
 ```
 
-To enable the script to run continuously until interrupted, use the loop command line argument:
+To enable the exporter to run continuously until interrupted, use the loop command line argument:
 
 ```
 $ safetyculture_audit_exporter --config=/path/to/config.yaml --loop
@@ -44,10 +44,10 @@ Note:
 For an overview of the CSV format used, see [here](https://support.safetyculture.com/integrations/safetyculture-csv-exporter-tool/#format)
 
 
-Audits are grouped into common CSV files by template. Audits built from the same template are appended to a CSV file named using the templates unique ID number. 
+Audits built from the same template will be saved in the same CSV file which is named after the templates unique ID number. 
 i.e. `TEMPLATE_ID.csv` 
 
-To export Multiple Audits to Bulk CSV file, execute run the `safetyculture_audit_exporter` with the format option set to CSV: 
+To export Multiple Audits to Bulk CSV file, run the `safetyculture_audit_exporter` with the format option set to CSV: 
 ```
 $ safetyculture_audit_exporter --format csv
 ```
@@ -67,14 +67,14 @@ $ safetyculture_audit_exporter --format csv
 * If you update a template, Audits with the new format will be appended to the same CSV file.
 
 ### Media Export
-* Executing 
+* Running
 ```
 $ safetyculture_audit_exporter --format media
 ```
 will export all audit media files for each audit (images, attachments, signature, and drawings) to a folder named after the audit ID. 
 
 ### Web Report Link Export
-* Executing 
+* Running
 ```
 $ safetyculture_audit_exporter --format web-report-link
 ``` 
