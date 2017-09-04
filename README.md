@@ -24,11 +24,11 @@ This will install
 >>> sc = safetypy.SafetyCulture(YOUR_IAUDITOR_API_TOKEN)
 ```
 #### For more information regarding the Python SDK functionality
-1. Open the Python interpreter by typing 
+1. To open the Python interpreter, run 
 ```
 $ python
 ```
-2. Import the Python SDK by running
+2. From the Python interpreter, import the Python SDK by running
 ```
 >>> import safetypy
 ```

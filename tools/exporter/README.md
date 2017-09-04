@@ -4,7 +4,7 @@ Supported export formats: PDF, MS WORD (docx), JSON, and CSV. Media and Web Repo
 
 ## Installation
 
-  1. See [top level ReadMe.md](https://github.com/SafetyCulture/safetyculture-sdk-python/blob/master/ReadMe.md)
+  1. See [top level ReadMe.md](https://github.com/SafetyCulture/safetyculture-sdk-python/blob/master/README.md)
 
 ## Initial Setup
 IMPORTANT: If you have used previous versions of the exporter tool, you should run it from the same folder you have run the tool from in the past.
