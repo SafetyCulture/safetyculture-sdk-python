@@ -17,24 +17,27 @@ If this is your first time using the exporter tool, follow these steps to get se
 ```
 $ safetyculture_audit_exporter --setup
 ```
-* You will be prompted for a iAuditor username and password which will be used to generate an API token. 
+* You will be prompted for an iAuditor username and password which will be used to generate an API token. 
 Note that your credentials will not be saved in any capacity.
 * A basic configuration file will be auto-generated. A configuration file is necessary to run the Exporter script.
-The configuration file will be named `config.yaml` and be placed in a folder named `iAuditor Audit Exports` which will be created in your current directory. 
-2. Navigate into the `iAuditor Audit Exporter` folder that was just created. 
+The file will be named `config.yaml` and be placed in a folder named `iAuditor Audit Exports` which will be created in your current directory. 
+2. Navigate into the `iAuditor Audit Exporter` folder just created:
+```
+$ cd 'iAuditor Audit Exporter'
+```
 3. To start exporting audits in PDF format, run the following command 
 ```
 $ safetyculture_audit_exporter
 ```
 #### Windows Users
-The location of `safetyculture_audit_exporter.exe` must be included in the system PATH variable in order to execute from the command line (without including the full path to the .exe file).  
+The location of `safetyculture_audit_exporter.exe` must be included in the system PATH variable in order to execute from the command line without including the full path to the .exe file.  
 Find the location of `safetyculture_audit_exporter.exe` by running 
 ```
 > where safetyculture_audit_exporter
 ```
 Add this path to the system PATH variable. 
 
-Directions on how to update Windows system PATH variable [here](http://windowsitpro.com/systems-management/how-can-i-add-new-folder-my-system-path)
+Directions on how to update Windows system PATH variable [here](https://www.computerhope.com/issues/ch000549.htm)
 
 
 ## How to run
