@@ -40,17 +40,6 @@ $ python
 ###  SafetyCulture Audit Exporter
 See [here](https://github.com/SafetyCulture/safetyculture-sdk-python/blob/INTG-539-pip_install/tools/exporter/ReadMe.md) for a complete guide on the audit exporter tool.
 
-#### Windows Users
-The location of `safetyculture_audit_exporter.exe` must be included in the system PATH variable in order to execute from the command line (without including the full path to the .exe file).  
-Find the location of `safetyculture_audit_exporter.exe` by running 
-```
-> where safetyculture_audit_exporter
-```
-Add this path to the system PATH variable. 
-
-Directions on how to update Windows system PATH variable [here](http://windowsitpro.com/systems-management/how-can-i-add-new-folder-my-system-path)
-
-
 ## License
 
 Copyright 2017 SafetyCulture Pty Ltd
