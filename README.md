@@ -7,7 +7,12 @@ This SDK is not compatible with Python 3.
 
 
 ## Installation
-$ `pip install safetyculture-sdk-python`
+You will need to have [Python](https://www.python.org/downloads/) and [Pip](https://pip.pypa.io/en/stable/installing/) installed on your computer. 
+
+Then run: 
+```
+pip install safetyculture-sdk-python
+```
 
 This will install
 * SafetyCulture Python SDK
@@ -17,24 +22,24 @@ This will install
 ### Basic Usage of the SafetyCulture Python SDK
 1. Import `safetypy` into a Python module or Python interpreter: 
 ```
->>> import safetpy
+import safetpy
 ```
 2. Create an instance of the SafetyCulture class: 
 ```
->>> sc = safetypy.SafetyCulture(YOUR_IAUDITOR_API_TOKEN)
+sc = safetypy.SafetyCulture(YOUR_IAUDITOR_API_TOKEN)
 ```
 #### For more information regarding the Python SDK functionality
 1. To open the Python interpreter, run 
 ```
-$ python
+python
 ```
 2. From the Python interpreter, import the Python SDK by running
 ```
->>> import safetypy
+import safetypy
 ```
 3. For an overview of available functionality, run
 ```
->>> help(safetypy.SafetyCulture)
+help(safetypy.SafetyCulture)
 ```
 
 ### Audit Exporter Tool

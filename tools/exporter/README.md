@@ -4,7 +4,7 @@ Supported export formats: PDF, MS WORD (docx), JSON, and CSV. Media and Web Repo
 
 ## Installation  
 ``` 
-$ pip install safetyculture-sdk-python
+pip install safetyculture-sdk-python
 ```
 
 This will install
@@ -22,7 +22,7 @@ Alternatively, you can move the `last_successful.txt` file if you prefer to expo
 If this is your first time using the exporter tool, follow these steps to get set up: 
 1. To automatically create a configuration file (which is needed to run the exporter tool), run:  
 ```
-$ safetyculture_audit_exporter --setup
+safetyculture_audit_exporter --setup
 ```
 * You will be prompted for an iAuditor username and password which will be used to generate an API token. 
 Note that your credentials will not be saved in any capacity.
@@ -30,11 +30,11 @@ Note that your credentials will not be saved in any capacity.
 The file will be named `config.yaml` and be placed in a folder named `iAuditor Audit Exports` which will be created in your current directory. 
 2. Navigate into the `iAuditor Audit Exporter` folder just created:
 ```
-$ cd 'iAuditor Audit Exporter'
+cd 'iAuditor Audit Exporter'
 ```
 3. To start exporting audits in PDF format, run the following command 
 ```
-$ safetyculture_audit_exporter
+safetyculture_audit_exporter
 ```
 #### Windows Users
 The location of `safetyculture_audit_exporter.exe` must be included in the system PATH variable in order to execute from the command line without including the full path to the .exe file.  
@@ -56,25 +56,25 @@ All exported data is saved in a folder called  `exports`. The folder will be cre
 
 To export all completed audits in PDF format, run:
 ```
-$ safetyculture_audit_exporter --config=/path/to/config.yaml
+safetyculture_audit_exporter --config=/path/to/config.yaml
 ```
   
 To enable the exporter to run continuously until interrupted, use the loop command line argument:
 
 ```
-$ safetyculture_audit_exporter --config=/path/to/config.yaml --loop
+safetyculture_audit_exporter --config=/path/to/config.yaml --loop
 ```
 
 To specify the export format explicitly run:
 
 ```
-$ safetyculture_audit_exporter --config=/path/to/config.yaml --format pdf
+safetyculture_audit_exporter --config=/path/to/config.yaml --format pdf
 ```
 
 More than one supported formats can be exported at once e.g.
 
 ```
-$ safetyculture_audit_exporter --config=/path/to/config.yaml --format pdf docx json csv media web-report-link
+safetyculture_audit_exporter --config=/path/to/config.yaml --format pdf docx json csv media web-report-link
 ```
 
 Note:
@@ -93,7 +93,7 @@ i.e. `TEMPLATE_ID.csv`
 
 To export Multiple Audits to Bulk CSV file, run the `safetyculture_audit_exporter` with the format option set to CSV: 
 ```
-$ safetyculture_audit_exporter --format csv
+safetyculture_audit_exporter --format csv
 ```
 
 #### The format of the following CSV values do not match the format used by the SafetyCulture API Audit JSON 
@@ -113,14 +113,14 @@ $ safetyculture_audit_exporter --format csv
 ### Media Export
 * Running
 ```
-$ safetyculture_audit_exporter --format media
+safetyculture_audit_exporter --format media
 ```
 will export all audit media files for each audit (images, attachments, signature, and drawings) to a folder named after the audit ID. 
 
 ### Web Report Link Export
 * Running
 ```
-$ safetyculture_audit_exporter --format web-report-link
+safetyculture_audit_exporter --format web-report-link
 ``` 
 will export your Web Report Links to a CSV file named `web-report-links.csv`.
 
@@ -198,11 +198,11 @@ will result in all exported files named after the `Audit Title` field.
 To list all available export profile IDs and their associated templates:
 
 ```
-$ safetyculture_audit_exporter --list_export_profiles
+safetyculture_audit_exporter --list_export_profiles
 ```
 To list export profile IDs associated with specific templates:
 ```
-$ safetyculture_audit_exporter --list_export_profiles template_3E631E46F466411B9C09AD804886A8B4
+safetyculture_audit_exporter --list_export_profiles template_3E631E46F466411B9C09AD804886A8B4
 ```
 
 Multiple template IDs can be passed, separated by a space
@@ -212,13 +212,13 @@ Multiple template IDs can be passed, separated by a space
 You may want to maintain multiple export configurations in different YAML configuration files. To use a specific configuration file (other than config.yaml) do
 
 ```
-$ safetyculture_audit_exporter --config=/path/to/alternate_config.yaml
+safetyculture_audit_exporter --config=/path/to/alternate_config.yaml
 ```
 Note that you can supply a relative or absolute path to an alternate_config.yaml if it is in another directory
 
 Arguments can be combined e.g. - 
 ```
-$ safetyculture_audit_exporter --config=alternate_config.yaml --format pdf json
+safetyculture_audit_exporter --config=alternate_config.yaml --format pdf json
 ```
 
 ## Troubleshooting
