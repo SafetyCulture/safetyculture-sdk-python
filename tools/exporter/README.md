@@ -9,45 +9,47 @@ Supported export formats: PDF, MS WORD (docx), JSON, and CSV. Media and Web Repo
 ## How to run
 ### Common usage
 
-To export in PDF format all audit reports owned by your SafetyCulture account including those shared with you by other SafetyCulture users open a command line prompt and run:
+To export in all audit reports owned by your SafetyCulture account in PDF format including those shared with you by other SafetyCulture users open a command line prompt and run:
 
 ```
-safetyculture_audit_exporter --config=/path/to/config.yaml
+$ safetyculture_audit_exporter --config=/path/to/config.yaml
 ```
 
-To enable app to run continuously until interrupted, use the loop command line argument:
+To enable the script to run continuously until interrupted, use the loop command line argument:
 
 ```
-safetyculture_audit_exporter --config=/path/to/config.yaml --loop
+$ safetyculture_audit_exporter --config=/path/to/config.yaml --loop
 ```
 
 To specify the export format explicitly run:
 
 ```
-safetyculture_audit_exporter --config=/path/to/config.yaml --format pdf
+$ safetyculture_audit_exporter --config=/path/to/config.yaml --format pdf
 ```
 
 More than one supported formats can be exported at once e.g.
 
 ```
-safetyculture_audit_exporter --config=/path/to/config.yaml --format pdf docx json csv media web-report-link
+$ safetyculture_audit_exporter --config=/path/to/config.yaml --format pdf docx json csv media web-report-link
 ```
 
 Note:
-* Unless you start the tool with the --loop argument, it will sync documents once and terminate
+* Unless you start the tool with the --loop argument, it will sync documents once and terminate (up to 1000 per sync)
 * Only completed audits will be exported
 * Only audits that are owned by or shared with the SafetyCulture user account that generated the API token will be exported
 * Up to 1000 audits will be exported each time the software checks for new audits. If more than 1000 audits exist on the SafetyCulture platform, they will be retrieved automatically in subsequent sync cycles.
 
 ### CSV Export
 #### Bulk CSV Export
-* Each Audit is the same format as the single Audit CSV export
-* Audits are grouped by Template. Audits built from the same template are appended to a CSV file named using the templates unique ID number.
+For an overview of the CSV format used, see [here](https://support.safetyculture.com/integrations/safetyculture-csv-exporter-tool/#format)
 
-To export Multiple Audits to Bulk CSV file:
-* Execute exporter.py with the format option set to CSV
+
+Audits are grouped into common CSV files by template. Audits built from the same template are appended to a CSV file named using the templates unique ID number. 
+i.e. `TEMPLATE_ID.csv` 
+
+To export Multiple Audits to Bulk CSV file, execute run the `safetyculture_audit_exporter` with the format option set to CSV: 
 ```
-safetyculture_audit_exporter --config=/path/to/config.yaml --format csv
+$ safetyculture_audit_exporter --format csv
 ```
 
 #### The format of the following CSV values do not match the format used by the SafetyCulture API Audit JSON 
@@ -65,12 +67,20 @@ safetyculture_audit_exporter --config=/path/to/config.yaml --format csv
 * If you update a template, Audits with the new format will be appended to the same CSV file.
 
 ### Media Export
-* Executing ```python exporter.py --format media``` will export all audit media files for each audit (images, attachments, signature, and drawings) to a folder named after the audit ID.
+* Executing 
+```
+$ safetyculture_audit_exporter --format media
+```
+will export all audit media files for each audit (images, attachments, signature, and drawings) to a folder named after the audit ID. 
 
 ### Web Report Link Export
-* Executing ```python exporter.py --format web-report-link``` will export your Web Report Links to a CSV file named `web-report-links.csv`.
+* Executing 
+```
+$ safetyculture_audit_exporter --format web-report-link
+``` 
+will export your Web Report Links to a CSV file named `web-report-links.csv`.
 
-The CSV file includes five columns. Template ID, Template Name, Audit ID, Audit Name, and Web Report Link. 
+The CSV file includes five columns: Template ID, Template Name, Audit ID, Audit Name, and Web Report Link. 
 
 ## Export settings
 
