@@ -11,7 +11,7 @@ $ `pip install safetyculture-sdk-python`
 
 This will install
 * SafetyCulture Python SDK
-* iAuditor Exporter Script
+* Audit Exporter Tool
 * README files
 
 ### Basic Usage of the SafetyCulture Python SDK
@@ -37,7 +37,7 @@ $ python
 >>> help(safetypy.SafetyCulture)
 ```
 
-###  SafetyCulture Audit Exporter
+### Audit Exporter Tool
 See [here](https://github.com/SafetyCulture/safetyculture-sdk-python/blob/INTG-539-pip_install/tools/exporter/ReadMe.md) for a complete guide on the audit exporter tool.
 
 ## License

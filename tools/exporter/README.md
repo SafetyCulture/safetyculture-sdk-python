@@ -1,4 +1,4 @@
-# Audit exporter tool
+# Audit Exporter Tool
 Allows you to export audit data from the SafetyCulture Platform and save them anywhere on your computer.
 Supported export formats: PDF, MS WORD (docx), JSON, and CSV. Media and Web Report Link exporting is also supported.
 
