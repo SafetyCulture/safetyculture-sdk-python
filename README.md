@@ -38,7 +38,7 @@ $ python
 ```
 
 ### Audit Exporter Tool
-See [here](https://github.com/SafetyCulture/safetyculture-sdk-python/blob/INTG-539-pip_install/tools/exporter/ReadMe.md) for a complete guide on the audit exporter tool.
+See [here](https://github.com/SafetyCulture/safetyculture-sdk-python/blob/INTG-539-pip_install/tools/exporter/README.md) for a complete guide on the audit exporter tool.
 
 ## License
 
