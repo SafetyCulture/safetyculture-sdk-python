@@ -53,8 +53,12 @@ class SafetyCulture:
         self.create_directory_if_not_exists(self.log_dir)
         self.configure_logging()
         logger = logging.getLogger('sp_logger')
+        try:
+            token_is_valid = re.match('^[a-f0-9]{64}$', api_token)
+        except Exception as ex:
+            self.log_critical_error(ex, 'Exception occurred while validating API token in config.yaml file. Exiting Program.')
+            exit()
 
-        token_is_valid = re.match('^[a-f0-9]{64}$', api_token)
 
         if token_is_valid:
             self.api_token = api_token
