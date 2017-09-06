@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(name = 'safetyculture-sdk-python',
       version = '2.0.2',
-      description = 'SafetyCulture Python SDK and export tools',
+      description = 'SafetyCulture Python SDK and iAuditor integration tools',
       url = 'https://github.com/SafetyCulture/safetyculture-sdk-python',
       author = 'SafetyCulture',
       author_email = 'integrations@safetyculture.io',

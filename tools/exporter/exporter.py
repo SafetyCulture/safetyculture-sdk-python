@@ -365,8 +365,6 @@ def get_last_successful(logger):
             last_successful = last_run.readlines()[0]
     else:
         beginning_of_time = '2000-01-01T00:00:00.000Z'
-        # current_datetime = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S.000Z')
-        # last_successful = current_datetime
         last_successful = beginning_of_time
         with open(SYNC_MARKER_FILENAME, 'w') as last_run:
             last_run.write(last_successful)

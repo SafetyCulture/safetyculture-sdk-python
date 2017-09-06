@@ -22,7 +22,7 @@ This will install
 ### Basic Usage of the SafetyCulture Python SDK
 1. Import `safetypy` into a Python module or Python interpreter: 
 ```
-import safetpy
+import safetypy
 ```
 2. Create an instance of the SafetyCulture class: 
 ```
