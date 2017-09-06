@@ -21,7 +21,7 @@ HTTP_USER_AGENT_ID = 'safetyculture-python-sdk'
 
 def get_user_api_token(logger):
     """
-    Generate SafetyCulture user API Token
+    Generate iAuditor API Token
     :param logger:  the logger
     :return:        API Token if authenticated else None
     """
@@ -56,10 +56,8 @@ class SafetyCulture:
         try:
             token_is_valid = re.match('^[a-f0-9]{64}$', api_token)
         except Exception as ex:
-            self.log_critical_error(ex, 'Error occurred while validating API token in config.yaml file. Exiting Program.')
+            self.log_critical_error(ex, 'Error occurred while validating API token in config.yaml file. Exiting.')
             exit()
-
-
         if token_is_valid:
             self.api_token = api_token
         else:
