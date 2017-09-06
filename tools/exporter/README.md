@@ -28,9 +28,9 @@ iauditor_exporter --setup
 Note that your credentials will not be saved in any capacity.
 * A basic configuration file will be auto-generated. A configuration file is necessary to run the Exporter script.
 The file will be named `config.yaml` and be placed in a folder named `iAuditor Audit Exports` which will be created in your current directory. 
-2. Navigate into the `iAuditor Audit Exporter` folder just created:
+2. Navigate into the `iauditor_exports_folder` folder just created:
 ```
-cd 'iAuditor_audit_exporter'
+cd 'iauditor_exports_folder'
 ```
 3. To start exporting audits in PDF format, run the following command 
 ```

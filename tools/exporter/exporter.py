@@ -527,19 +527,45 @@ def initial_setup(logger):
     API token.
     :param logger:  the logger
     """
-    directory = 'iAuditor Audit Exports'
     current_directoy_path = os.getcwd()
+    exports_folder_name = 'iauditor_exports_folder'
     token = sp.get_user_api_token(logger)
     if token:
         DEFAULT_CONFIG_FILE_YAML[1] = '\n    token: ' + str(token)
     else:
+        logger.critical("Problem generating API token.")
         exit()
-    os.makedirs('iAuditor Audit Exports')
-    config_file = open(os.path.join(current_directoy_path, directory, 'config.yaml'), 'w')
-    logger.info("'iAuditor Audit Exports' directory successfully created.")
-    config_file.writelines(DEFAULT_CONFIG_FILE_YAML)
-    logger.info("Default config file ('config.yaml') successfully created.")
-    update_sync_marker_file()
+    try:
+        os.makedirs(exports_folder_name)
+    except Exception as ex:
+        log_critical_error(logger, ex, "Problem creating {0}".format(exports_folder_name))
+        logger.info("Please remove or rename {0} to run this setup script. Exiting program".format(exports_folder_name))
+        exit()
+    logger.info(exports_folder_name + " successfully created.")
+    path_to_config_file = os.path.join(current_directoy_path, exports_folder_name, 'config.yaml')
+    if os.path.exists(path_to_config_file):
+        logger.critical("Config file already exists at {0}".format(path_to_config_file))
+        logger.info("Please remove or rename the existing config file, then retry this setup program.")
+        logger.info('Exiting program')
+        exit()
+    try:
+        config_file = open(path_to_config_file, 'w')
+        config_file.writelines(DEFAULT_CONFIG_FILE_YAML)
+    except Exception as ex:
+        log_critical_error(logger, ex, "Problem creating " + path_to_config_file)
+        logger.info("Exiting program")
+        exit()
+    logger.info("Default config file successfully created at {0}.".format(path_to_config_file))
+    os.chdir(exports_folder_name)
+    choice = raw_input('Would you like to start exporting audits from:\n  1. The beginning of time\n  2. Today\n  Enter 1 or 2: ')
+    if choice == '1':
+        logger.info('Audit exporting set to start from earliest audits available')
+        get_last_successful(logger)
+    else:
+        now = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.000Z')
+        update_sync_marker_file(now)
+        logger.info('Audit exporting set to start from ' + now)
+
     exit()
 
 
