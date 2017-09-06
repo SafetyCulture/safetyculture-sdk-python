@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(name = 'safetyculture-sdk-python',
       version = '2.4.2',
-      description = 'iAuditor Python SDK and export tools',
+      description = 'SafetyCulture Python SDK and export tools',
       url = 'https://github.com/SafetyCulture/safetyculture-sdk-python',
       author = 'SafetyCulture',
       author_email = 'integrations@safetyculture.io',
@@ -10,7 +10,7 @@ setup(name = 'safetyculture-sdk-python',
       packages = ['safetypy', 'tools', 'tools/exporter'],
       entry_points = {
             'console_scripts': [
-                  'safetyculture_audit_exporter = tools.exporter.exporter:main',
+                  'iauditor_exporter = tools.exporter.exporter:main',
             ],
       },
       long_description=open('README.md', 'r').read(),

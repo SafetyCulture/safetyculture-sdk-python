@@ -16,7 +16,7 @@ pip install safetyculture-sdk-python
 
 This will install
 * SafetyCulture Python SDK
-* Audit Exporter Tool
+* iAuditor Exporter Tool
 * README files
 
 ### Basic Usage of the SafetyCulture Python SDK

@@ -365,6 +365,8 @@ def get_last_successful(logger):
             last_successful = last_run.readlines()[0]
     else:
         beginning_of_time = '2000-01-01T00:00:00.000Z'
+        # current_datetime = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S.000Z')
+        # last_successful = current_datetime
         last_successful = beginning_of_time
         with open(SYNC_MARKER_FILENAME, 'w') as last_run:
             last_run.write(last_successful)
@@ -492,7 +494,7 @@ def parse_command_line_arguments(logger):
     config_filename = DEFAULT_CONFIG_FILENAME
 
     if args.setup:
-        auto_create_config(logger)
+        initial_setup(logger)
         exit()
 
     if args.config is not None:
@@ -518,7 +520,7 @@ def parse_command_line_arguments(logger):
 
     return config_filename, export_formats, args.list_export_profiles, loop_enabled
 
-def auto_create_config(logger):
+def initial_setup(logger):
     """
     Creates a new directory in current working directory called 'iAuditor Audit Exports'. Default config file placed
     in directory, with user API Token. User is asked for iAuditor credentials in order to generate their
@@ -537,6 +539,7 @@ def auto_create_config(logger):
     logger.info("'iAuditor Audit Exports' directory successfully created.")
     config_file.writelines(DEFAULT_CONFIG_FILE_YAML)
     logger.info("Default config file ('config.yaml') successfully created.")
+    update_sync_marker_file()
     exit()
 
 

@@ -56,7 +56,7 @@ class SafetyCulture:
         try:
             token_is_valid = re.match('^[a-f0-9]{64}$', api_token)
         except Exception as ex:
-            self.log_critical_error(ex, 'Exception occurred while validating API token in config.yaml file. Exiting Program.')
+            self.log_critical_error(ex, 'Error occurred while validating API token in config.yaml file. Exiting Program.')
             exit()
 
 

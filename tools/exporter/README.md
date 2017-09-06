@@ -9,7 +9,7 @@ pip install safetyculture-sdk-python
 
 This will install
 * SafetyCulture Python SDK -- See top level [README.md](https://github.com/SafetyCulture/safetyculture-sdk-python/blob/master/README.md) for more information. 
-* Audit Exporter Tool
+* iAuditor Exporter Tool
 * README files
 
 
@@ -22,7 +22,7 @@ Alternatively, you can move the `last_successful.txt` file if you prefer to expo
 If this is your first time using the exporter tool, follow these steps to get set up: 
 1. To automatically create a configuration file (which is needed to run the exporter tool), run:  
 ```
-safetyculture_audit_exporter --setup
+iauditor_exporter --setup
 ```
 * You will be prompted for an iAuditor username and password which will be used to generate an API token. 
 Note that your credentials will not be saved in any capacity.
@@ -30,17 +30,17 @@ Note that your credentials will not be saved in any capacity.
 The file will be named `config.yaml` and be placed in a folder named `iAuditor Audit Exports` which will be created in your current directory. 
 2. Navigate into the `iAuditor Audit Exporter` folder just created:
 ```
-cd 'iAuditor Audit Exporter'
+cd 'iAuditor_audit_exporter'
 ```
 3. To start exporting audits in PDF format, run the following command 
 ```
-safetyculture_audit_exporter
+iauditor_exporter
 ```
 #### Windows Users
-The location of `safetyculture_audit_exporter.exe` must be included in the system PATH variable in order to execute from the command line without including the full path to the .exe file.  
-Find the location of `safetyculture_audit_exporter.exe` by running 
+The location of `iauditor_exporter.exe` must be included in the system PATH variable in order to execute from the command line without including the full path to the .exe file.  
+Find the location of `iauditor_exporter.exe` by running 
 ```
-> where safetyculture_audit_exporter
+> where iauditor_exporter
 ```
 Add this path to the system PATH variable. 
 
@@ -56,32 +56,32 @@ All exported data is saved in a folder called  `exports`. The folder will be cre
 
 To export all completed audits in PDF format, run:
 ```
-safetyculture_audit_exporter --config=/path/to/config.yaml
+iauditor_exporter --config=/path/to/config.yaml
 ```
   
 To enable the exporter to run continuously until interrupted, use the loop command line argument:
 
 ```
-safetyculture_audit_exporter --config=/path/to/config.yaml --loop
+iauditor_exporter --config=/path/to/config.yaml --loop
 ```
 
 To specify the export format explicitly run:
 
 ```
-safetyculture_audit_exporter --config=/path/to/config.yaml --format pdf
+iauditor_exporter --config=/path/to/config.yaml --format pdf
 ```
 
 More than one supported formats can be exported at once e.g.
 
 ```
-safetyculture_audit_exporter --config=/path/to/config.yaml --format pdf docx json csv media web-report-link
+iauditor_exporter --config=/path/to/config.yaml --format pdf docx json csv media web-report-link
 ```
 
 Note:
 * Unless you start the tool with the --loop argument, it will sync documents once and terminate (up to 1000 per sync)
 * Only completed audits will be exported
-* Only audits that are owned by or shared with the SafetyCulture user account that generated the API token will be exported
-* Up to 1000 audits will be exported each time the software checks for new audits. If more than 1000 audits exist on the SafetyCulture platform, they will be retrieved automatically in subsequent sync cycles.
+* Only audits that are owned by or shared with the iAuditor user account that generated the API token will be exported
+* Up to 1000 audits will be exported each time the software checks for new audits. If more than 1000 audits exist they will be retrieved automatically in subsequent sync cycles.
 
 ### CSV Export
 #### Bulk CSV Export
@@ -91,9 +91,9 @@ For an overview of the CSV format used, see [here](https://support.safetyculture
 Audits built from the same template will be saved in the same CSV file which is named after the templates unique ID number. 
 i.e. `TEMPLATE_ID.csv` 
 
-To export Multiple Audits to Bulk CSV file, run the `safetyculture_audit_exporter` with the format option set to CSV: 
+To export Multiple Audits to Bulk CSV file, run the `iauditor_exporter` with the format option set to CSV: 
 ```
-safetyculture_audit_exporter --format csv
+iauditor_exporter --format csv
 ```
 
 #### The format of the following CSV values do not match the format used by the SafetyCulture API Audit JSON 
@@ -113,14 +113,14 @@ safetyculture_audit_exporter --format csv
 ### Media Export
 * Running
 ```
-safetyculture_audit_exporter --format media
+iauditor_exporter --format media
 ```
 will export all audit media files for each audit (images, attachments, signature, and drawings) to a folder named after the audit ID. 
 
 ### Web Report Link Export
 * Running
 ```
-safetyculture_audit_exporter --format web-report-link
+iauditor_exporter --format web-report-link
 ``` 
 will export your Web Report Links to a CSV file named `web-report-links.csv`.
 
@@ -198,11 +198,11 @@ will result in all exported files named after the `Audit Title` field.
 To list all available export profile IDs and their associated templates:
 
 ```
-safetyculture_audit_exporter --list_export_profiles
+iauditor_exporter --list_export_profiles
 ```
 To list export profile IDs associated with specific templates:
 ```
-safetyculture_audit_exporter --list_export_profiles template_3E631E46F466411B9C09AD804886A8B4
+iauditor_exporter --list_export_profiles template_3E631E46F466411B9C09AD804886A8B4
 ```
 
 Multiple template IDs can be passed, separated by a space
@@ -212,13 +212,13 @@ Multiple template IDs can be passed, separated by a space
 You may want to maintain multiple export configurations in different YAML configuration files. To use a specific configuration file (other than config.yaml) do
 
 ```
-safetyculture_audit_exporter --config=/path/to/alternate_config.yaml
+iauditor_exporter --config=/path/to/alternate_config.yaml
 ```
 Note that you can supply a relative or absolute path to an alternate_config.yaml if it is in another directory
 
 Arguments can be combined e.g. - 
 ```
-safetyculture_audit_exporter --config=alternate_config.yaml --format pdf json
+iauditor_exporter --config=alternate_config.yaml --format pdf json
 ```
 
 ## Troubleshooting
