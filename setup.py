@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name = 'safetyculture-sdk-python',
-      version = '2.0.0',
+      version = '2.0.2',
       description = 'SafetyCulture Python SDK and export tools',
       url = 'https://github.com/SafetyCulture/safetyculture-sdk-python',
       author = 'SafetyCulture',
