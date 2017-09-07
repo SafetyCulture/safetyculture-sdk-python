@@ -12,16 +12,37 @@ import time
 import errno
 from datetime import datetime
 import requests
+from getpass import getpass
 
 DEFAULT_EXPORT_TIMEZONE = 'Etc/UTC'
 DEFAULT_EXPORT_FORMAT = 'pdf'
 GUID_PATTERN = '[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}$'
 HTTP_USER_AGENT_ID = 'safetyculture-python-sdk'
 
+def get_user_api_token(logger):
+    """
+    Generate iAuditor API Token
+    :param logger:  the logger
+    :return:        API Token if authenticated else None
+    """
+    username = raw_input("What is your iAuditor login email: ")
+    password = getpass()
+    generate_token_url = "https://api.safetyculture.io/auth"
+    payload = "username=" + username + "&password=" + password + "&grant_type=password"
+    headers = {
+        'content-type': "application/x-www-form-urlencoded",
+        'cache-control': "no-cache",
+    }
+    response = requests.request("POST", generate_token_url, data=payload, headers=headers)
+    if response.status_code == requests.codes.ok:
+        return response.json()['access_token']
+    else:
+        logger.error('An error occurred calling ' + generate_token_url + ': ' + str(response.json()))
+        return None
+
 
 class SafetyCulture:
     def __init__(self, api_token):
-
         self.current_dir = os.getcwd()
         self.log_dir = self.current_dir + '/log/'
 
@@ -32,9 +53,11 @@ class SafetyCulture:
         self.create_directory_if_not_exists(self.log_dir)
         self.configure_logging()
         logger = logging.getLogger('sp_logger')
-
-        token_is_valid = re.match('^[a-f0-9]{64}$', api_token)
-
+        try:
+            token_is_valid = re.match('^[a-f0-9]{64}$', api_token)
+        except Exception as ex:
+            self.log_critical_error(ex, 'Error occurred while validating API token in config.yaml file. Exiting.')
+            exit()
         if token_is_valid:
             self.api_token = api_token
         else:
