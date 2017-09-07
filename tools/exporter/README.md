@@ -1,5 +1,5 @@
 # Audit Exporter Tool
-Allows you to export audit data from the iAuditor and save them anywhere on your computer.
+Allows you to export audit data from iAuditor and save them anywhere on your computer.
 Supported export formats: PDF, MS WORD (docx), JSON, and CSV. Media and Web Report Link exporting is also supported.
 
 ## Installation  
@@ -74,10 +74,10 @@ iauditor_exporter --config=/path/to/config.yaml --format pdf docx json csv media
 ```
 
 Note:
-* Unless you start the tool with the --loop argument, it will sync documents once and terminate (up to 1000 per sync)
+* Unless you start the tool with the --loop argument, it will sync documents once and terminate
 * Only completed audits will be exported
 * Only audits that are owned by or shared with the iAuditor user account that generated the API token will be exported
-* Up to 1000 audits will be exported each time the software checks for new audits. If more than 1000 audits exist they will be retrieved automatically in subsequent sync cycles.
+* Up to 1000 audits will be exported each sync cycle. If more than 1000 audits exist they will be retrieved automatically in subsequent sync cycles
 
 ### CSV Export
 #### Bulk CSV Export

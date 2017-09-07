@@ -25,7 +25,7 @@ def get_user_api_token(logger):
     :param logger:  the logger
     :return:        API Token if authenticated else None
     """
-    username = raw_input("What is your iAuditor login email: ")
+    username = raw_input("iAuditor username: ")
     password = getpass()
     generate_token_url = "https://api.safetyculture.io/auth"
     payload = "username=" + username + "&password=" + password + "&grant_type=password"
@@ -70,7 +70,7 @@ class SafetyCulture:
                 'Authorization': 'Bearer ' + self.api_token
             }
         else:
-            logger.error('No valid API token parsed! Exiting!')
+            logger.error('No valid API token parsed! Exiting.')
             sys.exit(1)
 
     def authenticated_request_get(self, url):
