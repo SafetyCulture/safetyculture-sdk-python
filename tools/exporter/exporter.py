@@ -520,7 +520,8 @@ def parse_command_line_arguments(logger):
 
 def initial_setup(logger):
     """
-    Creates a new directory in current working directory called 'iAuditor Audit Exports'. Default config file placed
+    Creates a new directory in current working directory called 'iauditor_exports_folder'.  If 'iauditor_exports_folder'
+    already exists the setup script will notify user that the folder exists and exit. Default config file placed
     in directory, with user API Token. User is asked for iAuditor credentials in order to generate their
     API token.
     :param logger:  the logger
@@ -536,22 +537,22 @@ def initial_setup(logger):
     try:
         os.makedirs(exports_folder_name)
     except Exception as ex:
-        log_critical_error(logger, ex, "Problem creating {0}".format(exports_folder_name))
-        logger.info("Please remove or rename {0} to run this setup script. Exiting program".format(exports_folder_name))
+        log_critical_error(logger, ex, "Problem creating exports folder {0}".format(exports_folder_name))
+        logger.info("Please remove or rename folder {0} to run this setup script. Exiting.".format(exports_folder_name))
         exit()
     logger.info(exports_folder_name + " successfully created.")
     path_to_config_file = os.path.join(current_directoy_path, exports_folder_name, 'config.yaml')
     if os.path.exists(path_to_config_file):
         logger.critical("Config file already exists at {0}".format(path_to_config_file))
         logger.info("Please remove or rename the existing config file, then retry this setup program.")
-        logger.info('Exiting program')
+        logger.info('Exiting.')
         exit()
     try:
         config_file = open(path_to_config_file, 'w')
         config_file.writelines(DEFAULT_CONFIG_FILE_YAML)
     except Exception as ex:
         log_critical_error(logger, ex, "Problem creating " + path_to_config_file)
-        logger.info("Exiting program")
+        logger.info("Exiting.")
         exit()
     logger.info("Default config file successfully created at {0}.".format(path_to_config_file))
     os.chdir(exports_folder_name)
