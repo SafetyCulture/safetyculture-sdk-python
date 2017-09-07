@@ -22,5 +22,4 @@ setup(name = 'safetyculture-sdk-python',
             'requests>=2.10.0',
             'pyyaml>=3.11'
       ],
-      python_requires = "!=3.*"
       )

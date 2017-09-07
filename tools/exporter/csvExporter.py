@@ -335,7 +335,7 @@ class CsvExporter:
                 'File already exists at ' + output_csv_path +
                 '\nPlease set allow_overwrite to True in config.yaml file. See README.md for further instruction')
         elif file_exists and allow_overwrite:
-            print 'Overwriting file at ' + output_csv_path
+            print('Overwriting file at ' + output_csv_path)
         elif self.audit_table[0] != CSV_HEADER_ROW:
             self.audit_table.insert(0, CSV_HEADER_ROW)
         self.write_file(output_csv_path, 'wb')
@@ -353,7 +353,7 @@ class CsvExporter:
             wr.writerows(self.audit_table)
             csv_file.close()
         except Exception as ex:
-            print str(ex) + ': Error saving audit_table to ' + output_csv_path
+            print(str(ex) + ': Error saving audit_table to ' + output_csv_path)
 
     def get_item_response(self, item):
         """
@@ -398,8 +398,8 @@ class CsvExporter:
                            INFORMATION]:
             pass
         else:
-            print 'Unhandled item type: ' + str(item_type) + ' from ' + \
-                  self.audit_id() + ', ' + item.get(ID)
+            print('Unhandled item type: ' + str(item_type) + ' from ' + \
+                  self.audit_id() + ', ' + item.get(ID))
         return response
 
     def get_item_response_id(self, item):
@@ -561,7 +561,7 @@ def main():
         csv_exporter = CsvExporter(audit_json)
         csv_exporter.save_converted_audit_to_file(os.path.splitext(arg.split('/')[-1])[0] + '.csv',
                                                   allow_overwrite=True)
-    print 'Exiting'
+    print('Exiting')
 
 
 if __name__ == '__main__':
