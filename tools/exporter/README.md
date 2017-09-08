@@ -29,7 +29,7 @@ Note that your username and password will not be saved, only used to generate th
 * A configuration file is necessary to run the Exporter script. The file will be named `config.yaml` and be placed in a folder named `iauditor_exports_folder` which will be created in your current directory. 
 2. Navigate into the `iauditor_exports_folder` folder just created:
 ```
-cd 'iauditor_exports_folder'
+cd iauditor_exports_folder
 ```
 3. To start exporting audits in PDF format, run the following command 
 ```
