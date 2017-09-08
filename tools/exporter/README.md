@@ -1,74 +1,95 @@
-# Audit exporter tool
+# Audit Exporter Tool
+Allows you to export audit data from iAuditor and save them anywhere on your computer.
+Supported export formats: PDF, MS WORD (docx), JSON, and CSV. Media and Web Report Link exporting is also supported.
 
-Allows you to export audit data from the SafetyCulture Platform and save them anywhere on your computer.
+## Installation  
+``` 
+pip install safetyculture-sdk-python
+```
 
-Supported export formats: PDF, MS WORD (docx), JSON, and CSV. Media exporting is also supported.
+This will install
+* SafetyCulture Python SDK -- See top level [README.md](https://github.com/SafetyCulture/safetyculture-sdk-python/blob/master/README.md) for more information. 
+* iAuditor Exporter Tool
+* README files
 
-## Installation
 
-  1. First install the Python SDK (see top-level Readme)
-  2. Switch to this directory (safetyculture-sdk-python/tools/exporter)
-  3. Execute the following command from the command line:
-    ``pip install -r requirements.txt``
-  4. Edit config.yaml and replace ``YOUR_SAFETYCULTURE_API_TOKEN`` with your SafetyCulture API token
+## Initial Setup
+IMPORTANT: If you have used previous versions of the exporter tool, you should run the new version of the tool from the same folder you have run the tool from in the past.
+Otherwise, the exporter will start exporting from the earliest available audits, rather than from where the last successful export left off. 
+The export tool reads and writes to a file named `last_successful.txt` to keep track of what has already been exported. You'll find this file anywhere that you have run the exporter tool before. 
+Alternatively, you can move the `last_successful.txt` file if you prefer to export from a different location.
+
+If this is your first time using the exporter tool, follow these steps to get set up: 
+1. To automatically create a configuration file (which is needed to run the exporter tool), run:  
+```
+iauditor_exporter --setup
+```
+* You will be prompted for an iAuditor username and password which will be used to generate an API token. 
+Note that your username and password will not be saved, only used to generate the API token which is saved in the auto-generated configuration file.
+* A configuration file is necessary to run the Exporter script. The file will be named `config.yaml` and be placed in a folder named `iauditor_exports_folder` which will be created in your current directory. 
+2. Navigate into the `iauditor_exports_folder` folder just created:
+```
+cd 'iauditor_exports_folder'
+```
+3. To start exporting audits in PDF format, run the following command 
+```
+iauditor_exporter
+```
+#### Windows Users
+The location of `iauditor_exporter.exe` must be included in the system PATH variable in order to execute from the command line without including the full path to the .exe file.  
+Find the location of `iauditor_exporter.exe` by running 
+```
+> where iauditor_exporter
+```
+Add the full path to the system PATH variable. 
 
 
 ## How to run
-
 ### Common usage
+The API token saved in `config.yaml` provides access to data associated with a single account. Namely, the account used to generate the API token.
+Only audits that are accessible by the single iAuditor account associated with the iAuditor API token used are available for exporting.
+ 
+All exported data is saved in a folder called  `exports`. The folder will be created in the current working directory if it does not already exist.
 
-To export in PDF format all audit reports owned by your SafetyCulture account including those shared with you by other SafetyCulture users open a command line prompt and run:
+To export all completed audits in PDF format, run:
+```
+iauditor_exporter --config=/path/to/config.yaml
+```
+  
+To enable the exporter to run continuously until interrupted, use the loop command line argument:
 
 ```
-python exporter.py
-```
-
-or simply double click exporter.py
-
-To enable app to run continuously until interrupted, use the loop command line argument:
-
-```
-python exporter.py --loop
+iauditor_exporter --config=/path/to/config.yaml --loop
 ```
 
 To specify the export format explicitly run:
 
 ```
-python exporter.py --format pdf
+iauditor_exporter --config=/path/to/config.yaml --format pdf
 ```
 
 More than one supported formats can be exported at once e.g.
 
 ```
-python exporter.py --format pdf docx json csv media web-report-link
+iauditor_exporter --config=/path/to/config.yaml --format pdf docx json csv media web-report-link
 ```
 
 Note:
 * Unless you start the tool with the --loop argument, it will sync documents once and terminate
 * Only completed audits will be exported
-* Only audits that are owned by or shared with the SafetyCulture user account that generated the API token will be exported
-* Up to 1000 audits will be exported each time the software checks for new audits. If more than 1000 audits exist on the SafetyCulture platform, they will be retrieved automatically in subsequent sync cycles.
+* Only audits that are owned by or shared with the iAuditor user account that generated the API token will be exported
+* Up to 1000 audits will be exported each sync cycle. If more than 1000 audits exist they will be retrieved automatically in subsequent sync cycles
 
 ### CSV Export
-#### Single Audit CSV Export
-To export a single Audit:
-1. First export the Audit in JSON format
-2. Execute csvExporter.py with the Audit JSON sent as an argument.
-```
-python exporter.py --format json
-python csvExporter.py path/to/audit_file.json
-```
-* Basic example of [CSV Export Format](https://github.com/SafetyCulture/safetyculture-sdk-python/blob/master/tools/exporter/tests/csv_test_files/unit_test_single_question_yes___no___na_answered_no_expected_output.csv)
-* [Explanation and details of CSV format](https://support.safetyculture.com/integrations/safetyculture-csv-exporter-tool/#format)
-
 #### Bulk CSV Export
-* Each Audit is the same format as the single Audit CSV export
-* Audits are grouped by Template. Audits built from the same template are appended to a CSV file named using the templates unique ID number.
+For an overview of the CSV format used, see [here](https://support.safetyculture.com/integrations/safetyculture-csv-exporter-tool/#format)
 
-To export Multiple Audits to Bulk CSV file:
-* Execute exporter.py with the format option set to CSV
+Audits built from the same template will be saved in the same CSV file which is named after the template's unique ID number. 
+i.e. `TEMPLATE_ID.csv` 
+
+To export multiple audits in bulk to a CSV file, run the `iauditor_exporter` with the format option set to CSV: 
 ```
-python exporter.py --format csv
+iauditor_exporter --format csv
 ```
 
 #### The format of the following CSV values do not match the format used by the SafetyCulture API Audit JSON 
@@ -86,12 +107,20 @@ python exporter.py --format csv
 * If you update a template, Audits with the new format will be appended to the same CSV file.
 
 ### Media Export
-* Executing ```python exporter.py --format media``` will export all audit media files for each audit (images, attachments, signature, and drawings) to a folder named after the audit ID.
+* Running
+```
+iauditor_exporter --format media
+```
+will export all audit media files for each audit (images, attachments, signature, and drawings) to a folder named after the audit ID. 
 
 ### Web Report Link Export
-* Executing ```python exporter.py --format web-report-link``` will export your Web Report Links to a CSV file named `web-report-links.csv`.
+* Running
+```
+iauditor_exporter --format web-report-link
+``` 
+will export your Web Report Links to a CSV file named `web-report-links.csv`.
 
-The CSV file includes five columns. Template ID, Template Name, Audit ID, Audit Name, and Web Report Link. 
+The CSV file includes five columns: Template ID, Template Name, Audit ID, Audit Name, and Web Report Link. 
 
 ## Export settings
 
@@ -165,26 +194,28 @@ will result in all exported files named after the `Audit Title` field.
 To list all available export profile IDs and their associated templates:
 
 ```
-python exporter.py --list_export_profiles
+iauditor_exporter --list_export_profiles
 ```
 To list export profile IDs associated with specific templates:
 ```
-python exporter.py --list_export_profiles template_3E631E46F466411B9C09AD804886A8B4
+iauditor_exporter --list_export_profiles template_3E631E46F466411B9C09AD804886A8B4
 ```
 
-Multiple template_ids can be passed, separated by a space
+Multiple template IDs can be passed, separated by a space
 
 ### How to maintain multiple configurations
 
 You may want to maintain multiple export configurations in different YAML configuration files. To use a specific configuration file (other than config.yaml) do
 
 ```
-python exporter.py --config=/path/to/alternate_config.yaml
+iauditor_exporter --config=/path/to/alternate_config.yaml
 ```
+Note that you can supply a relative or absolute path to an alternate_config.yaml if it is in another directory
 
-Note that you can supply a relative or absolute path to alternate_config.yaml if it is in another directory
-
-Arguments can be combined e.g. - `python exporter.py --config=alternate_config.yaml --format pdf json`
+Arguments can be combined e.g. - 
+```
+iauditor_exporter --config=alternate_config.yaml --format pdf json
+```
 
 ## Troubleshooting
 

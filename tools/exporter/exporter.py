@@ -40,6 +40,21 @@ SYNC_MARKER_FILENAME = 'last_successful.txt'
 # Whether to export inactive items to CSV
 DEFAULT_EXPORT_INACTIVE_ITEMS_TO_CSV = True
 
+# Used to create a default config file for new users
+DEFAULT_CONFIG_FILE_YAML = [
+'API:',
+'\n    token: ',
+'\nexport_options:',
+'\n    export_path:',
+'\n    timezone:',
+'\n    filename:',
+'\n    csv_options:',
+'\n        export_inactive_items: false',
+'\n    export_profiles:',
+'\n    sync_delay_in_seconds:',
+'\n    media_sync_offset_in_seconds:',
+]
+
 
 def log_critical_error(logger, ex, message):
     """
@@ -354,7 +369,6 @@ def get_last_successful(logger):
         with open(SYNC_MARKER_FILENAME, 'w') as last_run:
             last_run.write(last_successful)
         logger.info('Searching for audits since the beginning of time: ' + beginning_of_time)
-
     return last_successful
 
 
@@ -471,9 +485,16 @@ def parse_command_line_arguments(logger):
     parser.add_argument('--list_export_profiles', nargs='*', help='display all export profiles, or restrict to specific'
                                                                   ' template_id if supplied as additional argument')
     parser.add_argument('--loop', nargs='*', help='execute continuously until interrupted')
+    parser.add_argument('--setup', action='store_true', help='Automatically create new directory containing the necessary config file.'
+                        'Directory will be named iAuditor Audit Exports, and will be placed in your current directory')
     args = parser.parse_args()
 
     config_filename = DEFAULT_CONFIG_FILENAME
+
+    if args.setup:
+        initial_setup(logger)
+        exit()
+
     if args.config is not None:
         if os.path.isfile(args.config):
             config_filename = args.config
@@ -496,6 +517,56 @@ def parse_command_line_arguments(logger):
     loop_enabled = True if args.loop is not None else False
 
     return config_filename, export_formats, args.list_export_profiles, loop_enabled
+
+def initial_setup(logger):
+    """
+    Creates a new directory in current working directory called 'iauditor_exports_folder'.  If 'iauditor_exports_folder'
+    already exists the setup script will notify user that the folder exists and exit. Default config file placed
+    in directory, with user API Token. User is asked for iAuditor credentials in order to generate their
+    API token.
+    :param logger:  the logger
+    """
+    current_directoy_path = os.getcwd()
+    exports_folder_name = 'iauditor_exports_folder'
+    token = sp.get_user_api_token(logger)
+    if token:
+        DEFAULT_CONFIG_FILE_YAML[1] = '\n    token: ' + str(token)
+    else:
+        logger.critical("Problem generating API token.")
+        exit()
+    try:
+        os.makedirs(exports_folder_name)
+    except Exception as ex:
+        log_critical_error(logger, ex, "Problem creating exports folder {0}".format(exports_folder_name))
+        logger.info("Please remove or rename folder {0} to run this setup script. Exiting.".format(exports_folder_name))
+        exit()
+    logger.info(exports_folder_name + " successfully created.")
+    path_to_config_file = os.path.join(current_directoy_path, exports_folder_name, 'config.yaml')
+    if os.path.exists(path_to_config_file):
+        logger.critical("Config file already exists at {0}".format(path_to_config_file))
+        logger.info("Please remove or rename the existing config file, then retry this setup program.")
+        logger.info('Exiting.')
+        exit()
+    try:
+        config_file = open(path_to_config_file, 'w')
+        config_file.writelines(DEFAULT_CONFIG_FILE_YAML)
+    except Exception as ex:
+        log_critical_error(logger, ex, "Problem creating " + path_to_config_file)
+        logger.info("Exiting.")
+        exit()
+    logger.info("Default config file successfully created at {0}.".format(path_to_config_file))
+    os.chdir(exports_folder_name)
+    choice = raw_input('Would you like to start exporting audits from:\n  1. The beginning of time\n  2. Today\n  Enter 1 or 2: ')
+    if choice == '1':
+        logger.info('Audit exporting set to start from earliest audits available')
+        get_last_successful(logger)
+    else:
+        now = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.000Z')
+        update_sync_marker_file(now)
+        logger.info('Audit exporting set to start from ' + now)
+
+    exit()
+
 
 
 def show_export_profiles_and_exit(list_export_profiles, sc_client):
@@ -565,7 +636,7 @@ def sync_exports(logger, sc_client, settings):
                 logger.info('downloading ' + audit_id)
                 audit_json = sc_client.get_audit(audit_id)
                 template_id = audit_json['template_id']
-                if template_id in export_profiles.keys():
+                if export_profiles is not None and template_id in export_profiles.keys():
                     export_profile_id = export_profiles[template_id]
                 else:
                     export_profile_id = None
