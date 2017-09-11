@@ -581,6 +581,12 @@ def initial_setup(logger):
     API token.
     :param logger:  the logger
     """
+    # Bind raw_input to input in Python 2. Raw_input() only exists in Python 2, while Python 3 uses input()
+    try:
+        input = raw_input
+    except NameError:
+        pass
+
     current_directoy_path = os.getcwd()
     exports_folder_name = 'iauditor_exports_folder'
     token = sp.get_user_api_token(logger)
