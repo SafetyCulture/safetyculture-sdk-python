@@ -12,6 +12,7 @@ This will install
 * iAuditor Exporter Tool
 * README files
 
+
 ## Initial Setup
 IMPORTANT: If you have used previous versions of the exporter tool, you should run the new version of the tool from the same folder you have run the tool from in the past.
 Otherwise, the exporter will start exporting from the earliest available audits, rather than from where the last successful export left off. 
@@ -28,7 +29,7 @@ Note that your username and password will not be saved, only used to generate th
 * A configuration file is necessary to run the Exporter script. The file will be named `config.yaml` and be placed in a folder named `iauditor_exports_folder` which will be created in your current directory. 
 2. Navigate into the `iauditor_exports_folder` folder just created:
 ```
-cd 'iauditor_exports_folder'
+cd iauditor_exports_folder
 ```
 3. To start exporting audits in PDF format, run the following command 
 ```
@@ -120,35 +121,6 @@ iauditor_exporter --format web-report-link
 will export your Web Report Links to a CSV file named `web-report-links.csv`.
 
 The CSV file includes five columns: Template ID, Template Name, Audit ID, Audit Name, and Web Report Link. 
-
-### Actions Export
-Executing,
-```
-safetyculture_audit_exporter --format actions
-```
-will create a CSV file named `AUDIT_ID-actions.csv` for each audit. 
-
-The actions CSV includes the following columns
-- actionsId 
-- description 
-- assignees 
-- assignee 
-- priority
-- priorityCode 
-- status 
-- statusCode 
-- due_datetime 
-- audit 
-- auditId
-- linkedToItem 
-- linkedToItemId 
-- creatorName 
-- creatorId 
-- createdDatetime 
-- modifiedDatetime 
-- completedDatetime 
-
-The fields `priorityCode` and `statusCode` are number values. All other fields are string values.  
 
 ## Export settings
 
