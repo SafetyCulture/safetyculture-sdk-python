@@ -147,7 +147,7 @@ export_options:
     export_path: /Users/Monty/Dropbox
     timezone: America/Chicago
     filename: f3245d40-ea77-11e1-aff1-0800200c9a66
-    csv:
+    csv_options:
         export_inactive_items: false
 export_profiles:
     template_3E631E46F466411B9C09AD804886A8B4:E15A6525-EFA5-4835-92F0-D11CA9F364F3
