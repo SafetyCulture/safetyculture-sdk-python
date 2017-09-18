@@ -302,58 +302,6 @@ def save_web_report_link_to_file(logger, export_dir, web_report_data):
         except Exception as ex:
             log_critical_error(logger, ex, 'Exception while writing' + file_path + ' to file')
 
-def save_exported_actions_to_csv_file(logger, export_path, actions_json, audit_id):
-    """
-    Write Actions to 'AUDIT_ID-actions.csv' on disk at specified location
-    Any existing file with the same name will be overwritten
-    :param logger:          the logger
-    :param export_path:     path to directory for exports
-    :param actions_json:    JSON object of actions associated with specific audit ID
-    :param audit_id:        Audit whose actions are being exported
-    """
-    if not actions_json['actions']:
-        logger.info('No actions returned for ' + audit_id)
-        return
-    filename = audit_id + '-actions.csv'
-    file_path = os.path.join(export_path, filename)
-    logger.info('Exporting ' + str(len(actions_json['actions'])) + ' actions to ' + file_path)
-    priority_codes = {0: 'None', 10: 'Low', 20: 'Medium', 30: 'High'}
-    status_codes = {0: 'To Do', 10: 'In Progress', 50: 'Done', 60: 'Cannot Do'}
-    file_path = os.path.join(export_path, filename)
-    actions_csv = open(file_path, 'w')
-    actions_csv_wr = csv.writer(actions_csv, dialect='excel', quoting=csv.QUOTE_ALL)
-    actions_csv_wr.writerow([
-        'actionId', 'description', 'assignee', 'priority', 'priorityCode', 'status', 'statusCode', 'dueDatetime',
-        'audit', 'auditId', 'linkedToItem', 'linkedToItemId', 'creatorName', 'creatorId', 'createdDatetime',
-        'modifiedDatetime', 'completedDatetime'
-    ])
-    get_json_property = csvExporter.get_json_property
-
-    for action in actions_json['actions']:
-        actions_list = []
-        actions_list.append(get_json_property(action, 'action_id'))
-        actions_list.append(get_json_property(action, 'description'))
-        assignee_list = []
-        for assignee in get_json_property(action, 'assignees'):
-            assignee_list.append(get_json_property(assignee, 'name'))
-        actions_list.append(", ".join(assignee_list))
-        actions_list.append(get_json_property(priority_codes, get_json_property(action, 'priority')))
-        actions_list.append(get_json_property(action, 'priority'))
-        actions_list.append(get_json_property(status_codes, get_json_property(action, 'status')))
-        actions_list.append(get_json_property(action, 'status'))
-        actions_list.append(get_json_property(action, 'due_at'))
-        actions_list.append(get_json_property(action, 'audit', 'name'))
-        actions_list.append(get_json_property(action, 'audit', 'audit_id'))
-        actions_list.append(get_json_property(action, 'item', 'label'))
-        actions_list.append(get_json_property(action, 'item', 'item_id'))
-        actions_list.append(get_json_property(action, 'created_by', 'name'))
-        actions_list.append(get_json_property(action, 'created_by', 'user_id'))
-        actions_list.append(get_json_property(action, 'created_at'))
-        actions_list.append(get_json_property(action, 'modified_at'))
-        actions_list.append(get_json_property(action, 'completed_at'))
-        actions_csv_wr.writerow(actions_list)
-        del actions_list
-
 def save_exported_media_to_file(logger, export_dir, media_file, filename, extension):
     """
     Write exported media item to disk at specified location with specified file name.
