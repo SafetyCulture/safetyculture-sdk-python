@@ -482,7 +482,7 @@ def parse_command_line_arguments(logger):
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', help='config file to use, defaults to ' + DEFAULT_CONFIG_FILENAME)
-    parser.add_argument('--format', nargs='*', help='formats to download, valid options are pdf, json, docx, csv, media, web-report-link, and actions')
+    parser.add_argument('--format', nargs='*', help='formats to download, valid options are pdf, json, docx, csv, media, web-report-link')
     parser.add_argument('--list_export_profiles', nargs='*', help='display all export profiles, or restrict to specific'
                                                                   ' template_id if supplied as additional argument')
     parser.add_argument('--loop', nargs='*', help='execute continuously until interrupted')
@@ -510,7 +510,7 @@ def parse_command_line_arguments(logger):
         export_formats = []
         for option in args.format:
             if option not in valid_export_formats:
-                print('{0} is not a valid export format.  Valid options are pdf, json, docx, csv, web-report-link, media, or actions'.format(option))
+                print '{0} is not a valid export format.  Valid options are pdf, json, docx, csv, web-report-link, or media'.format(option)
                 logger.info('invalid export format argument: {0}'.format(option))
             else:
                 export_formats.append(option)
