@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name = 'safetyculture-sdk-python',
-      version = '2.2.0',
+      version = '2.1.0',
       description = 'SafetyCulture Python SDK and iAuditor integration tools',
       url = 'https://github.com/SafetyCulture/safetyculture-sdk-python',
       author = 'SafetyCulture',
