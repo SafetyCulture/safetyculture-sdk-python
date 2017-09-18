@@ -41,9 +41,6 @@ SYNC_MARKER_FILENAME = 'last_successful.txt'
 # Whether to export inactive items to CSV
 DEFAULT_EXPORT_INACTIVE_ITEMS_TO_CSV = True
 
-# When exporting actions to CSV, if property is None, print this value to CSV
-EMPTY_RESPONSE = ''
-
 # Used to create a default config file for new users
 DEFAULT_CONFIG_FILE_YAML = [
 'API:',
