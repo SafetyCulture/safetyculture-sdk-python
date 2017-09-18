@@ -20,6 +20,7 @@ setup(name = 'safetyculture-sdk-python',
             'tzlocal>=1.3',
             'unicodecsv>=0.14.1',
             'requests>=2.10.0',
-            'pyyaml>=3.11'
+            'pyyaml>=3.11',
+            'future>=0.16.0'
       ],
       )

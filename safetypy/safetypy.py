@@ -10,6 +10,7 @@ import re
 import sys
 import time
 import errno
+from builtins import input
 from datetime import datetime
 import requests
 from getpass import getpass
@@ -25,7 +26,7 @@ def get_user_api_token(logger):
     :param logger:  the logger
     :return:        API Token if authenticated else None
     """
-    username = raw_input("iAuditor username: ")
+    username = input("iAuditor username: ")
     password = getpass()
     generate_token_url = "https://api.safetyculture.io/auth"
     payload = "username=" + username + "&password=" + password + "&grant_type=password"

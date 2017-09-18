@@ -15,6 +15,7 @@ import dateutil.parser
 import yaml
 import pytz
 import shutil
+from builtins import input
 from tzlocal import get_localzone
 from ..exporter import csvExporter
 import unicodecsv as csv
@@ -581,12 +582,6 @@ def initial_setup(logger):
     API token.
     :param logger:  the logger
     """
-    # Bind raw_input to input in Python 2. Raw_input() only exists in Python 2, while Python 3 uses input()
-    try:
-        input = raw_input
-    except NameError:
-        pass
-
     current_directoy_path = os.getcwd()
     exports_folder_name = 'iauditor_exports_folder'
     token = sp.get_user_api_token(logger)
@@ -617,7 +612,7 @@ def initial_setup(logger):
         exit()
     logger.info("Default config file successfully created at {0}.".format(path_to_config_file))
     os.chdir(exports_folder_name)
-    choice = raw_input('Would you like to start exporting audits from:\n  1. The beginning of time\n  2. Today\n  Enter 1 or 2: ')
+    choice = input('Would you like to start exporting audits from:\n  1. The beginning of time\n  2. Today\n  Enter 1 or 2: ')
     if choice == '1':
         logger.info('Audit exporting set to start from earliest audits available')
         get_last_successful(logger)
