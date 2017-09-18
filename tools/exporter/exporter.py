@@ -16,7 +16,7 @@ import yaml
 import pytz
 import shutil
 from tzlocal import get_localzone
-import csvExporter
+from ..exporter import csvExporter
 import unicodecsv as csv
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
