@@ -510,7 +510,7 @@ def parse_command_line_arguments(logger):
         export_formats = []
         for option in args.format:
             if option not in valid_export_formats:
-                print '{0} is not a valid export format.  Valid options are pdf, json, docx, csv, web-report-link, or media'.format(option)
+                print('{0} is not a valid export format.  Valid options are pdf, json, docx, csv, web-report-link, or media'.format(option))
                 logger.info('invalid export format argument: {0}'.format(option))
             else:
                 export_formats.append(option)
