@@ -365,18 +365,35 @@ class SafetyCulture:
         else:
             return None
 
-    def get_audit_actions(self, audit_id):
+    def get_audit_actions(self, date_created, offset=0):
+        """
+        Get all actions created after a specified date. If the number of action is more than 100, this function will
+        page until it has collected all actions up to 5000 actions.
+        :param date_created:    ISO formatted date/time string. Only actions created after this date are are returned.
+        :param offset:          The API returns 100 actions per call, this is used to page forward if there are more
+                                then 100 actions to export.
+        :return:                Array of action objects.
+        """
+        logger = logging.getLogger('sp_logger')
+        if offset >= 4900:
+            logger.info('Reached maximum number o')
+            return []
+
         actions_url = self.api_url + 'actions/search'
-        payload = "audit_id=" + audit_id
-        self.custom_http_headers['content-type'] = 'application/x-www-form-urlencoded'
-        response = self.authenticated_request_post(actions_url, data=payload)
+        payload = {"created_at": {"from": date_created}, "offset": offset}
+        self.custom_http_headers['content-type'] = 'application/json'
+        response = self.authenticated_request_post(actions_url, data=json.dumps(payload))
         del self.custom_http_headers['content-type']
         result = self.parse_json(response.content) if response.status_code == requests.codes.ok else None
-        self.log_http_status(response.status_code, ' on get actions for ' + audit_id)
-        if result:
-            return result
-        else:
+        self.log_http_status(response.status_code, 'GET actions')
+        if None in [result, result.get('count'), result.get('offset'), result.get('total')]:
             return None
+        elif result['count'] + result['offset'] < result['total']:
+            logger.info('Paging Actions. Offset: ' + str(offset+100) + '. Total: ' + str(result['total']))
+            return self.get_audit_actions(date_created, offset+100) + result['actions']
+        elif result['count'] + result['offset'] == result['total']:
+            return result['actions']
+
 
 
     def get_audit(self, audit_id):
