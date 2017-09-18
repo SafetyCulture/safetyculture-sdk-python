@@ -561,7 +561,7 @@ def parse_command_line_arguments(logger):
 
     export_formats = ['pdf']
     if args.format is not None and len(args.format) > 0:
-        valid_export_formats = ['json', 'docx', 'pdf', 'csv', 'media', 'web-report-link', 'actions']
+        valid_export_formats = ['json', 'docx', 'pdf', 'csv', 'media', 'web-report-link']
         export_formats = []
         for option in args.format:
             if option not in valid_export_formats:
@@ -733,9 +733,6 @@ def sync_exports(logger, sc_client, settings):
                             web_report_link
                         ]
                         save_web_report_link_to_file(logger, export_path, web_report_data)
-                    elif export_format == 'actions':
-                        actions_json = sc_client.get_audit_actions(audit_id)
-                        save_exported_actions_to_csv_file(logger, export_path, actions_json, audit_id)
                 logger.debug('setting last modified to ' + audit['modified_at'])
                 update_sync_marker_file(audit['modified_at'])
             else:

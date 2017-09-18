@@ -366,20 +366,6 @@ class SafetyCulture:
         else:
             return None
 
-    def get_audit_actions(self, audit_id):
-        actions_url = self.api_url + 'actions/search'
-        payload = "audit_id=" + audit_id
-        self.custom_http_headers['content-type'] = 'application/x-www-form-urlencoded'
-        response = self.authenticated_request_post(actions_url, data=payload)
-        del self.custom_http_headers['content-type']
-        result = self.parse_json(response.content) if response.status_code == requests.codes.ok else None
-        self.log_http_status(response.status_code, ' on get actions for ' + audit_id)
-        if result:
-            return result
-        else:
-            return None
-
-
     def get_audit(self, audit_id):
         """
         Request JSON representation of a single specified audit and return it
