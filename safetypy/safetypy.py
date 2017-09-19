@@ -10,6 +10,7 @@ import re
 import sys
 import time
 import errno
+from builtins import input
 from datetime import datetime
 import requests
 from getpass import getpass
@@ -25,7 +26,7 @@ def get_user_api_token(logger):
     :param logger:  the logger
     :return:        API Token if authenticated else None
     """
-    username = raw_input("What is your iAuditor login email: ")
+    username = input("iAuditor username: ")
     password = getpass()
     generate_token_url = "https://api.safetyculture.io/auth"
     payload = "username=" + username + "&password=" + password + "&grant_type=password"
@@ -70,7 +71,7 @@ class SafetyCulture:
                 'Authorization': 'Bearer ' + self.api_token
             }
         else:
-            logger.error('No valid API token parsed! Exiting!')
+            logger.error('No valid API token parsed! Exiting.')
             sys.exit(1)
 
     def authenticated_request_get(self, url):
@@ -394,7 +395,6 @@ class SafetyCulture:
             return self.get_audit_actions(date_created, offset+100) + result['actions']
         elif result['count'] + result['offset'] == result['total']:
             return result['actions']
-
 
     def get_audit(self, audit_id):
         """

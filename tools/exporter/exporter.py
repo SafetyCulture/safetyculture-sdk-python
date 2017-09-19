@@ -15,8 +15,9 @@ import dateutil.parser
 import yaml
 import pytz
 import shutil
+from builtins import input
 from tzlocal import get_localzone
-import csvExporter
+from ..exporter import csvExporter
 import unicodecsv as csv
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -315,6 +316,7 @@ def save_web_report_link_to_file(logger, export_dir, web_report_data):
         except Exception as ex:
             log_critical_error(logger, ex, 'Exception while writing' + file_path + ' to file')
 
+
 def save_exported_actions_to_csv_file(logger, export_path, actions_array):
     """
     Write Actions to 'AUDIT_ID-actions.csv' on disk at specified location
@@ -370,6 +372,7 @@ def transform_action_object_to_list(action):
     actions_list.append(get_json_property(action, 'modified_at'))
     actions_list.append(get_json_property(action, 'completed_at'))
     return actions_list
+
 
 def save_exported_media_to_file(logger, export_dir, media_file, filename, extension):
     """
@@ -588,7 +591,7 @@ def parse_command_line_arguments(logger):
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', help='config file to use, defaults to ' + DEFAULT_CONFIG_FILENAME)
-    parser.add_argument('--format', nargs='*', help='formats to download, valid options are pdf, json, docx, csv, media, web-report-link, and actions')
+    parser.add_argument('--format', nargs='*', help='formats to download, valid options are pdf, json, docx, csv, media, web-report-link')
     parser.add_argument('--list_export_profiles', nargs='*', help='display all export profiles, or restrict to specific'
                                                                   ' template_id if supplied as additional argument')
     parser.add_argument('--loop', nargs='*', help='execute continuously until interrupted')
@@ -612,11 +615,11 @@ def parse_command_line_arguments(logger):
 
     export_formats = ['pdf']
     if args.format is not None and len(args.format) > 0:
-        valid_export_formats = ['json', 'docx', 'pdf', 'csv', 'media', 'web-report-link', 'actions']
+        valid_export_formats = ['json', 'docx', 'pdf', 'csv', 'media', 'web-report-link']
         export_formats = []
         for option in args.format:
             if option not in valid_export_formats:
-                print('{0} is not a valid export format.  Valid options are pdf, json, docx, csv, web-report-link, media, or actions'.format(option))
+                print('{0} is not a valid export format.  Valid options are pdf, json, docx, csv, web-report-link, or media'.format(option))
                 logger.info('invalid export format argument: {0}'.format(option))
             else:
                 export_formats.append(option)
@@ -628,7 +631,8 @@ def parse_command_line_arguments(logger):
 
 def initial_setup(logger):
     """
-    Creates a new directory in current working directory called 'iAuditor Audit Exports'. Default config file placed
+    Creates a new directory in current working directory called 'iauditor_exports_folder'.  If 'iauditor_exports_folder'
+    already exists the setup script will notify user that the folder exists and exit. Default config file placed
     in directory, with user API Token. User is asked for iAuditor credentials in order to generate their
     API token.
     :param logger:  the logger
@@ -653,19 +657,18 @@ def initial_setup(logger):
     if os.path.exists(path_to_config_file):
         logger.critical("Config file already exists at {0}".format(path_to_config_file))
         logger.info("Please remove or rename the existing config file, then retry this setup program.")
-        logger.info('Exiting program')
+        logger.info('Exiting.')
         exit()
     try:
         config_file = open(path_to_config_file, 'w')
         config_file.writelines(DEFAULT_CONFIG_FILE_YAML)
     except Exception as ex:
         log_critical_error(logger, ex, "Problem creating " + path_to_config_file)
-        logger.info("Exiting program")
+        logger.info("Exiting.")
         exit()
     logger.info("Default config file successfully created at {0}.".format(path_to_config_file))
     os.chdir(exports_folder_name)
-    # create and write to last_successful.txt
-    choice = raw_input('Would you like to start exporting audits from:\n  1. The beginning of time\n  2. Today\n  Enter 1 or 2: ')
+    choice = input('Would you like to start exporting audits from:\n  1. The beginning of time\n  2. Today\n  Enter 1 or 2: ')
     if choice == '1':
         logger.info('Audit exporting set to start from earliest audits available')
         get_last_successful(logger)
@@ -821,7 +824,7 @@ def export_audit_media(logger, sc_client, settings, audit_json, audit_id, export
         media_export_filename = media_id
         save_exported_media_to_file(logger, media_export_path, media_file, media_export_filename, extension)
 
-def export_audit_web_report_link(sc_client, audit_json, audit_id, template_id):
+def export_audit_web_report_link(logger, settings, sc_client, audit_json, audit_id, template_id):
     web_report_link = sc_client.get_web_report(audit_id)
     web_report_data = [
         template_id,
