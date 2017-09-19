@@ -378,22 +378,22 @@ class SafetyCulture:
         if offset >= 4900:
             logger.info('Reached maximum number o')
             return []
-
         actions_url = self.api_url + 'actions/search'
-        payload = {"created_at": {"from": date_created}, "offset": offset}
+        payload = {"created_at": {"from": str(date_created)}, "offset": offset}
         self.custom_http_headers['content-type'] = 'application/json'
         response = self.authenticated_request_post(actions_url, data=json.dumps(payload))
         del self.custom_http_headers['content-type']
         result = self.parse_json(response.content) if response.status_code == requests.codes.ok else None
         self.log_http_status(response.status_code, 'GET actions')
-        if None in [result, result.get('count'), result.get('offset'), result.get('total')]:
+        if result is None:
+            return None
+        if None in [result.get('count'), result.get('offset'), result.get('total')]:
             return None
         elif result['count'] + result['offset'] < result['total']:
             logger.info('Paging Actions. Offset: ' + str(offset+100) + '. Total: ' + str(result['total']))
             return self.get_audit_actions(date_created, offset+100) + result['actions']
         elif result['count'] + result['offset'] == result['total']:
             return result['actions']
-
 
 
     def get_audit(self, audit_id):

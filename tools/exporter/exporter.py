@@ -37,11 +37,25 @@ DEFAULT_MEDIA_SYNC_OFFSET_IN_SECONDS = 600
 # The file that stores the "date modified" of the last successfully synced audit
 SYNC_MARKER_FILENAME = 'last_successful.txt'
 
+# The file that stores the ISO date/time string of the last successful actions export
+ACTIONS_SYNC_MARKER_FILENAME = 'last_successful_actions_export.txt'
+
 # Whether to export inactive items to CSV
 DEFAULT_EXPORT_INACTIVE_ITEMS_TO_CSV = True
 
 # When exporting actions to CSV, if property is None, print this value to CSV
 EMPTY_RESPONSE = ''
+
+# Properties kept in settings dictionary which takes it's values from config.YAML
+API_TOKEN ='api_token'
+EXPORT_PATH ='export_path'
+TIMEZONE = 'timezone'
+EXPORT_PROFILES = 'export_profiles'
+FILENAME_ITEM_ID = 'filename_item_id'
+SYNC_DELAY_IN_SECONDS = 'sync_delay_in_seconds'
+EXPORT_INACTIVE_ITEMS_TO_CSV = 'export_inactive_items_to_csv'
+MEDIA_SYNC_OFFSET_IN_SECONDS = 'media_sync_offset_in_seconds'
+EXPORT_FORMATS = 'export_formats'
 
 # Used to create a default config file for new users
 DEFAULT_CONFIG_FILE_YAML = [
@@ -96,11 +110,11 @@ def load_setting_api_access_token(logger, config_settings):
 
 def load_export_inactive_items_to_csv(logger, config_settings):
     """
-    Attempt to parse export_inactive_items from config settings. Value of true or false is expected. 
-    True means the CSV exporter will include inactive items. False means the CSV exporter will exclude inactive items. 
+    Attempt to parse export_inactive_items from config settings. Value of true or false is expected.
+    True means the CSV exporter will include inactive items. False means the CSV exporter will exclude inactive items.
     :param logger:           the logger
     :param config_settings:  config settings loaded from config file
-    :return:                 value of export_inactive_items_to_csv if valid, else DEFAULT_EXPORT_INACTIVE_ITEMS_TO_CSV 
+    :return:                 value of export_inactive_items_to_csv if valid, else DEFAULT_EXPORT_INACTIVE_ITEMS_TO_CSV
     """
     try:
         export_inactive_items_to_csv = config_settings['export_options']['csv_options']['export_inactive_items']
@@ -152,7 +166,7 @@ def load_setting_export_profile_mapping(logger, config_settings):
     """
     try:
         profile_mapping = {}
-        export_profile_settings = config_settings['export_profiles']
+        export_profile_settings = config_settings['export_options']['export_profiles']
         if export_profile_settings is not None:
             profile_lines = export_profile_settings.split(' ')
             for profile in profile_lines:
@@ -270,7 +284,7 @@ def create_directory_if_not_exists(logger, path):
 
 def save_web_report_link_to_file(logger, export_dir, web_report_data):
     """
-    Write Web Report links to 'web-report-links.csv' on disk at specified location 
+    Write Web Report links to 'web-report-links.csv' on disk at specified location
     Any existing file with the same name will be appended to
     :param logger:          the logger
     :param export_dir:      path to directory for exports
@@ -301,7 +315,7 @@ def save_web_report_link_to_file(logger, export_dir, web_report_data):
         except Exception as ex:
             log_critical_error(logger, ex, 'Exception while writing' + file_path + ' to file')
 
-def save_exported_actions_to_csv_file(logger, export_path, actions_json, audit_id):
+def save_exported_actions_to_csv_file(logger, export_path, actions_array):
     """
     Write Actions to 'AUDIT_ID-actions.csv' on disk at specified location
     Any existing file with the same name will be overwritten
@@ -310,48 +324,52 @@ def save_exported_actions_to_csv_file(logger, export_path, actions_json, audit_i
     :param actions_json:    JSON object of actions associated with specific audit ID
     :param audit_id:        Audit whose actions are being exported
     """
-    if not actions_json['actions']:
-        logger.info('No actions returned for ' + audit_id)
+    if not actions_array:
+        logger.info('No actions returned after ' + get_last_successful(logger))
         return
-    filename = audit_id + '-actions.csv'
+    filename = 'iauditor_actions.csv'
     file_path = os.path.join(export_path, filename)
-    logger.info('Exporting ' + str(len(actions_json['actions'])) + ' actions to ' + file_path)
-    priority_codes = {0: 'None', 10: 'Low', 20: 'Medium', 30: 'High'}
-    status_codes = {0: 'To Do', 10: 'In Progress', 50: 'Done', 60: 'Cannot Do'}
+    logger.info('Exporting ' + str(len(actions_array)) + ' actions to ' + file_path)
     file_path = os.path.join(export_path, filename)
-    actions_csv = open(file_path, 'w')
+    actions_csv = open(file_path, 'a')
     actions_csv_wr = csv.writer(actions_csv, dialect='excel', quoting=csv.QUOTE_ALL)
     actions_csv_wr.writerow([
         'actionId', 'description', 'assignee', 'priority', 'priorityCode', 'status', 'statusCode', 'dueDatetime',
         'audit', 'auditId', 'linkedToItem', 'linkedToItemId', 'creatorName', 'creatorId', 'createdDatetime',
         'modifiedDatetime', 'completedDatetime'
     ])
-    get_json_property = csvExporter.get_json_property
 
-    for action in actions_json['actions']:
-        actions_list = []
-        actions_list.append(get_json_property(action, 'action_id'))
-        actions_list.append(get_json_property(action, 'description'))
-        assignee_list = []
-        for assignee in get_json_property(action, 'assignees'):
-            assignee_list.append(get_json_property(assignee, 'name'))
-        actions_list.append(", ".join(assignee_list))
-        actions_list.append(get_json_property(priority_codes, get_json_property(action, 'priority')))
-        actions_list.append(get_json_property(action, 'priority'))
-        actions_list.append(get_json_property(status_codes, get_json_property(action, 'status')))
-        actions_list.append(get_json_property(action, 'status'))
-        actions_list.append(get_json_property(action, 'due_at'))
-        actions_list.append(get_json_property(action, 'audit', 'name'))
-        actions_list.append(get_json_property(action, 'audit', 'audit_id'))
-        actions_list.append(get_json_property(action, 'item', 'label'))
-        actions_list.append(get_json_property(action, 'item', 'item_id'))
-        actions_list.append(get_json_property(action, 'created_by', 'name'))
-        actions_list.append(get_json_property(action, 'created_by', 'user_id'))
-        actions_list.append(get_json_property(action, 'created_at'))
-        actions_list.append(get_json_property(action, 'modified_at'))
-        actions_list.append(get_json_property(action, 'completed_at'))
+    for action in actions_array:
+        actions_list = transform_action_object_to_list(action)
         actions_csv_wr.writerow(actions_list)
         del actions_list
+
+def transform_action_object_to_list(action):
+    priority_codes = {0: 'None', 10: 'Low', 20: 'Medium', 30: 'High'}
+    status_codes = {0: 'To Do', 10: 'In Progress', 50: 'Done', 60: 'Cannot Do'}
+    get_json_property = csvExporter.get_json_property
+    actions_list = []
+    actions_list.append(get_json_property(action, 'action_id'))
+    actions_list.append(get_json_property(action, 'description'))
+    assignee_list = []
+    for assignee in get_json_property(action, 'assignees'):
+        assignee_list.append(get_json_property(assignee, 'name'))
+    actions_list.append(", ".join(assignee_list))
+    actions_list.append(get_json_property(priority_codes, get_json_property(action, 'priority')))
+    actions_list.append(get_json_property(action, 'priority'))
+    actions_list.append(get_json_property(status_codes, get_json_property(action, 'status')))
+    actions_list.append(get_json_property(action, 'status'))
+    actions_list.append(get_json_property(action, 'due_at'))
+    actions_list.append(get_json_property(action, 'audit', 'name'))
+    actions_list.append(get_json_property(action, 'audit', 'audit_id'))
+    actions_list.append(get_json_property(action, 'item', 'label'))
+    actions_list.append(get_json_property(action, 'item', 'item_id'))
+    actions_list.append(get_json_property(action, 'created_by', 'name'))
+    actions_list.append(get_json_property(action, 'created_by', 'user_id'))
+    actions_list.append(get_json_property(action, 'created_at'))
+    actions_list.append(get_json_property(action, 'modified_at'))
+    actions_list.append(get_json_property(action, 'completed_at'))
+    return actions_list
 
 def save_exported_media_to_file(logger, export_dir, media_file, filename, extension):
     """
@@ -427,6 +445,36 @@ def get_last_successful(logger):
     return last_successful
 
 
+def update_actions_sync_marker_file(date_modified):
+    """
+    Replaces the contents of the actions sync marker file with the the date/time string provided
+
+    :param date_modified:   ISO string
+    :return:
+    """
+    with open(ACTIONS_SYNC_MARKER_FILENAME, 'w') as actions_sync_marker_file:
+        actions_sync_marker_file.write(date_modified)
+
+
+def get_last_successful_actions_export(logger):
+    """
+    Read the date and time of the last successfully exported actions from the actions sync marker file
+
+    :param logger:  the logger
+    :return:        A datetime value (or 2000-01-01 if syncing since the 'beginning of time')
+    """
+    if os.path.isfile(ACTIONS_SYNC_MARKER_FILENAME):
+        with open(ACTIONS_SYNC_MARKER_FILENAME, 'r+') as last_run:
+            last_successful_actions_export = last_run.readlines()[0]
+    else:
+        beginning_of_time = '2000-01-01T00:00:00.000Z'
+        last_successful_actions_export = beginning_of_time
+        with open(ACTIONS_SYNC_MARKER_FILENAME, 'w') as last_run:
+            last_run.write(last_successful_actions_export)
+        logger.info('Searching for actions since the beginning of time: ' + beginning_of_time)
+    return last_successful_actions_export
+
+
 def parse_export_filename(header_items, filename_item_id):
     """
     Get 'response' value of specified header item to use for export file name
@@ -435,11 +483,15 @@ def parse_export_filename(header_items, filename_item_id):
     :param filename_item_id:  item_id from config settings
     :return:                  'response' value of specified item from audit JSON
     """
+    if filename_item_id is None:
+        return None
     for item in header_items:
         if item['item_id'] == filename_item_id:
             if 'responses' in item.keys():
                 if 'text' in item['responses'].keys() and item['responses']['text'].strip() != '':
                     return item['responses']['text']
+    return None
+
 
 
 def get_filename_item_id(logger, config_settings):
@@ -487,14 +539,14 @@ def load_config_settings(logger, path_to_config_file):
     """
     config_settings = yaml.safe_load(open(path_to_config_file))
     settings = {
-        'api_token': load_setting_api_access_token(logger, config_settings),
-        'export_path': load_setting_export_path(logger, config_settings),
-        'timezone': load_setting_export_timezone(logger, config_settings),
-        'export_profiles': load_setting_export_profile_mapping(logger, config_settings),
-        'filename_item_id': get_filename_item_id(logger, config_settings),
-        'sync_delay_in_seconds': load_setting_sync_delay(logger, config_settings),
-        'export_inactive_items_to_csv': load_export_inactive_items_to_csv(logger, config_settings),
-        'media_sync_offset_in_seconds': load_setting_media_sync_offset(logger, config_settings)
+        API_TOKEN: load_setting_api_access_token(logger, config_settings),
+        EXPORT_PATH: load_setting_export_path(logger, config_settings),
+        TIMEZONE: load_setting_export_timezone(logger, config_settings),
+        EXPORT_PROFILES: load_setting_export_profile_mapping(logger, config_settings),
+        FILENAME_ITEM_ID: get_filename_item_id(logger, config_settings),
+        SYNC_DELAY_IN_SECONDS: load_setting_sync_delay(logger, config_settings),
+        EXPORT_INACTIVE_ITEMS_TO_CSV: load_export_inactive_items_to_csv(logger, config_settings),
+        MEDIA_SYNC_OFFSET_IN_SECONDS: load_setting_media_sync_offset(logger, config_settings)
     }
 
     return settings
@@ -510,7 +562,7 @@ def configure(logger, path_to_config_file, export_formats):
     """
 
     config_settings = load_config_settings(logger, path_to_config_file)
-    config_settings['export_formats'] = export_formats
+    config_settings[EXPORT_FORMATS] = export_formats
     sc_client = sp.SafetyCulture(config_settings['api_token'])
 
     if config_settings['export_path'] is not None:
@@ -573,6 +625,7 @@ def parse_command_line_arguments(logger):
 
     return config_filename, export_formats, args.list_export_profiles, loop_enabled
 
+
 def initial_setup(logger):
     """
     Creates a new directory in current working directory called 'iAuditor Audit Exports'. Default config file placed
@@ -580,21 +633,22 @@ def initial_setup(logger):
     API token.
     :param logger:  the logger
     """
+    # setup variables
     current_directoy_path = os.getcwd()
     exports_folder_name = 'iauditor_exports_folder'
+
+    # get token, set token
     token = sp.get_user_api_token(logger)
-    if token:
-        DEFAULT_CONFIG_FILE_YAML[1] = '\n    token: ' + str(token)
-    else:
+
+    if not token:
         logger.critical("Problem generating API token.")
         exit()
-    try:
-        os.makedirs(exports_folder_name)
-    except Exception as ex:
-        log_critical_error(logger, ex, "Problem creating {0}".format(exports_folder_name))
-        logger.info("Please remove or rename {0} to run this setup script. Exiting program".format(exports_folder_name))
-        exit()
-    logger.info(exports_folder_name + " successfully created.")
+    DEFAULT_CONFIG_FILE_YAML[1] = '\n    token: ' + str(token)
+
+    # create new directory
+    create_directory_if_not_exists(exports_folder_name)
+
+    # write config file
     path_to_config_file = os.path.join(current_directoy_path, exports_folder_name, 'config.yaml')
     if os.path.exists(path_to_config_file):
         logger.critical("Config file already exists at {0}".format(path_to_config_file))
@@ -610,6 +664,7 @@ def initial_setup(logger):
         exit()
     logger.info("Default config file successfully created at {0}.".format(path_to_config_file))
     os.chdir(exports_folder_name)
+    # create and write to last_successful.txt
     choice = raw_input('Would you like to start exporting audits from:\n  1. The beginning of time\n  2. Today\n  Enter 1 or 2: ')
     if choice == '1':
         logger.info('Audit exporting set to start from earliest audits available')
@@ -618,9 +673,7 @@ def initial_setup(logger):
         now = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.000Z')
         update_sync_marker_file(now)
         logger.info('Audit exporting set to start from ' + now)
-
     exit()
-
 
 
 def show_export_profiles_and_exit(list_export_profiles, sc_client):
@@ -656,6 +709,22 @@ def show_export_profiles_and_exit(list_export_profiles, sc_client):
         sys.exit(0)
 
 
+def export_actions(logger, settings, sc_client):
+    """
+    Export all actions created after date specified
+    :param logger:      The logger
+    :param settings:    Settings from command line and configuration file
+    :param sc_client:   instance of safetypy SDK class
+    """
+    logger.info('Exporting iAuditor actions')
+    last_successful_actions_export = get_last_successful_actions_export(logger)
+    actions_array = sc_client.get_audit_actions(last_successful_actions_export)
+    if actions_array is not None:
+        logger.info('Found ' + str(len(actions_array)) + ' actions')
+        save_exported_actions_to_csv_file(logger, settings[EXPORT_PATH], actions_array)
+        utc_iso_datetime_now = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.000Z')
+        update_actions_sync_marker_file(utc_iso_datetime_now)
+
 def sync_exports(logger, sc_client, settings):
     """
     Perform sync, exporting documents modified since last execution
@@ -664,80 +733,104 @@ def sync_exports(logger, sc_client, settings):
     :param sc_client: instance of SDK object
     :param settings:  dict containing settings values
     """
-    export_formats = settings['export_formats']
-    export_profiles = settings['export_profiles']
-    filename_item_id = settings['filename_item_id']
-    export_path = settings['export_path']
-    timezone = settings['timezone']
-    export_inactive_items_to_csv = settings['export_inactive_items_to_csv']
-    media_sync_offset = settings['media_sync_offset_in_seconds']
+    # GET list of audits
     last_successful = get_last_successful(logger)
-    results = sc_client.discover_audits(modified_after=last_successful)
-
-    if results is not None:
-        logger.info(str(results['total']) + ' audits discovered')
+    list_of_audits = sc_client.discover_audits(modified_after=last_successful)
+    # exporting actions if specified by user
+    if 'actions' in settings[EXPORT_FORMATS]:
+        export_actions(logger, settings, sc_client)
+    # if there are audits start exporting
+    if list_of_audits is not None and bool(set(settings[EXPORT_FORMATS]) & set(['pdf', 'docx', 'csv', 'media', 'web-report-link'])):
+        logger.info(str(list_of_audits['total']) + ' audits discovered')
         export_count = 1
-        export_total = results['total']
-
-        for audit in results['audits']:
+        export_total = list_of_audits['total']
+        for audit in list_of_audits['audits']:
             logger.info('Processing audit (' + str(export_count) + '/' + str(export_total) + ')')
-            modified_at = dateutil.parser.parse(audit['modified_at'])
-            now = datetime.datetime.utcnow()
-            elapsed_time_difference = (pytz.utc.localize(now) - modified_at)
-            if elapsed_time_difference > datetime.timedelta(seconds=media_sync_offset):
-                export_count += 1
-                audit_id = audit['audit_id']
-                logger.info('downloading ' + audit_id)
-                audit_json = sc_client.get_audit(audit_id)
-                template_id = audit_json['template_id']
-                if export_profiles is not None and template_id in export_profiles.keys():
-                    export_profile_id = export_profiles[template_id]
-                else:
-                    export_profile_id = None
+            process_audit(logger, settings, sc_client, audit)
+            export_count += 1
 
-                if filename_item_id is not None:
-                    export_filename = parse_export_filename(audit_json['header_items'], filename_item_id)
-                    if export_filename is None:
-                        export_filename = audit_id
-                else:
-                    export_filename = audit_id
-                for export_format in export_formats:
-                    if export_format in ['pdf', 'docx']:
-                        export_doc = sc_client.get_export(audit_id, timezone, export_profile_id, export_format)
-                        save_exported_document(logger, export_path, export_doc, export_filename, export_format)
-                    elif export_format == 'json':
-                        export_doc = json.dumps(audit_json, indent=4)
-                        save_exported_document(logger, export_path, export_doc, export_filename, export_format)
-                    elif export_format == 'csv':
-                        csv_exporter = csvExporter.CsvExporter(audit_json, export_inactive_items_to_csv)
-                        csv_export_filename = audit_json['template_id']
-                        csv_exporter.append_converted_audit_to_bulk_export_file(os.path.join(export_path, csv_export_filename + '.csv'))
-                    elif export_format == 'media':
-                        media_export_path = os.path.join(export_path, 'media', export_filename)
-                        extension = 'jpg'
-                        media_id_list = get_media_from_audit(logger, audit_json)
-                        for media_id in media_id_list:
-                            logger.info("Saving media_{0} to disc.".format(media_id))
-                            media_file = sc_client.get_media(audit_id, media_id)
-                            media_export_filename = media_id
-                            save_exported_media_to_file(logger, media_export_path, media_file, media_export_filename, extension)
-                    elif export_format == 'web-report-link':
-                        web_report_link = sc_client.get_web_report(audit_id)
-                        web_report_data = [
-                            template_id,
-                            csvExporter.get_json_property(audit_json, 'template_data', 'metadata', 'name'),
-                            audit_id,
-                            csvExporter.get_json_property(audit_json, 'audit_data', 'name'),
-                            web_report_link
-                        ]
-                        save_web_report_link_to_file(logger, export_path, web_report_data)
-                    elif export_format == 'actions':
-                        actions_json = sc_client.get_audit_actions(audit_id)
-                        save_exported_actions_to_csv_file(logger, export_path, actions_json, audit_id)
-                logger.debug('setting last modified to ' + audit['modified_at'])
-                update_sync_marker_file(audit['modified_at'])
-            else:
-                logger.info('Audit\'s modified_at value is less than {0} seconds in the past, skipping for now!'.format(media_sync_offset))
+def check_if_media_sync_offset_satisfied(logger, settings, audit):
+    modified_at = dateutil.parser.parse(audit['modified_at'])
+    now = datetime.datetime.utcnow()
+    elapsed_time_difference = (pytz.utc.localize(now) - modified_at)
+    # if the media_sync_offset has been satisfied
+    if not elapsed_time_difference > datetime.timedelta(seconds=settings[MEDIA_SYNC_OFFSET_IN_SECONDS]):
+        logger.info('Audit\'s modified_at value is less than {0} seconds in the past, skipping for now!'.format(
+            settings[MEDIA_SYNC_OFFSET_IN_SECONDS]))
+        return False
+    return True
+
+def process_audit(logger, settings, sc_client, audit):
+    """
+
+    :param logger:
+    :param settings:
+    :param sc_client:
+    :param audit:
+    :return:
+    """
+    if not check_if_media_sync_offset_satisfied(logger, settings, audit):
+        return
+    audit_id = audit['audit_id']
+    logger.info('downloading ' + audit_id)
+    audit_json = sc_client.get_audit(audit_id)
+    template_id = audit_json['template_id']
+    # save export profile if specified for this template
+    export_profile_id = None
+    if settings[EXPORT_PROFILES] is not None and template_id in settings[EXPORT_PROFILES].keys():
+        export_profile_id = settings[EXPORT_PROFILES][template_id]
+    # if filename specified (using header item ID) then set that value
+    export_filename = parse_export_filename(audit_json['header_items'], settings[FILENAME_ITEM_ID]) or audit_id
+    # for each format specified, export it (pdf, docx, json, csv, media, web-report-link
+    for export_format in settings[EXPORT_FORMATS]:
+        if export_format in ['pdf', 'docx']:
+            export_audit_pdf_word(logger, sc_client, settings, audit_id, export_profile_id, export_format, export_filename)
+        elif export_format == 'json':
+            export_audit_json(logger, settings, audit_json, export_format, export_filename)
+        elif export_format == 'csv':
+            export_audit_csv(settings, audit_json)
+        elif export_format == 'media':
+            export_audit_media(logger, sc_client, settings, audit_json, audit_id, export_filename)
+        elif export_format == 'web-report-link':
+            export_audit_web_report_link(sc_client, audit_json, audit_id, template_id)
+    # update last_modifeid sync marker, log it
+    logger.debug('setting last modified to ' + audit['modified_at'])
+    update_sync_marker_file(audit['modified_at'])
+
+def export_audit_pdf_word(logger, sc_client, settings, audit_id, export_profile_id, export_format, export_filename):
+    export_doc = sc_client.get_export(audit_id, settings[TIMEZONE], export_profile_id, export_format)
+    save_exported_document(logger, settings[EXPORT_PATH], export_doc, export_filename, export_format)
+
+def export_audit_json(logger, settings, audit_json, export_format, export_filename):
+    export_doc = json.dumps(audit_json, indent=4)
+    save_exported_document(logger, settings[EXPORT_PATH], export_doc, export_filename, export_format)
+
+def export_audit_csv(settings, audit_json):
+    csv_exporter = csvExporter.CsvExporter(audit_json, settings[EXPORT_INACTIVE_ITEMS_TO_CSV])
+    csv_export_filename = audit_json['template_id']
+    csv_exporter.append_converted_audit_to_bulk_export_file(
+        os.path.join(settings[EXPORT_PATH], csv_export_filename + '.csv'))
+
+def export_audit_media(logger, sc_client, settings, audit_json, audit_id, export_filename):
+    media_export_path = os.path.join(settings[EXPORT_PATH], 'media', export_filename)
+    extension = 'jpg'
+    media_id_list = get_media_from_audit(logger, audit_json)
+    for media_id in media_id_list:
+        logger.info("Saving media_{0} to disc.".format(media_id))
+        media_file = sc_client.get_media(audit_id, media_id)
+        media_export_filename = media_id
+        save_exported_media_to_file(logger, media_export_path, media_file, media_export_filename, extension)
+
+def export_audit_web_report_link(sc_client, audit_json, audit_id, template_id):
+    web_report_link = sc_client.get_web_report(audit_id)
+    web_report_data = [
+        template_id,
+        csvExporter.get_json_property(audit_json, 'template_data', 'metadata', 'name'),
+        audit_id,
+        csvExporter.get_json_property(audit_json, 'audit_data', 'name'),
+        web_report_link
+    ]
+    save_web_report_link_to_file(logger, settings[EXPORT_PATH], web_report_data)
 
 def get_media_from_audit(logger, audit_json):
     """
@@ -769,7 +862,7 @@ def loop(logger, sc_client, settings):
     :param sc_client:  instance of SafetyCulture SDK object
     :param settings:   dictionary containing config settings values
     """
-    sync_delay_in_seconds = settings['sync_delay_in_seconds']
+    sync_delay_in_seconds = load_setting_sync_delay(logger, settings)
     while True:
         sync_exports(logger, sc_client, settings)
         logger.info('Next check will be in ' + str(sync_delay_in_seconds) + ' seconds. Waiting...')
