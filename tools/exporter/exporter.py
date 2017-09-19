@@ -646,7 +646,7 @@ def initial_setup(logger):
     DEFAULT_CONFIG_FILE_YAML[1] = '\n    token: ' + str(token)
 
     # create new directory
-    create_directory_if_not_exists(exports_folder_name)
+    create_directory_if_not_exists(logger, exports_folder_name)
 
     # write config file
     path_to_config_file = os.path.join(current_directoy_path, exports_folder_name, 'config.yaml')
