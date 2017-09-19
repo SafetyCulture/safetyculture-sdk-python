@@ -15,8 +15,9 @@ import dateutil.parser
 import yaml
 import pytz
 import shutil
+from builtins import input
 from tzlocal import get_localzone
-import csvExporter
+from ..exporter import csvExporter
 import unicodecsv as csv
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -280,7 +281,7 @@ def save_web_report_link_to_file(logger, export_dir, web_report_data):
     if os.path.isfile(file_path):
         logger.info('Appending Web Report link to ' + file_path)
         try:
-            with open(file_path, 'a') as web_report_link_csv:
+            with open(file_path, 'ab') as web_report_link_csv:
                 wr = csv.writer(web_report_link_csv, dialect='excel', quoting=csv.QUOTE_ALL)
                 wr.writerow(web_report_data)
                 web_report_link_csv.close()
@@ -290,7 +291,7 @@ def save_web_report_link_to_file(logger, export_dir, web_report_data):
         logger.info('Creating ' + file_path)
         logger.info('Appending web report to ' + file_path)
         try:
-            with open(file_path, 'w') as web_report_link_csv:
+            with open(file_path, 'wb') as web_report_link_csv:
                 wr = csv.writer(web_report_link_csv, dialect='excel', quoting=csv.QUOTE_ALL)
                 wr.writerow(['Template ID', 'Template Name', 'Audit ID', 'Audit Name',  'Web Report Link'])
                 wr.writerow(web_report_data)
@@ -509,7 +510,7 @@ def parse_command_line_arguments(logger):
         export_formats = []
         for option in args.format:
             if option not in valid_export_formats:
-                print '{0} is not a valid export format.  Valid options are pdf, json, docx, csv, web-report-link, or media'.format(option)
+                print('{0} is not a valid export format.  Valid options are pdf, json, docx, csv, web-report-link, or media'.format(option))
                 logger.info('invalid export format argument: {0}'.format(option))
             else:
                 export_formats.append(option)
@@ -556,7 +557,7 @@ def initial_setup(logger):
         exit()
     logger.info("Default config file successfully created at {0}.".format(path_to_config_file))
     os.chdir(exports_folder_name)
-    choice = raw_input('Would you like to start exporting audits from:\n  1. The beginning of time\n  2. Today\n  Enter 1 or 2: ')
+    choice = input('Would you like to start exporting audits from:\n  1. The beginning of time\n  2. Today\n  Enter 1 or 2: ')
     if choice == '1':
         logger.info('Audit exporting set to start from earliest audits available')
         get_last_successful(logger)
@@ -578,9 +579,9 @@ def show_export_profiles_and_exit(list_export_profiles, sc_client):
     """
     row_boundary = '|' + '-' * 136 + '|'
     row_format = '|{0:<25} | {1:<25} | {2:<80}|'
-    print row_boundary
-    print row_format.format('Template Name', 'Profile Name', 'Profile ID')
-    print row_boundary
+    print(row_boundary)
+    print(row_format.format('Template Name', 'Profile Name', 'Profile ID'))
+    print(row_boundary)
 
     if len(list_export_profiles) > 0:
         for template_id in list_export_profiles:
@@ -588,8 +589,8 @@ def show_export_profiles_and_exit(list_export_profiles, sc_client):
             template_name = str(profile['export_profiles'][0]['templates'][0]['name'])
             profile_name = str(profile['export_profiles'][0]['name'])
             profile_id = str(profile['export_profiles'][0]['id'])
-            print row_format.format(template_name, profile_name, profile_id)
-            print row_boundary
+            print(row_format.format(template_name, profile_name, profile_id))
+            print(row_boundary)
         sys.exit()
     else:
         profiles = sc_client.get_export_profile_ids()
@@ -597,8 +598,8 @@ def show_export_profiles_and_exit(list_export_profiles, sc_client):
             template_name = str(profile['templates'][0]['name'])[:19]
             profile_name = str(profile['name'])[:19]
             profile_id = str(profile['id'])
-            print row_format.format(template_name, profile_name, profile_id)
-            print row_boundary
+            print(row_format.format(template_name, profile_name, profile_id))
+            print(row_boundary)
         sys.exit(0)
 
 
@@ -669,11 +670,13 @@ def sync_exports(logger, sc_client, settings):
                             save_exported_media_to_file(logger, media_export_path, media_file, media_export_filename, extension)
                     elif export_format == 'web-report-link':
                         web_report_link = sc_client.get_web_report(audit_id)
-                        web_report_data = [template_id,
-                               csvExporter.get_json_property(audit_json, 'template_data', 'metadata', 'name'),
-                               audit_id,
-                               csvExporter.get_json_property(audit_json, 'audit_data', 'name'),
-                               web_report_link]
+                        web_report_data = [
+                            template_id,
+                            csvExporter.get_json_property(audit_json, 'template_data', 'metadata', 'name'),
+                            audit_id,
+                            csvExporter.get_json_property(audit_json, 'audit_data', 'name'),
+                            web_report_link
+                        ]
                         save_web_report_link_to_file(logger, export_path, web_report_data)
                 logger.debug('setting last modified to ' + audit['modified_at'])
                 update_sync_marker_file(audit['modified_at'])
@@ -733,7 +736,7 @@ def main():
             logger.info('Completed sync process, exiting')
 
     except KeyboardInterrupt:
-        print "Interrupted by user, exiting."
+        print("Interrupted by user, exiting.")
         sys.exit(0)
 
 

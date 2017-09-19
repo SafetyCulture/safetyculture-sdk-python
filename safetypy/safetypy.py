@@ -10,6 +10,7 @@ import re
 import sys
 import time
 import errno
+from builtins import input
 from datetime import datetime
 import requests
 from getpass import getpass
@@ -25,7 +26,7 @@ def get_user_api_token(logger):
     :param logger:  the logger
     :return:        API Token if authenticated else None
     """
-    username = raw_input("iAuditor username: ")
+    username = input("iAuditor username: ")
     password = getpass()
     generate_token_url = "https://api.safetyculture.io/auth"
     payload = "username=" + username + "&password=" + password + "&grant_type=password"
@@ -86,7 +87,7 @@ class SafetyCulture:
         :param json_to_parse:  string representation of JSON
         :return:               OrderedDict representation of JSON
         """
-        return json.JSONDecoder(object_pairs_hook=collections.OrderedDict).decode(json_to_parse)
+        return json.JSONDecoder(object_pairs_hook=collections.OrderedDict).decode(json_to_parse.decode('utf-8'))
 
     def log_critical_error(self, ex, message):
         """
@@ -341,7 +342,7 @@ class SafetyCulture:
     def get_media(self, audit_id, media_id):
         """
         Get media item associated with a specified audit and media ID
-        :param audit_id:    audit ID of document that contains media 
+        :param audit_id:    audit ID of document that contains media
         :param media_id:    media ID of image to fetch
         :return:            The Content-Type will be the MIME type associated with the media, 
                             and the body of the response is the media itself.
