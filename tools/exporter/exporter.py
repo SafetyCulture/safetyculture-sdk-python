@@ -10,18 +10,19 @@ import os
 import re
 import sys
 import time
-import datetime
+from datetime import datetime
+from datetime import timedelta
 import dateutil.parser
 import yaml
 import pytz
 import shutil
 from builtins import input
 from tzlocal import get_localzone
-from ..exporter import csvExporter
 import unicodecsv as csv
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 from safetypy import safetypy as sp
+from tools import csvExporter
 
 # Possible values here are DEBUG, INFO, WARN, ERROR and CRITICAL
 LOG_LEVEL = logging.DEBUG
@@ -249,7 +250,7 @@ def configure_logging(path_to_log_directory):
     :param path_to_log_directory:  path to directory to write log file in
     :return:
     """
-    log_filename = datetime.datetime.now().strftime('%Y-%m-%d') + '.log'
+    log_filename = datetime.now().strftime('%Y-%m-%d') + '.log'
     exporter_logger = logging.getLogger('exporter_logger')
     exporter_logger.setLevel(LOG_LEVEL)
     formatter = logging.Formatter('%(asctime)s : %(levelname)s : %(message)s')
@@ -327,13 +328,13 @@ def save_exported_actions_to_csv_file(logger, export_path, actions_array):
     :param audit_id:        Audit whose actions are being exported
     """
     if not actions_array:
-        logger.info('No actions returned after ' + get_last_successful(logger))
+        logger.info('No actions returned after ' + get_last_successful_actions_export(logger))
         return
     filename = 'iauditor_actions.csv'
     file_path = os.path.join(export_path, filename)
     logger.info('Exporting ' + str(len(actions_array)) + ' actions to ' + file_path)
     file_path = os.path.join(export_path, filename)
-    actions_csv = open(file_path, 'a')
+    actions_csv = open(file_path, 'ab')
     actions_csv_wr = csv.writer(actions_csv, dialect='excel', quoting=csv.QUOTE_ALL)
     actions_csv_wr.writerow([
         'actionId', 'description', 'assignee', 'priority', 'priorityCode', 'status', 'statusCode', 'dueDatetime',
@@ -591,7 +592,7 @@ def parse_command_line_arguments(logger):
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', help='config file to use, defaults to ' + DEFAULT_CONFIG_FILENAME)
-    parser.add_argument('--format', nargs='*', help='formats to download, valid options are pdf, json, docx, csv, media, web-report-link')
+    parser.add_argument('--format', nargs='*', help='formats to download, valid options are pdf, json, docx, csv, media, web-report-link, actions')
     parser.add_argument('--list_export_profiles', nargs='*', help='display all export profiles, or restrict to specific'
                                                                   ' template_id if supplied as additional argument')
     parser.add_argument('--loop', nargs='*', help='execute continuously until interrupted')
@@ -615,11 +616,11 @@ def parse_command_line_arguments(logger):
 
     export_formats = ['pdf']
     if args.format is not None and len(args.format) > 0:
-        valid_export_formats = ['json', 'docx', 'pdf', 'csv', 'media', 'web-report-link']
+        valid_export_formats = ['json', 'docx', 'pdf', 'csv', 'media', 'web-report-link', 'actions']
         export_formats = []
         for option in args.format:
             if option not in valid_export_formats:
-                print('{0} is not a valid export format.  Valid options are pdf, json, docx, csv, web-report-link, or media'.format(option))
+                print('{0} is not a valid export format.  Valid options are pdf, json, docx, csv, web-report-link, media, or actions'.format(option))
                 logger.info('invalid export format argument: {0}'.format(option))
             else:
                 export_formats.append(option)
@@ -673,7 +674,7 @@ def initial_setup(logger):
         logger.info('Audit exporting set to start from earliest audits available')
         get_last_successful(logger)
     else:
-        now = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.000Z')
+        now = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.000Z')
         update_sync_marker_file(now)
         logger.info('Audit exporting set to start from ' + now)
     exit()
@@ -725,7 +726,7 @@ def export_actions(logger, settings, sc_client):
     if actions_array is not None:
         logger.info('Found ' + str(len(actions_array)) + ' actions')
         save_exported_actions_to_csv_file(logger, settings[EXPORT_PATH], actions_array)
-        utc_iso_datetime_now = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.000Z')
+        utc_iso_datetime_now = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.000Z')
         update_actions_sync_marker_file(utc_iso_datetime_now)
 
 def sync_exports(logger, sc_client, settings):
@@ -754,10 +755,10 @@ def sync_exports(logger, sc_client, settings):
 
 def check_if_media_sync_offset_satisfied(logger, settings, audit):
     modified_at = dateutil.parser.parse(audit['modified_at'])
-    now = datetime.datetime.utcnow()
+    now = datetime.utcnow()
     elapsed_time_difference = (pytz.utc.localize(now) - modified_at)
     # if the media_sync_offset has been satisfied
-    if not elapsed_time_difference > datetime.timedelta(seconds=settings[MEDIA_SYNC_OFFSET_IN_SECONDS]):
+    if not elapsed_time_difference > timedelta(seconds=settings[MEDIA_SYNC_OFFSET_IN_SECONDS]):
         logger.info('Audit\'s modified_at value is less than {0} seconds in the past, skipping for now!'.format(
             settings[MEDIA_SYNC_OFFSET_IN_SECONDS]))
         return False
@@ -795,7 +796,7 @@ def process_audit(logger, settings, sc_client, audit):
         elif export_format == 'media':
             export_audit_media(logger, sc_client, settings, audit_json, audit_id, export_filename)
         elif export_format == 'web-report-link':
-            export_audit_web_report_link(sc_client, audit_json, audit_id, template_id)
+            export_audit_web_report_link(logger, settings, sc_client, audit_json, audit_id, template_id)
     # update last_modifeid sync marker, log it
     logger.debug('setting last modified to ' + audit['modified_at'])
     update_sync_marker_file(audit['modified_at'])
