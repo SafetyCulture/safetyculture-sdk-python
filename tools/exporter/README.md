@@ -69,7 +69,7 @@ iauditor_exporter --config=/path/to/config.yaml --format pdf
 More than one supported formats can be exported at once e.g.
 
 ```
-iauditor_exporter --config=/path/to/config.yaml --format pdf docx json csv media web-report-link actions
+iauditor_exporter --config=/path/to/config.yaml --format  pdf  docx  json  csv  media  web-report-link  actions
 ```
 
 Note:
@@ -125,14 +125,14 @@ Executing,
 ```
 safetyculture_audit_exporter --format actions
 ```
-will create a CSV file named `iauditor_actions.csv` where all actions will be exported. 
+will create a CSV file named `iauditor_actions.csv` where all actions are be exported. 
 
-The actions export tool reads and writes to a file named `last_successful_actions_export.txt` to keep track of what has already been exported. 
-If it does already exist, `last_successful_actions_export.txt` is created by the actions export tool. 
+The actions export tool reads and writes to a file named `last_successful_actions_export.txt` to keep track of what actions have already been exported. 
+If it does not already exist, `last_successful_actions_export.txt` is created by the actions export tool. 
 
-Subsequent runs will append newly created and modified actions to `iauditor_actions.csv`. Actions that are modified will be re-appended to CSV file. 
+Subsequent runs will append newly created and modified actions to `iauditor_actions.csv`. Actions that are modified will be re-appended to the CSV file. 
 
-The actions CSV includes the following columns
+`iauditor_actions.csv` includes the following columns
 - actionsId 
 - description 
 - assignees 
@@ -153,6 +153,7 @@ The actions CSV includes the following columns
 - completedDatetime 
 
 The fields `priorityCode` and `statusCode` are number values. All other fields are string values.  
+See [here](https://developer.safetyculture.io/#search-actions) for more information about the status codes and priority codes.
 
 ## Export settings
 
