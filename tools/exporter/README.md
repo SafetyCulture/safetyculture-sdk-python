@@ -1,6 +1,6 @@
 # Audit Exporter Tool
 Allows you to export audit data from iAuditor and save them anywhere on your computer.
-Supported export formats: PDF, MS WORD (docx), JSON, and CSV. Media and Web Report Link exporting is also supported.
+Supported export formats: PDF, MS WORD (docx), JSON, and CSV. Media, Web Report Link, and Actions exporting is also supported.
 
 ## Installation  
 ``` 
@@ -69,7 +69,7 @@ iauditor_exporter --config=/path/to/config.yaml --format pdf
 More than one supported formats can be exported at once e.g.
 
 ```
-iauditor_exporter --config=/path/to/config.yaml --format pdf docx json csv media web-report-link
+iauditor_exporter --config=/path/to/config.yaml --format pdf docx json csv media web-report-link actions
 ```
 
 Note:
@@ -125,7 +125,12 @@ Executing,
 ```
 safetyculture_audit_exporter --format actions
 ```
-will create a CSV file named `AUDIT_ID-actions.csv` for each audit. 
+will create a CSV file named `iauditor_actions.csv` where all actions will be exported. 
+
+The actions export tool reads and writes to a file named `last_successful_actions_export.txt` to keep track of what has already been exported. 
+If it does already exist, `last_successful_actions_export.txt` is created by the actions export tool. 
+
+Subsequent runs will append newly created and modified actions to `iauditor_actions.csv`. Actions that are modified will be re-appended to CSV file. 
 
 The actions CSV includes the following columns
 - actionsId 

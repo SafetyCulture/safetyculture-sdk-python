@@ -366,11 +366,11 @@ class SafetyCulture:
         else:
             return None
 
-    def get_audit_actions(self, date_created, offset=0):
+    def get_audit_actions(self, date_modified, offset=0):
         """
         Get all actions created after a specified date. If the number of action is more than 100, this function will
         page until it has collected all actions up to 5000 actions.
-        :param date_created:    ISO formatted date/time string. Only actions created after this date are are returned.
+        :param date_modified:    ISO formatted date/time string. Only actions created after this date are are returned.
         :param offset:          The API returns 100 actions per call, this is used to page forward if there are more
                                 then 100 actions to export.
         :return:                Array of action objects.
@@ -380,7 +380,7 @@ class SafetyCulture:
             logger.info('Reached maximum number o')
             return []
         actions_url = self.api_url + 'actions/search'
-        payload = {"created_at": {"from": str(date_created)}, "offset": offset}
+        payload = {"modified_at": {"from": str(date_modified)}, "offset": offset}
         self.custom_http_headers['content-type'] = 'application/json'
         response = self.authenticated_request_post(actions_url, data=json.dumps(payload))
         del self.custom_http_headers['content-type']
@@ -392,7 +392,7 @@ class SafetyCulture:
             return None
         elif result['count'] + result['offset'] < result['total']:
             logger.info('Paging Actions. Offset: ' + str(offset+100) + '. Total: ' + str(result['total']))
-            return self.get_audit_actions(date_created, offset+100) + result['actions']
+            return self.get_audit_actions(date_modified, offset + 100) + result['actions']
         elif result['count'] + result['offset'] == result['total']:
             return result['actions']
 
