@@ -373,7 +373,7 @@ class SafetyCulture:
 
     def get_audit_actions(self, date_modified, offset=0):
         """
-        Get all actions created after a specified date. If the number of action is more than 100, this function will
+        Get all actions created after a specified date. If the number of actions is more than 100, this function will
         page until it has collected all actions up to 5000 actions.
         :param date_modified:   ISO formatted date/time string. Only actions created after this date are are returned.
         :param offset:          The API returns 100 actions per call, this is used to page forward if there are more
