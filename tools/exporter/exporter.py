@@ -778,8 +778,8 @@ def check_if_media_sync_offset_satisfied(logger, settings, audit):
     elapsed_time_difference = (pytz.utc.localize(now) - modified_at)
     # if the media_sync_offset has been satisfied
     if not elapsed_time_difference > timedelta(seconds=settings[MEDIA_SYNC_OFFSET_IN_SECONDS]):
-        logger.info('Audit\'s modified_at value is less than {0} seconds in the past, skipping for now!'.format(
-            settings[MEDIA_SYNC_OFFSET_IN_SECONDS]))
+        logger.info('Audit {0} modified too recently, some media may not have completed syncing. Skipping export until next sync cycle'.format(
+            audit['audit_id']))
         return False
     return True
 
