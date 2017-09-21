@@ -10,6 +10,7 @@ import re
 import sys
 import time
 import errno
+# noinspection PyUnresolvedReferences
 from builtins import input
 from datetime import datetime
 import requests
@@ -19,6 +20,7 @@ DEFAULT_EXPORT_TIMEZONE = 'Etc/UTC'
 DEFAULT_EXPORT_FORMAT = 'pdf'
 GUID_PATTERN = '[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}$'
 HTTP_USER_AGENT_ID = 'safetyculture-python-sdk'
+
 
 def get_user_api_token(logger):
     """
@@ -56,15 +58,14 @@ class SafetyCulture:
         logger = logging.getLogger('sp_logger')
         try:
             token_is_valid = re.match('^[a-f0-9]{64}$', api_token)
+            if token_is_valid:
+                self.api_token = api_token
+            else:
+                logger.error('API token failed to match expected pattern')
+                self.api_token = None
         except Exception as ex:
             self.log_critical_error(ex, 'Error occurred while validating API token in config.yaml file. Exiting.')
             exit()
-        if token_is_valid:
-            self.api_token = api_token
-        else:
-            logger.error('API token failed to match expected pattern')
-            self.api_token = None
-
         if self.api_token:
             self.custom_http_headers = {
                 'User-Agent': HTTP_USER_AGENT_ID,
@@ -78,18 +79,22 @@ class SafetyCulture:
         return requests.get(url, headers=self.custom_http_headers)
 
     def authenticated_request_post(self, url, data):
-        return requests.post(url, data, headers=self.custom_http_headers)
+        self.custom_http_headers['content-type'] = 'application/json'
+        response = requests.post(url, data, headers=self.custom_http_headers)
+        del self.custom_http_headers['content-type']
+        return response
 
-    def parse_json(self, json_to_parse):
+    @staticmethod
+    def parse_json(json_to_parse):
         """
         Parse JSON string to OrderedDict and return
-
         :param json_to_parse:  string representation of JSON
         :return:               OrderedDict representation of JSON
         """
         return json.JSONDecoder(object_pairs_hook=collections.OrderedDict).decode(json_to_parse.decode('utf-8'))
 
-    def log_critical_error(self, ex, message):
+    @staticmethod
+    def log_critical_error(ex, message):
         """
         Write exception and description message to log
 
@@ -370,20 +375,24 @@ class SafetyCulture:
         """
         Get all actions created after a specified date. If the number of action is more than 100, this function will
         page until it has collected all actions up to 5000 actions.
-        :param date_modified:    ISO formatted date/time string. Only actions created after this date are are returned.
+        :param date_modified:   ISO formatted date/time string. Only actions created after this date are are returned.
         :param offset:          The API returns 100 actions per call, this is used to page forward if there are more
-                                then 100 actions to export.
+                                than 100 actions to export.
         :return:                Array of action objects.
         """
         logger = logging.getLogger('sp_logger')
-        if offset >= 4900:
-            logger.info('Reached maximum number o')
+        paging_length = 100
+        if offset >= 5000:
+            logger.info('Reached maximum number of actions')
             return []
         actions_url = self.api_url + 'actions/search'
-        payload = {"modified_at": {"from": str(date_modified)}, "offset": offset}
-        self.custom_http_headers['content-type'] = 'application/json'
-        response = self.authenticated_request_post(actions_url, data=json.dumps(payload))
-        del self.custom_http_headers['content-type']
+        # payload = {"modified_at": {"from": str(date_modified)}, "offset": offset}
+        # self.custom_http_headers['content-type'] = 'application/json'
+        response = self.authenticated_request_post(
+            actions_url,
+            data=json.dumps({"modified_at": {"from": str(date_modified)}, "offset": offset})
+        )
+        # del self.custom_http_headers['content-type']
         result = self.parse_json(response.content) if response.status_code == requests.codes.ok else None
         self.log_http_status(response.status_code, 'GET actions')
         if result is None:
@@ -391,8 +400,8 @@ class SafetyCulture:
         if None in [result.get('count'), result.get('offset'), result.get('total')]:
             return None
         elif result['count'] + result['offset'] < result['total']:
-            logger.info('Paging Actions. Offset: ' + str(offset+100) + '. Total: ' + str(result['total']))
-            return self.get_audit_actions(date_modified, offset + 100) + result['actions']
+            logger.info('Paging Actions. Offset: ' + str(offset + paging_length) + '. Total: ' + str(result['total']))
+            return self.get_audit_actions(date_modified, offset + paging_length) + result['actions']
         elif result['count'] + result['offset'] == result['total']:
             return result['actions']
 
@@ -410,7 +419,8 @@ class SafetyCulture:
         self.log_http_status(response.status_code, log_message)
         return result
 
-    def log_http_status(self, status_code, message):
+    @staticmethod
+    def log_http_status(status_code, message):
         """
         Write http status code and descriptive message to log
 

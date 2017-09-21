@@ -1,6 +1,6 @@
 # Audit Exporter Tool
 Allows you to export audit data from iAuditor and save it anywhere on your computer.
-Audit can be exported in the following fomrats: PDF, MS Word (docx), JSON, CSV, and web report. Media and actions can also be exported. 
+Audit data can be exported in the following formats: PDF, MS Word (docx), JSON,and CSV. Media, actions and web report links can also be exported. 
 
 ## Installation  
 ``` 
@@ -130,7 +130,8 @@ will export all actions to a file named `iauditor_actions.csv`
 The actions export tool reads and writes to a file named `last_successful_actions_export.txt` to keep track of what actions have already been exported. 
 If it does not already exist, `last_successful_actions_export.txt` is created.
 
-Subsequent runs will append newly created and modified actions to `iauditor_actions.csv`. Actions that are modified will be re-appended to the CSV file. 
+Each time actions are exported, newly created actions are appended to `iauditor_actions.csv`. Additionally, any existing actions that have been modified since the last 
+time actions were exported will be re-appended to the CSV file.  
 
 `iauditor_actions.csv` consists of the following columns 
 - actionsId 
