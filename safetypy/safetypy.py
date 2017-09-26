@@ -10,7 +10,6 @@ import re
 import sys
 import time
 import errno
-# noinspection PyUnresolvedReferences
 from builtins import input
 from datetime import datetime
 import requests
@@ -382,24 +381,23 @@ class SafetyCulture:
         """
         logger = logging.getLogger('sp_logger')
         paging_length = 100
-        if offset >= 5000:
+        offset_limit = 5000
+        if offset >= offset_limit:
             logger.info('Reached maximum number of actions')
             return []
         actions_url = self.api_url + 'actions/search'
-        # payload = {"modified_at": {"from": str(date_modified)}, "offset": offset}
-        # self.custom_http_headers['content-type'] = 'application/json'
         response = self.authenticated_request_post(
             actions_url,
             data=json.dumps({"modified_at": {"from": str(date_modified)}, "offset": offset})
         )
-        # del self.custom_http_headers['content-type']
         result = self.parse_json(response.content) if response.status_code == requests.codes.ok else None
         self.log_http_status(response.status_code, 'GET actions')
-        if result is None:
+        if result is None or None in [result.get('count'), result.get('offset'), result.get('total')]:
             return None
-        if None in [result.get('count'), result.get('offset'), result.get('total')]:
-            return None
-        elif result['count'] + result['offset'] < result['total']:
+        return self.page_for_actions(logger, date_modified, result, offset, paging_length)
+
+    def page_for_actions(self, logger, date_modified, result, offset, paging_length):
+        if result['count'] + result['offset'] < result['total']:
             logger.info('Paging Actions. Offset: ' + str(offset + paging_length) + '. Total: ' + str(result['total']))
             return self.get_audit_actions(date_modified, offset + paging_length) + result['actions']
         elif result['count'] + result['offset'] == result['total']:

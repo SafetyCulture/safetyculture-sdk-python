@@ -1,49 +1,61 @@
-# Audit Exporter Tool
-Allows you to export audit data from iAuditor and save it anywhere on your computer.
-Audit data can be exported in the following formats: PDF, MS Word (docx), JSON,and CSV. Media, actions and web report links can also be exported. 
+# SafetyCulture Python SDK and iAuditor Export Tool
 
-## Installation  
-``` 
-pip install safetyculture-sdk-python
+* the SafetyCulture Python SDK has a number of functions for making requests to the iAuditor API. 
+
+* The iAuditor Export Tool is used to export audit data in a variety of formats. It uses the SafetyCulture Python SDK to make API requests.   
+
+## iAuditor Export Tool 
+### Quick Installation, Setup, and Execution of iAuditor Export Tool for First Time Users 
+You will need to have [Python](https://www.python.org/downloads/) and [Pip](https://pip.pypa.io/en/stable/installing/) installed on your computer. 
+
+run the following commands from your terminal: 
+1. Install SafetyCulture Python SDK and iAuditor Export Tool: 
 ```
-
-This will install
-* SafetyCulture Python SDK -- See top level [README.md](https://github.com/SafetyCulture/safetyculture-sdk-python/blob/master/README.md) for more information. 
-* iAuditor Exporter Tool
-* README files
-
-## Initial Setup
-IMPORTANT: If you are using a version prior to 2.0.0 (see [here](https://github.com/SafetyCulture/safetyculture-sdk-python/releases)), you should run the new version of the tool from the same folder you ran the earlier version of the tool.
-Otherwise, the exporter will start exporting from the earliest available audits, rather than from where the last successful export left off. 
-The export tool reads and writes to a file named `last_successful.txt` to keep track of what audits have already been exported. You'll find this file anywhere that you have run the exporter tool before. 
-Alternatively, you can move the `last_successful.txt` file if you prefer to export from a different location.
-
-If this is your first time using the exporter tool, follow these steps to get set up after installation: 
-1. To automatically create a configuration file (which is needed to run the exporter tool), run:  
+pip install safetyculture-sdk-python
+``` 
+2. Create `iauditor_exports_folder`, save configuration file (`config.yaml`) within new folder: 
 ```
 iauditor_exporter --setup
 ```
-* You will be prompted for an iAuditor username and password which will be used to generate an API token. 
-Note that your username and password will not be saved, only used to generate the API token which is saved in the auto-generated configuration file.
-* A configuration file is necessary to run the Exporter script. The file will be named `config.yaml` and be placed in a folder named `iauditor_exports_folder` which will be created in your current directory. 
-2. Navigate into the newly created folder `iauditor_exports_folder`:
+3. Move into the newly created folder: 
 ```
 cd iauditor_exports_folder
 ```
-3. To start exporting audits in PDF format, run the following command: 
+4. Start exporting audits in PDF format: 
 ```
 iauditor_exporter
 ```
-#### Windows Users
-The location of `iauditor_exporter.exe` must be included in the system PATH variable in order to execute from the command line.  
-Find the location of `iauditor_exporter.exe` by running 
-```
-> where iauditor_exporter
-```
-Add the full path to the system PATH variable. 
 
-## How to run
-### Common usage
+### Existing Users Update Options
+
+**Option 1**
+
+Follow the instruction above to start exporting data to new location. The setup script will give you the option to start your exports from the 
+current date and time, so that you do not have to start over from your earliest audits. 
+
+**Option 2**
+
+Install the latest version of the SafetyCulture Python SDK and iAuditor Export Tool: 
+```
+pip install safetyculture-sdk-python
+```
+Then navigate into your existing exporter folder. This is located within the cloned repo at `safetyculture-sdk-python/tools/exporter`
+and run `iauditor_exporter` from there. Export data will be saved in the existing `exports` folder, and the existing `last_successful.txt` file will 
+be used to pick up where the last export left off. 
+
+**Option 3**
+
+Pull the latest repository by navigating into `safetyculture-sdk-python` and running 
+```
+git pull
+```
+Navigate into `safetyculture-sdk-python/tools/exporter`
+Run the iAuditor export tool directly: 
+```
+python exporter.py 
+```
+
+### How to use the iAuditor Export Tool 
 The API token saved in `config.yaml` provides access to data associated with a single account. Namely, the account used to generate the API token.
 Only audits that are accessible to the single iAuditor account associated with the iAuditor API token used are available for exporting.
  
@@ -89,7 +101,6 @@ To export multiple audits in bulk to a CSV file, run the `iauditor_exporter` wit
 ```
 iauditor_exporter --format csv
 ```
-
 #### The format of the following CSV values do not match the format used by the SafetyCulture API Audit JSON 
 ##### Date/Time field
 * JSON: `2017-03-03T03:45:58.090Z`
@@ -120,7 +131,7 @@ will export your Web Report Links to a CSV file named `web-report-links.csv`.
 
 The CSV file includes five columns: Template ID, Template Name, Audit ID, Audit Name, and Web Report Link. 
 
-### Actions Export
+### Actions Export 
 Running
 ```
 safetyculture_audit_exporter --format actions
@@ -134,10 +145,9 @@ Each time actions are exported, newly created actions are appended to `iauditor_
 time actions were exported will be re-appended to the CSV file.  
 
 `iauditor_actions.csv` consists of the following columns 
-- actionsId 
+- actionId 
 - description 
-- assignees 
-- assignee 
+- assignee
 - priority
 - priorityCode 
 - status 
@@ -222,8 +232,6 @@ export_options:
 
 will result in all exported files named after the `Audit Title` field.
 
-## Advanced usage
-
 ### How to list available export profile IDs
 To list all available export profile IDs and their associated templates:
 
@@ -251,22 +259,63 @@ Arguments can be combined e.g. -
 iauditor_exporter --config=alternate_config.yaml --format pdf json
 ```
 
-## Troubleshooting
+### Troubleshooting
 
-### Nothing gets exported
+#### Nothing gets exported
 
 Your API key may be missing or has expired. Generate a new API token from the iAuditor web application or using the SafetyCulture API and replace it in the config.yaml file of the top-level directory of this repository. Ensure your API key corresponds to a SafetyCulture account that contains the audits you want to export.
 
-### Some audits failed to transfer
+#### Some audits failed to transfer
 
 If an audit failed to transfer the export process will not stop, it will simply record the failure in the log file and continue. You can find the log files under the log/ directory. To retry a failed audit export you can reset the export start date as shown in "Setting the export start date" below.
 
-### pdf documents have placeholder images, or docx documents won't open
+#### pdf documents have placeholder images, or docx documents won't open
 
 Sometimes media on an audit can take longer to sync than the rest of the data.  Increasing the value of the media_sync_offset_in_seconds config setting can improve this.
 
-### Re-setting the export start date
+#### Re-setting the export start date
 
 Once you have successfully used this tool to extract audit reports, the next time you run it it will only export reports modified or completed since the last time it ran. To reset the export start date edit or delete the file last_successful.txt generated by the exporter tool in this directory. The time is UTC in ISO 8061 format (example: 2016-10-20T05:19:18.352Z).
 
 IMPORTANT: Exporting large numbers of audits in bulk over and over again may result in your account being throttled or your API token revoked.
+
+
+
+## SafetyCulture Python SDK
+1. Import `safetypy` into a Python module or Python interpreter: 
+```
+import safetypy
+```
+2. Create an instance of the SafetyCulture class: 
+```
+sc = safetypy.SafetyCulture(YOUR_IAUDITOR_API_TOKEN)
+```
+### For more information regarding the Python SDK functionality
+1. To open the Python interpreter, run 
+```
+python
+```
+2. From the Python interpreter, import the Python SDK by running
+```
+import safetypy
+```
+3. For an overview of available functionality, run
+```
+help(safetypy.SafetyCulture)
+```
+
+## License
+
+Copyright 2017 SafetyCulture Pty Ltd
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
