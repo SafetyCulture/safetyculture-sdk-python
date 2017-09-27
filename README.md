@@ -1,51 +1,56 @@
-# SafetyCulture Python SDK and iAuditor Export Tool
+# SafetyCulture Python SDK and iAuditor Tools
 
-* the SafetyCulture Python SDK has a number of functions for making requests to the iAuditor API. 
+Contains:
 
-* The iAuditor Export Tool is used to export audit data in a variety of formats. It uses the SafetyCulture Python SDK to make API requests.   
+* The SafetyCulture Python SDK: core functions to interact with the iAuditor API
+
+* The iAuditor Export Tool for exporting audit data to your computer
 
 ## iAuditor Export Tool 
-### Quick Installation, Setup, and Execution of iAuditor Export Tool for First Time Users 
-You will need to have [Python](https://www.python.org/downloads/) and [Pip](https://pip.pypa.io/en/stable/installing/) installed on your computer. 
 
-run the following commands from your terminal: 
-1. Install SafetyCulture Python SDK and iAuditor Export Tool: 
+### First Time Install and Run 
+
+You will need to have [Python 2.7 or higher](https://www.python.org/downloads/) and [Pip](https://pip.pypa.io/en/stable/installing/) installed on your computer.
+
+Run the following commands from your terminal: 
+
+1. Install the SDK and tools
 ```
 pip install safetyculture-sdk-python
-``` 
-2. Create `iauditor_exports_folder`, save configuration file (`config.yaml`) within new folder: 
+```
+
+2. Setup (creates `config.yaml` file in new folder `iauditor_exports_folder`)
+
 ```
 iauditor_exporter --setup
 ```
-3. Move into the newly created folder: 
+
+3. Go to the newly created folder 
 ```
 cd iauditor_exports_folder
 ```
-4. Start exporting audits in PDF format: 
+
+4. Run the tool to export PDF reports of all your audits (for other formats see below)
 ```
 iauditor_exporter
 ```
 
-### Existing Users Update Options
+### Upgrading from an Older Version of the Exporter Tool
 
-**Option 1**
+**Option 1 (re-use existing exports folder)**
 
-Follow the instruction above to start exporting data to new location. The setup script will give you the option to start your exports from the 
-current date and time, so that you do not have to start over from your earliest audits. 
-
-**Option 2**
-
-Install the latest version of the SafetyCulture Python SDK and iAuditor Export Tool: 
+Install the latest version of the SDK and Export Tool: 
 ```
 pip install safetyculture-sdk-python
 ```
-Then navigate into your existing exporter folder. This is located within the cloned repo at `safetyculture-sdk-python/tools/exporter`
+
+Then navigate into your existing exporter folder. This is located within the cloned repository at `safetyculture-sdk-python/tools/exporter`
 and run `iauditor_exporter` from there. Export data will be saved in the existing `exports` folder, and the existing `last_successful.txt` file will 
 be used to pick up where the last export left off. 
 
-**Option 3**
+**Option 2 (re-use existing exports folder)**
 
-Pull the latest repository by navigating into `safetyculture-sdk-python` and running 
+Get the latest version of the code by navigating into `safetyculture-sdk-python` and running 
 ```
 git pull
 ```
@@ -55,24 +60,31 @@ Run the iAuditor export tool directly:
 python exporter.py 
 ```
 
+**Option 3 (export audits in new folder)**
+
+Follow the instructions above to start exporting data to the new folder named `iauditor_exports_folder`. The setup script will give you the option to start your exports from the 
+current date and time, so that you do not have to re-export older audits. 
+
+
 ### How to use the iAuditor Export Tool 
+
 The API token saved in `config.yaml` provides access to data associated with a single account. Namely, the account used to generate the API token.
 Only audits that are accessible to the single iAuditor account associated with the iAuditor API token used are available for exporting.
  
-All exported data is saved in a folder called  `exports`. The folder will be created in the current working directory if it does not already exist.
+All exported data is saved in a folder called `exports`. The folder will be created in the current working directory if it does not already exist.
 
-To export all completed audits in PDF format, run:
+To export all completed audits in PDF format, run
 ```
 iauditor_exporter
 ```
   
-To enable the exporter to run continuously until interrupted, use the loop command line argument:
+To enable the exporter to run continuously until interrupted, use the loop command line argument
 
 ```
 iauditor_exporter --loop
 ```
 
-To specify the export format explicitly run:
+To specify the export format explicitly run
 
 ```
 iauditor_exporter --format pdf
@@ -134,7 +146,7 @@ The CSV file includes five columns: Template ID, Template Name, Audit ID, Audit 
 ### Actions Export 
 Running
 ```
-safetyculture_audit_exporter --format actions
+iauditor_exporter --format actions
 ```
 will export all actions to a file named `iauditor_actions.csv`
 
@@ -263,7 +275,7 @@ iauditor_exporter --config=alternate_config.yaml --format pdf json
 
 #### Nothing gets exported
 
-Your API key may be missing or has expired. Generate a new API token from the iAuditor web application or using the SafetyCulture API and replace it in the config.yaml file of the top-level directory of this repository. Ensure your API key corresponds to a SafetyCulture account that contains the audits you want to export.
+Your API key may be missing or has expired. Generate a new API token from the iAuditor web application or using the iAuditor API and replace it in the config.yaml file of the top-level directory of this repository. Ensure your API key corresponds to a SafetyCulture account that contains the audits you want to export.
 
 #### Some audits failed to transfer
 
