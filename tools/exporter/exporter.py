@@ -459,7 +459,7 @@ def update_actions_sync_marker_file(logger, date_modified):
         with open(ACTIONS_SYNC_MARKER_FILENAME, 'w') as actions_sync_marker_file:
             actions_sync_marker_file.write(date_modified)
     except Exception as ex:
-        log_critical_error(logger, ex, 'Unable to open last_successful_actions_export.txt for writing')
+        log_critical_error(logger, ex, 'Unable to open ' + ACTIONS_SYNC_MARKER_FILENAME + ' for writing')
         exit()
 
 
