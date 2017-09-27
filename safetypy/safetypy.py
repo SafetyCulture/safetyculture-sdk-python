@@ -370,21 +370,17 @@ class SafetyCulture:
         else:
             return None
 
-    def get_audit_actions(self, date_modified, offset=0):
+    def get_audit_actions(self, date_modified, offset=0, page_length=100):
         """
-        Get all actions created after a specified date. If the number of actions is more than 100, this function will
-        page until it has collected all actions up to 5000 actions.
+        Get all actions created after a specified date. If the number of actions found is more than 100, this function will
+        page until it has collected all actions
+
         :param date_modified:   ISO formatted date/time string. Only actions created after this date are are returned.
-        :param offset:          The API returns 100 actions per call, this is used to page forward if there are more
-                                than 100 actions to export.
-        :return:                Array of action objects.
+        :param offset:          The index to start retrieving actions from
+        :param page_length:     How many actions to fetch for each page of action results
+        :return:                Array of action objects
         """
         logger = logging.getLogger('sp_logger')
-        paging_length = 100
-        offset_limit = 5000
-        if offset >= offset_limit:
-            logger.info('Reached maximum number of actions')
-            return []
         actions_url = self.api_url + 'actions/search'
         response = self.authenticated_request_post(
             actions_url,
@@ -394,12 +390,22 @@ class SafetyCulture:
         self.log_http_status(response.status_code, 'GET actions')
         if result is None or None in [result.get('count'), result.get('offset'), result.get('total')]:
             return None
-        return self.page_for_actions(logger, date_modified, result, offset, paging_length)
+        return self.get_page_of_actions(logger, date_modified, result, offset, page_length)
 
-    def page_for_actions(self, logger, date_modified, result, offset, paging_length):
+    def get_page_of_actions(self, logger, date_modified, result, offset=0, page_length=100):
+        """
+        Returns a page of action search results
+
+        :param logger: the logger
+        :param date_modified: fetch from that date onwards
+        :param result: a page of action search results
+        :param offset: the index to start retrieving actions from
+        :param page_length: the number of actions to return on the search page (max 100)
+        :return: Array of action objects
+        """
         if result['count'] + result['offset'] < result['total']:
-            logger.info('Paging Actions. Offset: ' + str(offset + paging_length) + '. Total: ' + str(result['total']))
-            return self.get_audit_actions(date_modified, offset + paging_length) + result['actions']
+            logger.info('Paging Actions. Offset: ' + str(offset + page_length) + '. Total: ' + str(result['total']))
+            return self.get_audit_actions(date_modified, offset + page_length) + result['actions']
         elif result['count'] + result['offset'] == result['total']:
             return result['actions']
 
