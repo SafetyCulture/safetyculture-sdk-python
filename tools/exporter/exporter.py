@@ -719,7 +719,6 @@ def show_export_profiles_and_exit(list_export_profiles, sc_client):
             print(row_boundary)
         sys.exit(0)
 
-
 def export_actions(logger, settings, sc_client):
     """
     Export all actions created after date specified
@@ -745,15 +744,13 @@ def sync_exports(logger, settings, sc_client):
     :param settings:  Settings from command line and configuration file
     :param sc_client: Instance of SDK object
     """
-    # GET list of audits
-    last_successful = get_last_successful(logger)
-    list_of_audits = sc_client.discover_audits(modified_after=last_successful)
-    # exporting actions if specified by user
     if 'actions' in settings[EXPORT_FORMATS]:
         export_actions(logger, settings, sc_client)
-    # if there are audits start exporting
-    if list_of_audits is not None and bool(set(settings[EXPORT_FORMATS]) & {'pdf', 'docx', 'csv', 'media',
-                                                                            'web-report-link'}):
+    if not bool(set(settings[EXPORT_FORMATS]) & {'pdf', 'docx', 'csv', 'media', 'web-report-link'}):
+        return
+    last_successful = get_last_successful(logger)
+    list_of_audits = sc_client.discover_audits(modified_after=last_successful)
+    if list_of_audits is not None:
         logger.info(str(list_of_audits['total']) + ' audits discovered')
         export_count = 1
         export_total = list_of_audits['total']

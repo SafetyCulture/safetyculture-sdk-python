@@ -388,26 +388,29 @@ class SafetyCulture:
         )
         result = self.parse_json(response.content) if response.status_code == requests.codes.ok else None
         self.log_http_status(response.status_code, 'GET actions')
-        if result is None or None in [result.get('count'), result.get('offset'), result.get('total')]:
+        if result is None or None in [result.get('count'), result.get('offset'), result.get('total'), result.get('actions')]:
             return None
         return self.get_page_of_actions(logger, date_modified, result, offset, page_length)
 
-    def get_page_of_actions(self, logger, date_modified, result, offset=0, page_length=100):
+    def get_page_of_actions(self, logger, date_modified, previous_page, offset=0, page_length=100):
         """
         Returns a page of action search results
 
         :param logger: the logger
         :param date_modified: fetch from that date onwards
-        :param result: a page of action search results
+        :param previous_page: a page of action search results
         :param offset: the index to start retrieving actions from
         :param page_length: the number of actions to return on the search page (max 100)
         :return: Array of action objects
         """
-        if result['count'] + result['offset'] < result['total']:
-            logger.info('Paging Actions. Offset: ' + str(offset + page_length) + '. Total: ' + str(result['total']))
-            return self.get_audit_actions(date_modified, offset + page_length) + result['actions']
-        elif result['count'] + result['offset'] == result['total']:
-            return result['actions']
+        if previous_page['count'] + previous_page['offset'] < previous_page['total']:
+            logger.info('Paging Actions. Offset: ' + str(offset + page_length) + '. Total: ' + str(previous_page['total']))
+            next_page = self.get_audit_actions(date_modified, offset + page_length)
+            if next_page is None:
+                return None
+            return next_page + previous_page['actions']
+        elif previous_page['count'] + previous_page['offset'] == previous_page['total']:
+            return previous_page['actions']
 
     def get_audit(self, audit_id):
         """
@@ -431,7 +434,6 @@ class SafetyCulture:
         :param status_code:  http status code to log
         :param message:      to describe where the status code was obtained
         """
-
         logger = logging.getLogger('sp_logger')
         status_description = requests.status_codes._codes[status_code][0]
         log_string = str(status_code) + ' [' + status_description + '] status received ' + message
