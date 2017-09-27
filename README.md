@@ -20,7 +20,6 @@ pip install safetyculture-sdk-python
 ```
 
 2. Setup (creates `config.yaml` file in new folder `iauditor_exports_folder`)
-
 ```
 iauditor_exporter --setup
 ```
@@ -30,7 +29,7 @@ iauditor_exporter --setup
 cd iauditor_exports_folder
 ```
 
-4. Run the tool to export PDF reports of all your audits (for other formats see below)
+4. Run the tool to export PDF reports of all your audits (for other formats see later sections in this tutorial)
 ```
 iauditor_exporter
 ```
@@ -103,7 +102,9 @@ Note:
 * Up to 1000 audits will be exported each sync cycle. If more than 1000 audits exist they will be retrieved automatically in subsequent sync cycles
 
 ### CSV Export
+
 #### Bulk CSV Export
+
 For an overview of the CSV format used, see [here](https://support.safetyculture.com/integrations/safetyculture-csv-exporter-tool/#format)
 
 Audits built from the same template will be saved in the same CSV file which is named after the template's unique ID number. 
@@ -114,15 +115,19 @@ To export multiple audits in bulk to a CSV file, run the `iauditor_exporter` wit
 iauditor_exporter --format csv
 ```
 #### The format of the following CSV values do not match the format used by the SafetyCulture API Audit JSON 
+
 ##### Date/Time field
 * JSON: `2017-03-03T03:45:58.090Z`
 * CSV:  `03 March 2017 03:45 AM`
+
 ##### Checkbox field
 * JSON: `1` or `0`
 * CSV:  `True` or `False`
+
 ##### Media List, Multiple Choice Responses
 * JSON: List Object
 * CSV:  Newline separated values in single cell
+
 #### Bulk CSV Export Gotchas
 * If you update an Audit that has already been exported, it may be appended to the CSV file a second time.
 * If you update a template, Audits with the new format will be appended to the same CSV file.
