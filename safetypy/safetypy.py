@@ -10,6 +10,7 @@ import re
 import sys
 import time
 import errno
+from builtins import input
 from datetime import datetime
 import requests
 from getpass import getpass
@@ -19,13 +20,14 @@ DEFAULT_EXPORT_FORMAT = 'pdf'
 GUID_PATTERN = '[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}$'
 HTTP_USER_AGENT_ID = 'safetyculture-python-sdk'
 
+
 def get_user_api_token(logger):
     """
     Generate iAuditor API Token
     :param logger:  the logger
     :return:        API Token if authenticated else None
     """
-    username = raw_input("iAuditor username: ")
+    username = input("iAuditor username: ")
     password = getpass()
     generate_token_url = "https://api.safetyculture.io/auth"
     payload = "username=" + username + "&password=" + password + "&grant_type=password"
@@ -55,15 +57,14 @@ class SafetyCulture:
         logger = logging.getLogger('sp_logger')
         try:
             token_is_valid = re.match('^[a-f0-9]{64}$', api_token)
+            if token_is_valid:
+                self.api_token = api_token
+            else:
+                logger.error('API token failed to match expected pattern')
+                self.api_token = None
         except Exception as ex:
             self.log_critical_error(ex, 'Error occurred while validating API token in config.yaml file. Exiting.')
             exit()
-        if token_is_valid:
-            self.api_token = api_token
-        else:
-            logger.error('API token failed to match expected pattern')
-            self.api_token = None
-
         if self.api_token:
             self.custom_http_headers = {
                 'User-Agent': HTTP_USER_AGENT_ID,
@@ -77,18 +78,22 @@ class SafetyCulture:
         return requests.get(url, headers=self.custom_http_headers)
 
     def authenticated_request_post(self, url, data):
-        return requests.post(url, data, headers=self.custom_http_headers)
+        self.custom_http_headers['content-type'] = 'application/json'
+        response = requests.post(url, data, headers=self.custom_http_headers)
+        del self.custom_http_headers['content-type']
+        return response
 
-    def parse_json(self, json_to_parse):
+    @staticmethod
+    def parse_json(json_to_parse):
         """
         Parse JSON string to OrderedDict and return
-
         :param json_to_parse:  string representation of JSON
         :return:               OrderedDict representation of JSON
         """
-        return json.JSONDecoder(object_pairs_hook=collections.OrderedDict).decode(json_to_parse)
+        return json.JSONDecoder(object_pairs_hook=collections.OrderedDict).decode(json_to_parse.decode('utf-8'))
 
-    def log_critical_error(self, ex, message):
+    @staticmethod
+    def log_critical_error(ex, message):
         """
         Write exception and description message to log
 
@@ -341,7 +346,7 @@ class SafetyCulture:
     def get_media(self, audit_id, media_id):
         """
         Get media item associated with a specified audit and media ID
-        :param audit_id:    audit ID of document that contains media 
+        :param audit_id:    audit ID of document that contains media
         :param media_id:    media ID of image to fetch
         :return:            The Content-Type will be the MIME type associated with the media, 
                             and the body of the response is the media itself.
@@ -365,6 +370,48 @@ class SafetyCulture:
         else:
             return None
 
+    def get_audit_actions(self, date_modified, offset=0, page_length=100):
+        """
+        Get all actions created after a specified date. If the number of actions found is more than 100, this function will
+        page until it has collected all actions
+
+        :param date_modified:   ISO formatted date/time string. Only actions created after this date are are returned.
+        :param offset:          The index to start retrieving actions from
+        :param page_length:     How many actions to fetch for each page of action results
+        :return:                Array of action objects
+        """
+        logger = logging.getLogger('sp_logger')
+        actions_url = self.api_url + 'actions/search'
+        response = self.authenticated_request_post(
+            actions_url,
+            data=json.dumps({"modified_at": {"from": str(date_modified)}, "offset": offset})
+        )
+        result = self.parse_json(response.content) if response.status_code == requests.codes.ok else None
+        self.log_http_status(response.status_code, 'GET actions')
+        if result is None or None in [result.get('count'), result.get('offset'), result.get('total'), result.get('actions')]:
+            return None
+        return self.get_page_of_actions(logger, date_modified, result, offset, page_length)
+
+    def get_page_of_actions(self, logger, date_modified, previous_page, offset=0, page_length=100):
+        """
+        Returns a page of action search results
+
+        :param logger: the logger
+        :param date_modified: fetch from that date onwards
+        :param previous_page: a page of action search results
+        :param offset: the index to start retrieving actions from
+        :param page_length: the number of actions to return on the search page (max 100)
+        :return: Array of action objects
+        """
+        if previous_page['count'] + previous_page['offset'] < previous_page['total']:
+            logger.info('Paging Actions. Offset: ' + str(offset + page_length) + '. Total: ' + str(previous_page['total']))
+            next_page = self.get_audit_actions(date_modified, offset + page_length)
+            if next_page is None:
+                return None
+            return next_page + previous_page['actions']
+        elif previous_page['count'] + previous_page['offset'] == previous_page['total']:
+            return previous_page['actions']
+
     def get_audit(self, audit_id):
         """
         Request JSON representation of a single specified audit and return it
@@ -379,14 +426,14 @@ class SafetyCulture:
         self.log_http_status(response.status_code, log_message)
         return result
 
-    def log_http_status(self, status_code, message):
+    @staticmethod
+    def log_http_status(status_code, message):
         """
         Write http status code and descriptive message to log
 
         :param status_code:  http status code to log
         :param message:      to describe where the status code was obtained
         """
-
         logger = logging.getLogger('sp_logger')
         status_description = requests.status_codes._codes[status_code][0]
         log_string = str(status_code) + ' [' + status_description + '] status received ' + message

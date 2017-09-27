@@ -15,7 +15,6 @@ class ExporterTestCase(unittest.TestCase):
     relative_path_to_test_files = 'csv_test_files/'
     path_to_test_files = os.path.join(script_dir, relative_path_to_test_files)
 
-
     def test_single_checkbox_checked(self):
         csv_exporter = csv.CsvExporter(json.load(open(os.path.join(self.path_to_test_files, 'unit_test_single_checkbox_checked.json'), 'r')))
         csv_exporter.save_converted_audit_to_file('test 2.csv', allow_overwrite=True)
@@ -88,12 +87,6 @@ class ExporterTestCase(unittest.TestCase):
         csv_exporter.save_converted_audit_to_file('test 14.csv', allow_overwrite=True)
         self.assertEqual(open('test 14.csv', 'r').read(), open(os.path.join(self.path_to_test_files, 'unit_test_single_text_single_line_mathematical_symbols_in_text_expected_output.csv'), 'r').read())
         os.remove('test 14.csv')
-
-    def test_single_text_single_line_longest_possible_line_of_text_allowed(self):
-        csv_exporter = csv.CsvExporter(json.load(open(os.path.join(self.path_to_test_files, 'unit_test_single_text_single_line_longest_possible_line_of_text_allowed.json'), 'r')))
-        csv_exporter.save_converted_audit_to_file('test 15.csv', allow_overwrite=True)
-        self.assertEqual(open('test 15.csv', 'r').read(), open(os.path.join(self.path_to_test_files, 'unit_test_single_text_single_line_longest_possible_line_of_text_allowed_expected_output.csv'), 'r').read())
-        os.remove('test 15.csv')
 
     def test_single_text_single_line_Single_line_entered(self):
         csv_exporter = csv.CsvExporter(json.load(open(os.path.join(self.path_to_test_files, 'unit_test_single_text_single_line_Single_line_entered.json'), 'r')))
