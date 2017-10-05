@@ -1,3 +1,4 @@
+import copy
 import datetime
 import errno
 import json
@@ -16,7 +17,11 @@ input_filename = 'grs_1.xlsx'
 
 api_token = 'my_api_token'
 
-auth_header = {'Authorization': 'Bearer {0}'.format(api_token)}
+auth_header = {
+    'Authorization': 'Bearer {0}'.format(api_token),
+    'Content-Type': 'application/json'
+}
+
 
 def configure_logging(path_to_log_directory):
     """
@@ -96,10 +101,9 @@ def read_workbook(input_filename):
 
         number_of_rows = sheet.nrows
         for row in range(1, number_of_rows):
-            label_object = {}
-
-            label_object['label'] = sheet.cell(row, 0).value
-            label_object['short_label'] = sheet.cell(row, 1).value
+            label_object = {
+                'label': sheet.cell(row, 0).value,
+            }
             wb_response_sets[name].append(label_object)
     return wb_response_sets
 
@@ -122,20 +126,17 @@ def get_response_set(response_set_id):
 
 
 def build_grs_payload(responses, name):
-    payload = {}
-    payload['name'] = name
-    payload['responses'] = responses
-    return payload
+    return {
+        'name': name,
+        'responses': responses
+    }
+
 
 def is_identical(remote_response_set, local_response_set):
     if remote_response_set == local_response_set:
         return True
     else:
         return False
-
-
-def strip_id(response):
-    del response['id']
 
 
 def get_rs_id_by_name(name, response_sets):
@@ -150,17 +151,36 @@ def handle_matching_rs(local_response_sets, remote_response_sets, response_set_n
     responseset_id = get_rs_id_by_name(response_set_name, remote_response_sets)['responseset_id']
 
     remote_response_set = get_response_set(responseset_id)
-
     remote_responses = remote_response_set['responses']
-    map(strip_id, remote_responses)
 
-    if is_identical(local_response_set, remote_responses):
-        print 'Yep. They are identical'
+    stripped_responses = []
+    for response in remote_responses:
+        stripped_responses.append(response['label'])
+
+    if is_identical(local_response_set, stripped_responses):
+        print 'Remote responses are identical to local responses, moving on without changes'
     else:
-        print local_response_set
-        print '_-_' * 20
-        print remote_responses
+        local_labels = [str(x['label']) for x in local_response_set]
+        remote_labels = [str(x['label']) for x in remote_response_set['responses']]
 
+        local_diff = [x for x in local_labels if x not in remote_labels]
+        remote_diff = [x for x in remote_labels if x not in local_labels]
+
+        if len(local_diff) > 0:
+            print 'there is a local diff in {0}'.format(responseset_id)
+            for label in local_diff:
+                payload = {
+                    'label': label
+                }
+
+                status = requests.post('https://api.safetyculture.io/response_sets/{0}/responses'.format(responseset_id), data=json.dumps(payload), headers=auth_header)
+                print '{0} on {1}'.format(status, responseset_id)
+        if len(remote_diff) > 0:
+            print 'there is a remote diff in {0}'.format(responseset_id)
+            remote_diff_ids = [x['id'] for x in remote_responses if x['label'] in remote_diff]
+            for response_id in remote_diff_ids:
+                status = requests.delete('https://api.safetyculture.io/response_sets/{0}/responses/{1}'.format(responseset_id, response_id), headers=auth_header)
+                print '{0} on {1}'.format(status, response_id)
 
 def create_remote_response_set(local_response_sets, response_set_name):
     payload = build_grs_payload(local_response_sets[response_set_name], response_set_name)
@@ -177,9 +197,4 @@ for response_set_name in local_response_sets:
     if response_set_name in remote_rs_names:
         handle_matching_rs(local_response_sets, remote_response_sets, response_set_name)
     else:
-        print 'creating new remote response set'
         create_remote_response_set(local_response_sets, response_set_name)
-
-
-
-
