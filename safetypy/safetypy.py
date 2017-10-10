@@ -49,6 +49,7 @@ class SafetyCulture:
         self.api_url = 'https://api.safetyculture.io/'
         self.audit_url = self.api_url + 'audits/'
         self.template_search_url = self.api_url + 'templates/search?field=template_id&field=name'
+        self.response_set_url = self.api_url + 'response_sets'
 
         self.create_directory_if_not_exists(self.log_dir)
         self.configure_logging()
@@ -78,6 +79,9 @@ class SafetyCulture:
 
     def authenticated_request_post(self, url, data):
         return requests.post(url, data, headers=self.custom_http_headers)
+
+    def authenticated_request_delete(self, url):
+        return requests.delete(url, headers=self.custom_http_headers)
 
     def parse_json(self, json_to_parse):
         """
@@ -378,6 +382,65 @@ class SafetyCulture:
 
         self.log_http_status(response.status_code, log_message)
         return result
+
+    def create_response_set(self, name, responses):
+        """
+        Create new response_set
+        :param payload:  Name and responses of response_set to create
+        :return:
+        """
+        payload = json.dumps({'name': name, 'responses': responses})
+        response = self.authenticated_request_post(self.response_set_url, payload)
+        # result = self.parse_json(response.content) if response.status_code == requests.codes.ok else None
+        log_message = 'on POST for new response_set: {0}'.format(name)
+        self.log_http_status(response.status_code, log_message)
+
+    def get_response_sets(self):
+        """
+        GET and return all response_sets
+        :return: response_sets accessible to user
+        """
+        response = self.authenticated_request_get(self.response_set_url)
+        result = self.parse_json(response.content) if response.status_code == requests.codes.ok else None
+        log_message = 'on GET for response_sets'
+        self.log_http_status(response.status_code, log_message)
+        return result
+
+    def get_response_set(self, responseset_id):
+        """
+        GET individual response_set by id
+        :param responseset_id:  responseset_id of response_set to GET
+        :return: response_set
+        """
+        response = self.authenticated_request_get('{0}/{1}'.format(self.response_set_url, responseset_id))
+        result = self.parse_json(response.content) if response.status_code == requests.codes.ok else None
+        log_message = 'on GET for {0}'.format(responseset_id)
+        self.log_http_status(response.status_code, log_message)
+        return result
+
+    def create_response(self, responseset_id, response):
+        """
+        Create response in existing response_set
+        :param responseset_id: id of response_set to add response to
+        :param response:       response to add
+        :return:               None
+        """
+        url = '{0}/{1}/responses'.format(self.response_set_url, responseset_id)
+        response = self.authenticated_request_post(url, json.dumps(response))
+        log_message = 'on POST for new response to: {0}'.format(responseset_id)
+        self.log_http_status(response.status_code, log_message)
+
+    def delete_response(self, responseset_id, response_id):
+        """
+        DELETE individual response by id
+        :param responseset_id: responseset_id of response_set containing response to be deleted
+        :param response_id:    id of response to be deleted
+        :return:               None
+        """
+        url = '{0}/{1}/responses/{2}'.format(self.response_set_url, responseset_id, response_id)
+        response = self.authenticated_request_delete(url)
+        log_message = 'on DELETE for response_set: {0}'.format(responseset_id)
+        self.log_http_status(response.status_code, log_message)
 
     def log_http_status(self, status_code, message):
         """

@@ -1,10 +1,10 @@
 import datetime
 import errno
-import json
 import logging
 import os
-import requests
+import re
 import sys
+import yaml
 from xlrd import open_workbook
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 from safetypy import safetypy as sp
@@ -12,14 +12,7 @@ from safetypy import safetypy as sp
 # Possible values here are DEBUG, INFO, WARN, ERROR and CRITICAL
 LOG_LEVEL = logging.DEBUG
 
-input_filename = 'grs_1.xlsx'
-
-api_token = 'my_api_token'
-
-auth_header = {
-    'Authorization': 'Bearer {0}'.format(api_token),
-    'Content-Type': 'application/json'
-}
+DEFAULT_CONFIG_FILENAME = 'config.yaml'
 
 
 def configure_logging(path_to_log_directory):
@@ -30,19 +23,19 @@ def configure_logging(path_to_log_directory):
     :return:
     """
     log_filename = datetime.datetime.now().strftime('%Y-%m-%d') + '.log'
-    exporter_logger = logging.getLogger('exporter_logger')
-    exporter_logger.setLevel(LOG_LEVEL)
+    importer_logger = logging.getLogger('importer_logger')
+    importer_logger.setLevel(LOG_LEVEL)
     formatter = logging.Formatter('%(asctime)s : %(levelname)s : %(message)s')
 
     fh = logging.FileHandler(filename=os.path.join(path_to_log_directory, log_filename))
     fh.setLevel(LOG_LEVEL)
     fh.setFormatter(formatter)
-    exporter_logger.addHandler(fh)
+    importer_logger.addHandler(fh)
 
     sh = logging.StreamHandler(sys.stdout)
     sh.setLevel(LOG_LEVEL)
     sh.setFormatter(formatter)
-    exporter_logger.addHandler(sh)
+    importer_logger.addHandler(sh)
 
 
 def log_critical_error(logger, ex, message):
@@ -86,81 +79,93 @@ def configure_logger():
     log_dir = os.path.join(os.getcwd(), 'log')
     create_directory_if_not_exists(None, log_dir)
     configure_logging(log_dir)
-    logger = logging.getLogger('exporter_logger')
+    logger = logging.getLogger('importer_logger')
     return logger
 
 
-def read_workbook(input_filename):
+def load_setting_api_access_token(logger, config_settings):
+    """
+    Attempt to parse API token from config settings
+
+    :param logger:           the logger
+    :param config_settings:  config settings loaded from config file
+    :return:                 API token if valid, else None
+    """
+    try:
+        api_token = config_settings['API']['token']
+        token_is_valid = re.match('^[a-f0-9]{64}$', api_token)
+        if token_is_valid:
+            logger.debug('API token matched expected pattern')
+            return api_token
+        else:
+            logger.error('API token failed to match expected pattern')
+            return None
+    except Exception as ex:
+        log_critical_error(logger, ex, 'Exception parsing API token from config.yaml')
+        return None
+
+
+def load_setting_input_filename(logger, config_settings):
+    """
+    Attempt to parse input filename from config settings
+    :param logger:           the logger
+    :param config_settings:  config settings loaded from config file
+    :return:                 input filename from config file if valid, else None
+    """
+
+    try:
+        filename = config_settings['input_filename']
+        filename_is_valid = re.match('.+xls|.+xlsx', filename)
+        if filename_is_valid:
+            logger.debug('Filename matched expected pattern')
+            return filename
+        else:
+            logger.error('Filename failed to match expected pattern, acceptable formats are xls and xlsx')
+            return None
+    except Exception as ex:
+        log_critical_error(logger, ex, 'Exception parsing input filename from config.yaml')
+
+
+def load_config_settings(logger, path_to_config_file):
+    """
+    Load config settings from config file
+
+    :param logger:              the logger
+    :param path_to_config_file: location of config file
+    :return:                    settings dictionary containing values for:
+                                api_token, input_filename
+    """
+    config_settings = yaml.safe_load(open(path_to_config_file))
+    settings = {
+        'api_token': load_setting_api_access_token(logger, config_settings),
+        'input_filename': load_setting_input_filename(logger, config_settings),
+    }
+
+    return settings
+
+
+def read_workbook(logger, input_filename):
     """
     Read the contents of input_filename and return
     :param input_filename: Filepath of the spreadsheet to read
     :return:  Dict of response sets
     """
     wb_response_sets = {}
+    if os.path.isfile(input_filename):
+        wb = open_workbook(input_filename)
+        for sheet in wb.sheets():
+            name = sheet.name
+            wb_response_sets[name] = []
 
-    wb = open_workbook(input_filename)
-    for sheet in wb.sheets():
-        name = sheet.name
-        wb_response_sets[name] = []
-
-        number_of_rows = sheet.nrows
-        for row in range(1, number_of_rows):
-            label_object = {
-                'label': sheet.cell(row, 0).value,
-            }
-            wb_response_sets[name].append(label_object)
-    return wb_response_sets
-
-
-def get_response_sets():
-    """
-    Discover all response_sets visible
-    :return:  JSON representation of remote response_sets
-    """
-    response_sets = requests.get('https://api.safetyculture.io/response_sets', headers=auth_header)
-    if response_sets.status_code == 200:
-        return response_sets.json()
+            number_of_rows = sheet.nrows
+            for row in range(1, number_of_rows):
+                label_object = {
+                    'label': sheet.cell(row, 0).value,
+                }
+                wb_response_sets[name].append(label_object)
+        return wb_response_sets
     else:
-        print response_sets
-
-
-def get_response_set(response_set_id):
-    """
-    GET individual response_set from iAuditor API
-    :param response_set_id:  id of response_set to GET
-    :return: JSON object of response set
-    """
-    api_url = 'https://api.safetyculture.io/response_sets/{0}'.format(response_set_id)
-    response_set = requests.get(api_url, headers=auth_header)
-    if response_set.status_code == 200:
-        return response_set.json()
-    else:
-        print response_set.status_code
-
-
-def build_grs_payload(responses, name):
-    """
-    :param responses: responses for responseset
-    :param name:      name of responseset
-    :return:          Object composed of name and responses
-    """
-    return {
-        'name': name,
-        'responses': responses
-    }
-
-
-def is_identical(remote_response_set, local_response_set):
-    """
-    Check for equality between response_set objects
-    :param remote_response_set:  Response_set pulled from API
-    :param local_response_set:   Response_set stored in spreadsheet
-    :return:
-    """
-    if remote_response_set == local_response_set:
-        return True
-    else:
-        return False
+        logger.error('{0} does not appear to be a valid file'.format(input_filename))
 
 
 def get_rs_id_by_name(name, response_sets):
@@ -176,69 +181,64 @@ def get_rs_id_by_name(name, response_sets):
             return rs
 
 
-def handle_matching_rs(local_response_sets, remote_response_sets, response_set_name):
+def handle_matching_rs(logger, local_response_sets, remote_response_sets, response_set_name, sc_client):
     """
+    :param logger:               The logger
     :param local_response_sets:  Response_set data pulled from spreadsheet
     :param remote_response_sets: Response_set data pulled from API
     :param response_set_name:    Name of the response_set
     :return:                     None
     """
     local_response_set = local_response_sets[response_set_name]
-
     responseset_id = get_rs_id_by_name(response_set_name, remote_response_sets)['responseset_id']
 
-    remote_response_set = get_response_set(responseset_id)
+    remote_response_set = sc_client.get_response_set(responseset_id)
     remote_responses = remote_response_set['responses']
 
-    stripped_responses = []
-    for response in remote_responses:
-        stripped_responses.append(response['label'])
+    local_labels = [str(x['label']) for x in local_response_set]
+    remote_labels = [str(x['label']) for x in remote_response_set['responses']]
 
-    if is_identical(local_response_set, stripped_responses):
-        print 'Remote responses are identical to local responses, moving on without changes'
-    else:
-        local_labels = [str(x['label']) for x in local_response_set]
-        remote_labels = [str(x['label']) for x in remote_response_set['responses']]
+    local_diff = [x for x in local_labels if x not in remote_labels]
+    remote_diff = [x for x in remote_labels if x not in local_labels]
 
-        local_diff = [x for x in local_labels if x not in remote_labels]
-        remote_diff = [x for x in remote_labels if x not in local_labels]
+    if len(local_diff) > 0:
+        logger.debug('there is a local response to create in {0}'.format(responseset_id))
+        for label in local_diff:
+            payload = {
+                'label': label
+            }
+            sc_client.create_response(responseset_id, payload)
 
-        if len(local_diff) > 0:
-            print 'there is a local diff in {0}'.format(responseset_id)
-            for label in local_diff:
-                payload = {
-                    'label': label
-                }
+    if len(remote_diff) > 0:
+        logger.debug('there is a remote response to delete in {0}'.format(responseset_id))
+        remote_diff_ids = [x['id'] for x in remote_responses if x['label'] in remote_diff]
+        for response_id in remote_diff_ids:
+            sc_client.delete_response(responseset_id, response_id)
 
-                status = requests.post('https://api.safetyculture.io/response_sets/{0}/responses'.format(responseset_id), data=json.dumps(payload), headers=auth_header)
-                print '{0} on {1}'.format(status, responseset_id)
-        if len(remote_diff) > 0:
-            print 'there is a remote diff in {0}'.format(responseset_id)
-            remote_diff_ids = [x['id'] for x in remote_responses if x['label'] in remote_diff]
-            for response_id in remote_diff_ids:
-                status = requests.delete('https://api.safetyculture.io/response_sets/{0}/responses/{1}'.format(responseset_id, response_id), headers=auth_header)
-                print '{0} on {1}'.format(status, response_id)
+    if len(local_diff) == 0 and len(remote_diff) == 0:
+        logger.debug('{0} on server matches local responseset - no changes to make'.format(responseset_id))
 
-
-def create_remote_response_set(local_response_sets, response_set_name):
+def main():
     """
-    POST a new response_set to the iAuditor API
-    :param local_response_sets: list of local_response_sets
-    :param response_set_name:   name of response_set to post
-    :return:                    None
+    Load local response_set data, get remote response_set data, compare and reconcile
     """
-    payload = build_grs_payload(local_response_sets[response_set_name], response_set_name)
-    status = requests.post('https://api.safetyculture.io/response_sets', data=json.dumps(payload), headers=auth_header)
 
-logger = configure_logger()
-sc_client = sp.SafetyCulture(api_token)
+    logger = configure_logger()
+    config = load_config_settings(logger, DEFAULT_CONFIG_FILENAME)
+    sc_client = sp.SafetyCulture(config['api_token'])
 
-local_response_sets = read_workbook(input_filename)
-remote_response_sets = get_response_sets()
-remote_rs_names = [x['name'] for x in remote_response_sets]
+    if config['input_filename'] is not None:
+        local_response_sets = read_workbook(logger, config['input_filename'])
+        if local_response_sets is not None:
+            remote_response_sets = sc_client.get_response_sets()
+            remote_rs_names = [x['name'] for x in remote_response_sets]
 
-for response_set_name in local_response_sets:
-    if response_set_name in remote_rs_names:
-        handle_matching_rs(local_response_sets, remote_response_sets, response_set_name)
-    else:
-        create_remote_response_set(local_response_sets, response_set_name)
+            for response_set_name in local_response_sets:
+                if response_set_name in remote_rs_names:
+                    handle_matching_rs(logger, local_response_sets, remote_response_sets, response_set_name, sc_client)
+                else:
+                    name = response_set_name
+                    responses = local_response_sets[response_set_name]
+                    sc_client.create_response_set(name, responses)
+
+main()
