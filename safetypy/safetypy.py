@@ -96,6 +96,7 @@ class SafetyCulture:
     def log_critical_error(ex, message):
         """
         Write exception and description message to log
+
         :param ex:       Exception instance to log
         :param message:  Descriptive message to describe exception
         """
@@ -129,7 +130,9 @@ class SafetyCulture:
     def create_directory_if_not_exists(self, path):
         """
         Creates 'path' if it does not exist
+
         If creation fails, an exception will be thrown
+
         :param path:    the path to ensure it exists
         """
         try:
@@ -179,6 +182,7 @@ class SafetyCulture:
     def discover_templates(self, modified_after=None, modified_before=None):
         """
         Query API for all template IDs if no parameters are passed, otherwise restrict search based on parameters
+
         :param modified_after:   Restrict discovery to templates modified after this UTC timestamp
         :param modified_before:  Restrict discovery to templates modified before this UTC timestamp
         :return:                 JSON object containing IDs of all templates returned by API
@@ -212,6 +216,7 @@ class SafetyCulture:
     def get_export_profile(self, export_profile_id):
         """
         Query API for export profile corresponding to passed profile_id
+
         :param export_profile_id:  Export profile ID of the profile to retrieve
         :return:                   Export profile in JSON format
         """
@@ -235,6 +240,7 @@ class SafetyCulture:
                           export_format=DEFAULT_EXPORT_FORMAT):
         """
         Request export job ID from API and return it
+
         :param audit_id:           audit_id to retrieve export_job_id for
         :param timezone:           timezone to apply to exports
         :param export_profile_id:  export profile to apply to exports
@@ -304,6 +310,7 @@ class SafetyCulture:
 
     def download_export(self, export_href):
         """
+
         :param export_href:  href for export document to download
         :return:             String representation of exported document
         """
@@ -323,6 +330,7 @@ class SafetyCulture:
                    export_format=DEFAULT_EXPORT_FORMAT):
         """
         Obtain exported document from API and return string representation of it
+
         :param audit_id:           audit_id of export to obtain
         :param timezone:           timezone to apply to exports
         :param export_profile_id:  ID of export profile to apply to exports
@@ -366,6 +374,7 @@ class SafetyCulture:
         """
         Get all actions created after a specified date. If the number of actions found is more than 100, this function will
         page until it has collected all actions
+
         :param date_modified:   ISO formatted date/time string. Only actions created after this date are are returned.
         :param offset:          The index to start retrieving actions from
         :param page_length:     How many actions to fetch for each page of action results
@@ -386,6 +395,7 @@ class SafetyCulture:
     def get_page_of_actions(self, logger, date_modified, previous_page, offset=0, page_length=100):
         """
         Returns a page of action search results
+
         :param logger: the logger
         :param date_modified: fetch from that date onwards
         :param previous_page: a page of action search results
@@ -405,6 +415,7 @@ class SafetyCulture:
     def get_audit(self, audit_id):
         """
         Request JSON representation of a single specified audit and return it
+
         :param audit_id:  audit_id of document to fetch
         :return:          JSON audit object
         """
@@ -419,6 +430,7 @@ class SafetyCulture:
     def log_http_status(status_code, message):
         """
         Write http status code and descriptive message to log
+
         :param status_code:  http status code to log
         :param message:      to describe where the status code was obtained
         """

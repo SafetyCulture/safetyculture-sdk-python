@@ -173,9 +173,10 @@ class CsvExporter:
         """
         self.audit_json = audit_json
         self.export_inactive_items = export_inactive_items
+        self.item_category = EMPTY_RESPONSE
+        self.item_map = {}
         self.map_items()
         self.audit_table = self.convert_audit_to_table()
-
 
     def audit_id(self):
         """
@@ -194,8 +195,6 @@ class CsvExporter:
         Creates a dictionary which maps each item to it's parent ID, Label, and Type.
         This tree can then be traversed recursively to find the Category or Section of a given item.
         """
-        self.item_category = EMPTY_RESPONSE
-        self.item_map = {}
         for item in self.audit_items():
             if item.get('item_id'):
                 self.item_map[item['item_id']] = {
@@ -261,12 +260,13 @@ class CsvExporter:
         audit_data_as_list.append(self.get_header_item(header_data, 'ClientSite'))
         return audit_data_as_list
 
-    def get_header_item(self, header_data, header_item_type):
+    @staticmethod
+    def get_header_item(header_data, header_item_type):
         """
-        
-        :param header_data: 
-        :param header_item_type: 
-        :return: 
+        Return standard header item response string
+        :param header_data:         Audit JSON array of header items
+        :param header_item_type:    Header type whose response is to be returned
+        :return:    Header item response string
         """
         for item in header_data:
             if item.get('item_id') == header_field_id.get(header_item_type):
@@ -283,6 +283,7 @@ class CsvExporter:
     @staticmethod
     def format_date_time(date):
         """
+        Reformat datetime string from ISO format to 'DD Month YYYY HH:MM AM/PM'
         :param date:    date in the format: 2017-03-03T03:45:58.090Z
         :return:        date and time in the format: '03 March 2017 03:45 AM',
         """
@@ -297,7 +298,6 @@ class CsvExporter:
     def convert_audit_to_table(self):
         """
         Collects all audit item responses, appends common audit data and returns a 2-dimensional list.
-
         :return:    2 dimensional list, each list is a single item, which corresponds to a single row
         """
         self.audit_table = []
@@ -315,7 +315,6 @@ class CsvExporter:
     def append_converted_audit_to_bulk_export_file(self, output_csv_path):
         """
         Appends audit data table to bulk export file at output_csv_path
-
         :param output_csv_path: The full path to the file to save
         """
         if not os.path.isfile(output_csv_path) and self.audit_table[0] != CSV_HEADER_ROW:
@@ -325,7 +324,6 @@ class CsvExporter:
     def save_converted_audit_to_file(self, output_csv_path, allow_overwrite):
         """
         Saves audit data table to a file at output_csv_path
-
         :param output_csv_path:     The full path to the file to save
         :param allow_overwrite:     if True, allow function to overwrite existing file
         """
@@ -335,7 +333,7 @@ class CsvExporter:
                 'File already exists at ' + output_csv_path +
                 '\nPlease set allow_overwrite to True in config.yaml file. See README.md for further instruction')
         elif file_exists and allow_overwrite:
-            print 'Overwriting file at ' + output_csv_path
+            print('Overwriting file at ' + output_csv_path)
         elif self.audit_table[0] != CSV_HEADER_ROW:
             self.audit_table.insert(0, CSV_HEADER_ROW)
         self.write_file(output_csv_path, 'wb')
@@ -343,7 +341,6 @@ class CsvExporter:
     def write_file(self, output_csv_path, mode):
         """
         Saves audit data table to a file at 'path'
-
         :param output_csv_path: the full path to file to save
         :param mode:    write ('wb') or append ('ab') mode
         """
@@ -353,10 +350,11 @@ class CsvExporter:
             wr.writerows(self.audit_table)
             csv_file.close()
         except Exception as ex:
-            print str(ex) + ': Error saving audit_table to ' + output_csv_path
+            print(str(ex) + ': Error saving audit_table to ' + output_csv_path)
 
     def get_item_response(self, item):
         """
+        Return item response value
         :param item:    single item in JSON format
         :return:        response property
         """
@@ -398,14 +396,15 @@ class CsvExporter:
                            INFORMATION]:
             pass
         else:
-            print 'Unhandled item type: ' + str(item_type) + ' from ' + \
-                  self.audit_id() + ', ' + item.get(ID)
+            print('Unhandled item type: ' + str(item_type) + ' from ' +
+                  self.audit_id() + ', ' + item.get(ID))
         return response
 
-    def get_item_response_id(self, item):
+    @staticmethod
+    def get_item_response_id(item):
         """
         :param item:    single item in JSON format
-        :return:        response id property
+        :return:        response ID property
         """
         response_id = EMPTY_RESPONSE
         item_type = get_json_property(item, TYPE)
@@ -418,10 +417,10 @@ class CsvExporter:
             response_id = response_id[:-1]
         return response_id
 
-    def get_item_score(self, item):
+    @staticmethod
+    def get_item_score(item):
         """
         retrieve score property from item
-
         :param item:    single item in JSON format
         :return:        score property or empty string if property does not exist
         """
@@ -432,10 +431,10 @@ class CsvExporter:
         else:
             return EMPTY_RESPONSE
 
-    def get_item_max_score(self, item):
+    @staticmethod
+    def get_item_max_score(item):
         """
         retrieve max score property from item
-
         :param item:    single item in JSON format
         :return:        max score property or empty string if property does not exist
         """
@@ -446,10 +445,10 @@ class CsvExporter:
         else:
             return EMPTY_RESPONSE
 
-    def get_item_score_percentage(self, item):
+    @staticmethod
+    def get_item_score_percentage(item):
         """
         retrieve score percentage property from item
-
         :param item:    single item in JSON format
         :return:        score percentage property or empty string if property does not exist
         """
@@ -463,7 +462,6 @@ class CsvExporter:
     def get_item_label(self, item):
         """
         retrieve item label property
-
         :param item:    single item in JSON format
         :return:        label property
         """
@@ -487,7 +485,8 @@ class CsvExporter:
         else:
             return get_json_property(item, LABEL)
 
-    def get_item_type(self, item):
+    @staticmethod
+    def get_item_type(item):
         """
         :param item:    single item in JSON format
         :return:        item type property
@@ -497,7 +496,8 @@ class CsvExporter:
             item_type += ' - ' + get_json_property(item, 'options', TYPE)
         return item_type
 
-    def get_item_media(self, item):
+    @staticmethod
+    def get_item_media(item):
         """
         :param item:    single item in JSON format
         :return:        item media href links
@@ -511,7 +511,8 @@ class CsvExporter:
             media_href = '\n'.join(image[HREF] for image in get_json_property(item, MEDIA))
         return media_href
 
-    def get_item_location_coordinates(self, item):
+    @staticmethod
+    def get_item_location_coordinates(item):
         """
         :param item:    single item in JSON format
         :return:        comma separated longitude and latitude coordinates
@@ -561,7 +562,7 @@ def main():
         csv_exporter = CsvExporter(audit_json)
         csv_exporter.save_converted_audit_to_file(os.path.splitext(arg.split('/')[-1])[0] + '.csv',
                                                   allow_overwrite=True)
-    print 'Exiting'
+    print('Exiting')
 
 
 if __name__ == '__main__':
