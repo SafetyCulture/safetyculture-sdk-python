@@ -1,4 +1,3 @@
-import copy
 import datetime
 import errno
 import json
@@ -92,6 +91,11 @@ def configure_logger():
 
 
 def read_workbook(input_filename):
+    """
+    Read the contents of input_filename and return
+    :param input_filename: Filepath of the spreadsheet to read
+    :return:  Dict of response sets
+    """
     wb_response_sets = {}
 
     wb = open_workbook(input_filename)
@@ -109,6 +113,10 @@ def read_workbook(input_filename):
 
 
 def get_response_sets():
+    """
+    Discover all response_sets visible
+    :return:  JSON representation of remote response_sets
+    """
     response_sets = requests.get('https://api.safetyculture.io/response_sets', headers=auth_header)
     if response_sets.status_code == 200:
         return response_sets.json()
@@ -117,6 +125,11 @@ def get_response_sets():
 
 
 def get_response_set(response_set_id):
+    """
+    GET individual response_set from iAuditor API
+    :param response_set_id:  id of response_set to GET
+    :return: JSON object of response set
+    """
     api_url = 'https://api.safetyculture.io/response_sets/{0}'.format(response_set_id)
     response_set = requests.get(api_url, headers=auth_header)
     if response_set.status_code == 200:
@@ -126,6 +139,11 @@ def get_response_set(response_set_id):
 
 
 def build_grs_payload(responses, name):
+    """
+    :param responses: responses for responseset
+    :param name:      name of responseset
+    :return:          Object composed of name and responses
+    """
     return {
         'name': name,
         'responses': responses
@@ -133,6 +151,12 @@ def build_grs_payload(responses, name):
 
 
 def is_identical(remote_response_set, local_response_set):
+    """
+    Check for equality between response_set objects
+    :param remote_response_set:  Response_set pulled from API
+    :param local_response_set:   Response_set stored in spreadsheet
+    :return:
+    """
     if remote_response_set == local_response_set:
         return True
     else:
@@ -140,12 +164,25 @@ def is_identical(remote_response_set, local_response_set):
 
 
 def get_rs_id_by_name(name, response_sets):
+    """
+    Return the response_set that matches the passed name
+    :param name:          Name of response_set to return
+    :param response_sets: List of response_sets to check
+    :return:              Response_set with the passed name
+    """
+
     for rs in response_sets:
         if rs['name'] == name:
             return rs
 
 
 def handle_matching_rs(local_response_sets, remote_response_sets, response_set_name):
+    """
+    :param local_response_sets:  Response_set data pulled from spreadsheet
+    :param remote_response_sets: Response_set data pulled from API
+    :param response_set_name:    Name of the response_set
+    :return:                     None
+    """
     local_response_set = local_response_sets[response_set_name]
 
     responseset_id = get_rs_id_by_name(response_set_name, remote_response_sets)['responseset_id']
@@ -182,7 +219,14 @@ def handle_matching_rs(local_response_sets, remote_response_sets, response_set_n
                 status = requests.delete('https://api.safetyculture.io/response_sets/{0}/responses/{1}'.format(responseset_id, response_id), headers=auth_header)
                 print '{0} on {1}'.format(status, response_id)
 
+
 def create_remote_response_set(local_response_sets, response_set_name):
+    """
+    POST a new response_set to the iAuditor API
+    :param local_response_sets: list of local_response_sets
+    :param response_set_name:   name of response_set to post
+    :return:                    None
+    """
     payload = build_grs_payload(local_response_sets[response_set_name], response_set_name)
     status = requests.post('https://api.safetyculture.io/response_sets', data=json.dumps(payload), headers=auth_header)
 
