@@ -83,6 +83,9 @@ class SafetyCulture:
         del self.custom_http_headers['content-type']
         return response
 
+    def authenticated_request_delete(self, url):
+        return requests.delete(url, headers=self.custom_http_headers)
+
     @staticmethod
     def parse_json(json_to_parse):
         """
@@ -425,6 +428,65 @@ class SafetyCulture:
 
         self.log_http_status(response.status_code, log_message)
         return result
+
+    def create_response_set(self, name, responses):
+        """
+        Create new response_set
+        :param payload:  Name and responses of response_set to create
+        :return:
+        """
+        payload = json.dumps({'name': name, 'responses': responses})
+        response = self.authenticated_request_post(self.response_set_url, payload)
+        # result = self.parse_json(response.content) if response.status_code == requests.codes.ok else None
+        log_message = 'on POST for new response_set: {0}'.format(name)
+        self.log_http_status(response.status_code, log_message)
+
+    def get_response_sets(self):
+        """
+        GET and return all response_sets
+        :return: response_sets accessible to user
+        """
+        response = self.authenticated_request_get(self.response_set_url)
+        result = self.parse_json(response.content) if response.status_code == requests.codes.ok else None
+        log_message = 'on GET for response_sets'
+        self.log_http_status(response.status_code, log_message)
+        return result
+
+    def get_response_set(self, responseset_id):
+        """
+        GET individual response_set by id
+        :param responseset_id:  responseset_id of response_set to GET
+        :return: response_set
+        """
+        response = self.authenticated_request_get('{0}/{1}'.format(self.response_set_url, responseset_id))
+        result = self.parse_json(response.content) if response.status_code == requests.codes.ok else None
+        log_message = 'on GET for {0}'.format(responseset_id)
+        self.log_http_status(response.status_code, log_message)
+        return result
+
+    def create_response(self, responseset_id, response):
+        """
+        Create response in existing response_set
+        :param responseset_id: id of response_set to add response to
+        :param response:       response to add
+        :return:               None
+        """
+        url = '{0}/{1}/responses'.format(self.response_set_url, responseset_id)
+        response = self.authenticated_request_post(url, json.dumps(response))
+        log_message = 'on POST for new response to: {0}'.format(responseset_id)
+        self.log_http_status(response.status_code, log_message)
+
+    def delete_response(self, responseset_id, response_id):
+        """
+        DELETE individual response by id
+        :param responseset_id: responseset_id of response_set containing response to be deleted
+        :param response_id:    id of response to be deleted
+        :return:               None
+        """
+        url = '{0}/{1}/responses/{2}'.format(self.response_set_url, responseset_id, response_id)
+        response = self.authenticated_request_delete(url)
+        log_message = 'on DELETE for response_set: {0}'.format(responseset_id)
+        self.log_http_status(response.status_code, log_message)
 
     @staticmethod
     def log_http_status(status_code, message):
