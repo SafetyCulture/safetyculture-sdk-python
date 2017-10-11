@@ -147,6 +147,7 @@ def load_config_settings(logger, path_to_config_file):
 def read_workbook(logger, input_filename):
     """
     Read the contents of input_filename and return
+    :param logger:         The logger
     :param input_filename: Filepath of the spreadsheet to read
     :return:  Dict of response sets
     """
@@ -187,6 +188,7 @@ def handle_matching_rs(logger, local_response_sets, remote_response_sets, respon
     :param local_response_sets:  Response_set data pulled from spreadsheet
     :param remote_response_sets: Response_set data pulled from API
     :param response_set_name:    Name of the response_set
+    :param sc_client:            Instance of SDK client
     :return:                     None
     """
     local_response_set = local_response_sets[response_set_name]
@@ -218,6 +220,7 @@ def handle_matching_rs(logger, local_response_sets, remote_response_sets, respon
     if len(local_diff) == 0 and len(remote_diff) == 0:
         logger.debug('{0} on server matches local responseset - no changes to make'.format(responseset_id))
 
+
 def main():
     """
     Load local response_set data, get remote response_set data, compare and reconcile
@@ -241,4 +244,6 @@ def main():
                     responses = local_response_sets[response_set_name]
                     sc_client.create_response_set(name, responses)
 
-main()
+
+if __name__ == '__main__':
+    main()
