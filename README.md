@@ -296,7 +296,19 @@ Once you have successfully used this tool to extract audit reports, the next tim
 
 IMPORTANT: Exporting large numbers of audits in bulk over and over again may result in your account being throttled or your API token revoked.
 
+## How to use the Import GRS tool
 
+Open tools/import_grs/config.yaml and paste in your Public API Access Token.  For filename, type the name of the xlsx or xls file you want to sync your GRS to.
+
+Each sheet in the xls file will correspond to one Global Response Set.  The name of the sheet will correspond to the name of the GRS.  Please note that if you name a sheet exactly the same as a currently existing GRS, that GRS will be modified - including deletion of responses.
+
+A single column per sheet is required, each row in that column will correspond to the label of a response.
+
+To update your GRS, add a row to the spreadsheet, and run the tool.  To delete from your GRS, just delete the row in the spreadsheet, and run the tool.
+
+### How to run the Import GRS tool
+
+Open a terminal, navigate to safetyculture-sdk-python/tools/import_grs and execute 'python import_grs.py'.
 
 ## SafetyCulture Python SDK
 1. Import `safetypy` into a Python module or Python interpreter: 
