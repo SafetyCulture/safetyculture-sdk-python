@@ -160,10 +160,11 @@ def read_workbook(logger, input_filename):
 
             number_of_rows = sheet.nrows
             for row in range(1, number_of_rows):
-                label_object = {
-                    'label': sheet.cell(row, 0).value,
-                }
-                wb_response_sets[name].append(label_object)
+                if sheet.cell(row, 0).value != "":
+                    label_object = {
+                        'label': sheet.cell(row, 0).value,
+                    }
+                    wb_response_sets[name].append(label_object)
         return wb_response_sets
     else:
         logger.error('{0} does not appear to be a valid file'.format(input_filename))
