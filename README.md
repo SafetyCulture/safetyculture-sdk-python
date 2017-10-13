@@ -6,6 +6,8 @@ Contains:
 
 * The iAuditor Export Tool for exporting audit data to your computer
 
+* The Import Global Response Set (GRS) Tool for importing and updating response sets from a spreadsheet
+
 ## iAuditor Export Tool 
 
 ### First Time Install and Run 
@@ -296,9 +298,11 @@ Once you have successfully used this tool to extract audit reports, the next tim
 
 IMPORTANT: Exporting large numbers of audits in bulk over and over again may result in your account being throttled or your API token revoked.
 
-## How to use the Import GRS tool
+## The Import Global Response Sets (GRS) tool
 
-To import GRS from a MS Excel spreadsheet file: 
+This tool helps maintain Global Response Sets up to date by importing them automatically from a Microsoft Excel spreadsheet (xls or xlsx, version 2 or higher).
+
+To import response sets from a spreadsheet file: 
 ```
 import_grs --token <YOUR_IAUDITOR_API_TOKEN> --file <FULL_PATH_TO_SPREADSHEET_FILE>
 ```
