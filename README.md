@@ -203,7 +203,7 @@ Here is an example customised config.yaml:
 
 ```
 API:
-    token: YOUR_SAFETYCULTURE_API_TOKEN
+    token: YOUR_IAUDITOR_API_TOKEN
 export_options:
     export_path: /Users/Monty/Dropbox
     timezone: America/Chicago
@@ -298,19 +298,19 @@ IMPORTANT: Exporting large numbers of audits in bulk over and over again may res
 
 ## How to use the Import GRS tool
 
-Open tools/import_grs/config.yaml and paste in your iAuditor API Access Token.  For filename, type the name of the xlsx or xls file you want to sync your GRS to.
+To import GRS from a MS Excel spreadsheet file: 
+```
+import_grs --token <YOUR_IAUDITOR_API_TOKEN> --file <FULL_PATH_TO_SPREADSHEET_FILE>
+```
 
-Each sheet in the xls file will correspond to one Global Response Set.  Any GRS that exists in your account which has a name that does not match a sheet in the xls file will not be affected.  The name of the sheet will correspond to the name of the GRS.  Please note that if you name a sheet exactly the same as a currently existing GRS, that GRS will be modified - including deletion of any responses that don't exist in the xls file.
+Each sheet in the Excel file will correspond to one Global Response Set. Any Global Response Set that exists in your account which has a name that does not match a sheet in the xls file will not be affected.  The name of the sheet will correspond to the name of the Global Response Set.  Please note that if you name a sheet exactly the same as a currently existing Global Response Set, that Global Response Set will be modified - including deletion of any responses that don't exist in the xls file.
 
-The tool is case-sensitive - if you have 'city names' and 'City Names' as separate sheet-names, a new GRS will be created for each.  Similarly, if you want to manage an existing GRS, ensure you name the sheet exactly as it appears in the responseset, including capitalization.
+The tool is case-sensitive - if you have 'city names' and 'City Names' as separate sheet-names, a new Global Response Set will be created for each.  Similarly, if you want to manage an existing Global Response Set, ensure you name the sheet exactly as it appears in the responseset, including capitalization.
 A single column per sheet is required, each cell in that column will correspond to the label of a response. 
 
-To update your GRS, add a row to the spreadsheet, and run the tool.  To delete from your GRS, just delete the row in the spreadsheet, and run the tool.
+To update your Global Response Set, add a row to the spreadsheet, and run the tool.  To delete from your Global Response Set, just delete the row in the spreadsheet, and run the tool.
 
 It is important to note that deleting a response, and then re-adding the same response later will result in disconnected data in Analytics, as the new response will have a different ID than the deleted response had.
-### How to run the Import GRS tool
-
-Open a terminal, navigate to safetyculture-sdk-python/tools/import_grs and execute 'python import_grs.py'.
 
 ## SafetyCulture Python SDK
 1. Import `safetypy` into a Python module or Python interpreter: 

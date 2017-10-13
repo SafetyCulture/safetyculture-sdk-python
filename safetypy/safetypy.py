@@ -64,7 +64,7 @@ class SafetyCulture:
                 logger.error('API token failed to match expected pattern')
                 self.api_token = None
         except Exception as ex:
-            self.log_critical_error(ex, 'Error occurred while validating API token in config.yaml file. Exiting.')
+            self.log_critical_error(ex, 'API token is missing or invalid. Exiting.')
             exit()
         if self.api_token:
             self.custom_http_headers = {
@@ -438,7 +438,6 @@ class SafetyCulture:
         """
         payload = json.dumps({'name': name, 'responses': responses})
         response = self.authenticated_request_post(self.response_set_url, payload)
-        # result = self.parse_json(response.content) if response.status_code == requests.codes.ok else None
         log_message = 'on POST for new response_set: {0}'.format(name)
         self.log_http_status(response.status_code, log_message)
 

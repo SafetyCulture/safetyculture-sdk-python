@@ -1,3 +1,4 @@
+import argparse
 import datetime
 import errno
 import logging
@@ -6,7 +7,7 @@ import re
 import sys
 import yaml
 from xlrd import open_workbook
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 from safetypy import safetypy as sp
 
 # Possible values here are DEBUG, INFO, WARN, ERROR and CRITICAL
@@ -227,12 +228,18 @@ def main():
     Load local response_set data, get remote response_set data, compare and reconcile
     """
 
-    logger = configure_logger()
-    config = load_config_settings(logger, DEFAULT_CONFIG_FILENAME)
-    sc_client = sp.SafetyCulture(config['api_token'])
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-f', '--file', required=True)
+    parser.add_argument('-t', '--token', required=True)
+    args = parser.parse_args()
+    file_path = args.file
+    api_token = args.token
 
-    if config['input_filename'] is not None:
-        local_response_sets = read_workbook(logger, config['input_filename'])
+    logger = configure_logger()
+    sc_client = sp.SafetyCulture(api_token)
+
+    if file_path is not None:
+        local_response_sets = read_workbook(logger, file_path)
         if local_response_sets is not None:
             remote_response_sets = sc_client.get_response_sets()
             remote_rs_names = [x['name'] for x in remote_response_sets]
