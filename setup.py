@@ -1,16 +1,17 @@
 from setuptools import setup
 
 setup(name = 'safetyculture-sdk-python',
-      version = '3.0.0',
+      version = '3.1.0',
       description = 'iAuditor Python SDK and integration tools',
       url = 'https://github.com/SafetyCulture/safetyculture-sdk-python',
       author = 'SafetyCulture',
       author_email = 'integrations@safetyculture.io',
       include_package_data=True,
-      packages = ['safetypy', 'tools', 'tools/exporter'],
+      packages = ['safetypy', 'tools', 'tools/exporter', 'tools/import_grs'],
       entry_points = {
             'console_scripts': [
                   'iauditor_exporter = tools.exporter.exporter:main',
+                  'import_grs = tools.import_grs.import_grs:main'
             ],
       },
       long_description=open('README.md', 'r').read(),
@@ -21,6 +22,7 @@ setup(name = 'safetyculture-sdk-python',
             'unicodecsv>=0.14.1',
             'requests>=2.10.0',
             'pyyaml>=3.11',
-            'future>=0.16.0'
+            'future>=0.16.0',
+            'xlrd==1.1.0'
       ],
       )

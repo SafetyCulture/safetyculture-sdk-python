@@ -203,7 +203,7 @@ Here is an example customised config.yaml:
 
 ```
 API:
-    token: YOUR_SAFETYCULTURE_API_TOKEN
+    token: YOUR_IAUDITOR_API_TOKEN
 export_options:
     export_path: /Users/Monty/Dropbox
     timezone: America/Chicago
@@ -296,7 +296,20 @@ Once you have successfully used this tool to extract audit reports, the next tim
 
 IMPORTANT: Exporting large numbers of audits in bulk over and over again may result in your account being throttled or your API token revoked.
 
+## How to use the Import GRS tool
 
+To import GRS from a MS Excel spreadsheet file: 
+```
+import_grs --token <YOUR_IAUDITOR_API_TOKEN> --file <FULL_PATH_TO_SPREADSHEET_FILE>
+```
+Each sheet in the Excel file will correspond to one Global Response Set. Any Global Response Set that exists in your account which has a name that does not match a sheet in the Excel file will not be affected. The name of the sheet will correspond to the name of the Global Response Set.  Please note that if you name a sheet exactly the same as a currently existing Global Response Set, that Global Response Set will be modified - including deletion of any responses that don't exist in the Excel file.
+
+The tool is case-sensitive - if you have 'city names' and 'City Names' as separate sheet names, a new Global Response Set will be created for each. Similarly, if you want to manage an existing Global Response Set, ensure you name the sheet exactly as it appears in the response set, including capitalization.
+A single column per sheet is required, each cell in that column will correspond to the label of a response. 
+
+To update your Global Response Set, add one or more rows to the spreadsheet. To delete from your Global Response Set, just delete the relevant rows from the spreadsheet. After your changes, save the spreadsheet and run the tool.
+
+Caveat: deleting a response, and then re-adding the same response later will result in iAuditor Analytics dashboard treating these as different responses. This is because the new response will have a different internal identifier than the deleted response had. To update a response while keeping the same internal identifier you will need to use the response set API directly, instead of this tool. See the iAuditor developer portal for more details.
 
 ## SafetyCulture Python SDK
 1. Import `safetypy` into a Python module or Python interpreter: 
