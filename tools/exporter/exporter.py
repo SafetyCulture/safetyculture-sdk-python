@@ -234,7 +234,7 @@ def load_setting_media_sync_offset(logger, config_settings):
                              defined as global constant
     """
     try:
-        media_sync_offset = config_settings['media_sync_offset_in_seconds']
+        media_sync_offset = config_settings['export_options']['media_sync_offset_in_seconds']
         if media_sync_offset is None or media_sync_offset < 0 or not isinstance(media_sync_offset, int):
             media_sync_offset = DEFAULT_MEDIA_SYNC_OFFSET_IN_SECONDS
         return media_sync_offset
