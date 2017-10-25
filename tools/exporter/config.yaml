@@ -1,11 +1,11 @@
 API:
-    token: YOUR_IAUDITOR_API_TOKEN
+    token: 32b12a141ec9a87c07c11b5151bc2fa56e331fb8f552e8cdda3e0c4096fd2bfa
 export_options:
     export_path:
     timezone:
     filename: 
     csv_options:
         export_inactive_items: false
-export_profiles:
-sync_delay_in_seconds:
-media_sync_offset_in_seconds:
+    export_profiles:
+    sync_delay_in_seconds:
+    media_sync_offset_in_seconds:

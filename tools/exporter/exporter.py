@@ -140,7 +140,7 @@ def load_setting_sync_delay(logger, config_settings):
     :return:                 extracted sync delay if valid, else DEFAULT_SYNC_DELAY_IN_SECONDS
     """
     try:
-        sync_delay = config_settings['sync_delay_in_seconds']
+        sync_delay = config_settings['export_options']['sync_delay_in_seconds']
         sync_delay_is_valid = re.match('^[0-9]+$', str(sync_delay))
         if sync_delay_is_valid and sync_delay >= 0:
             if sync_delay < DEFAULT_SYNC_DELAY_IN_SECONDS:
@@ -168,7 +168,7 @@ def load_setting_export_profile_mapping(logger, config_settings):
     """
     try:
         profile_mapping = {}
-        export_profile_settings = config_settings['export_profiles']
+        export_profile_settings = config_settings['export_options']['export_profiles']
         if export_profile_settings is not None:
             profile_lines = export_profile_settings.split(' ')
             for profile in profile_lines:
@@ -570,14 +570,14 @@ def configure(logger, path_to_config_file, export_formats):
 
     config_settings = load_config_settings(logger, path_to_config_file)
     config_settings[EXPORT_FORMATS] = export_formats
-    sc_client = sp.SafetyCulture(config_settings['api_token'])
+    sc_client = sp.SafetyCulture(config_settings[API_TOKEN])
 
-    if config_settings['export_path'] is not None:
-        create_directory_if_not_exists(logger, config_settings['export_path'])
+    if config_settings[EXPORT_PATH] is not None:
+        create_directory_if_not_exists(logger, config_settings[EXPORT_PATH])
     else:
         logger.info('Invalid export path was found in ' + path_to_config_file + ', defaulting to /exports')
-        config_settings['export_path'] = os.path.join(os.getcwd(), 'exports')
-        create_directory_if_not_exists(logger, config_settings['export_path'])
+        config_settings[EXPORT_PATH] = os.path.join(os.getcwd(), 'exports')
+        create_directory_if_not_exists(logger, config_settings[EXPORT_PATH])
 
     return sc_client, config_settings
 
