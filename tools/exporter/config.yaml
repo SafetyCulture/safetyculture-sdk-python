@@ -1,5 +1,5 @@
 API:
-    token: 32b12a141ec9a87c07c11b5151bc2fa56e331fb8f552e8cdda3e0c4096fd2bfa
+    token: YOUR_IAUDITOR_API_TOKEN
 export_options:
     export_path:
     timezone:
