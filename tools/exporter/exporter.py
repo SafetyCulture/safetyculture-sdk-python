@@ -129,7 +129,7 @@ def load_settings_region(logger, config_settings):
             return region
         else:
             logger.warning('No valid region specified in config file. Must be one of "usa", "aus", or "uk".')
-            logger.info('API region defaulting to ' + DEFAULT_REGION)
+            logger.info('API region defaulting to "' + DEFAULT_REGION + '"')
             return DEFAULT_REGION
     except Exception as ex:
         log_critical_error(logger, ex, 'Exception parsing API region from config.yaml. Defaulting to default: ' + DEFAULT_REGION)
