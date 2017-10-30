@@ -124,11 +124,12 @@ def load_settings_region(logger, config_settings):
     """
     try:
         region = config_settings['API']['region']
-        if region in ['usa', 'aus', 'uk']:
-            logger.debug('Loading region from config file: ' + region)
+        if region in ['usa']:
+            logger.debug('Loading region from config file.')
+            logger.debug('Setting region to "' + region + '"')
             return region
         else:
-            logger.warning('No valid region specified in config file. Must be one of "usa", "aus", or "uk".')
+            logger.warning('No valid region specified in config file. Currently only "usa" is supported')
             logger.info('API region defaulting to "' + DEFAULT_REGION + '"')
             return DEFAULT_REGION
     except Exception as ex:
