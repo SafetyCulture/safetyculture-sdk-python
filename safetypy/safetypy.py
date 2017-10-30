@@ -44,11 +44,17 @@ def get_user_api_token(logger):
 
 
 class SafetyCulture:
-    def __init__(self, api_token):
+    def __init__(self, api_token, api_region='usa'):
         self.current_dir = os.getcwd()
         self.log_dir = self.current_dir + '/log/'
 
-        self.api_url = 'https://api.safetyculture.io/'
+        if api_region == 'usa':
+            self.api_url = 'https://api.safetyculture.io/'
+        elif api_region == 'uk':
+            pass
+        elif api_region == 'aus':
+            pass
+
         self.audit_url = self.api_url + 'audits/'
         self.template_search_url = self.api_url + 'templates/search?field=template_id&field=name'
         self.response_set_url = self.api_url + 'response_sets'

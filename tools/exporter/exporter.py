@@ -45,11 +45,15 @@ ACTIONS_SYNC_MARKER_FILENAME = 'last_successful_actions_export.txt'
 # Whether to export inactive items to CSV
 DEFAULT_EXPORT_INACTIVE_ITEMS_TO_CSV = True
 
+# specifies which datacenter the customers data is stored at. Can be usa, aus, or uk
+DEFAULT_REGION = 'usa'
+
 # When exporting actions to CSV, if property is None, print this value to CSV
 EMPTY_RESPONSE = ''
 
 # Properties kept in settings dictionary which takes its values from config.YAML
 API_TOKEN = 'api_token'
+REGION = 'region'
 EXPORT_PATH = 'export_path'
 TIMEZONE = 'timezone'
 EXPORT_PROFILES = 'export_profiles'
@@ -63,6 +67,7 @@ EXPORT_FORMATS = 'export_formats'
 DEFAULT_CONFIG_FILE_YAML = [
     'API:',
     '\n    token: ',
+    '\n    region:',
     '\nexport_options:',
     '\n    export_path:',
     '\n    timezone:',
@@ -109,6 +114,27 @@ def load_setting_api_access_token(logger, config_settings):
         log_critical_error(logger, ex, 'Exception parsing API token from config.yaml')
         return None
 
+def load_settings_region(logger, config_settings):
+    """
+    Attempt to parse API token from config settings
+
+    :param logger:           the logger
+    :param config_settings:  config settings loaded from config file
+    :return:                 API token if valid, else None
+    """
+    try:
+        region = config_settings['API']['region']
+        if region in ['usa']:
+            logger.debug('Loading region from config file.')
+            logger.debug('Setting region to "' + region + '"')
+            return region
+        else:
+            logger.warning('No valid region specified in config file. Currently only "usa" is supported')
+            logger.info('API region defaulting to "' + DEFAULT_REGION + '"')
+            return DEFAULT_REGION
+    except Exception as ex:
+        log_critical_error(logger, ex, 'Exception parsing API region from config.yaml. Defaulting to default: ' + DEFAULT_REGION)
+        return DEFAULT_REGION
 
 def load_export_inactive_items_to_csv(logger, config_settings):
     """
@@ -547,6 +573,7 @@ def load_config_settings(logger, path_to_config_file):
     config_settings = yaml.safe_load(open(path_to_config_file))
     settings = {
         API_TOKEN: load_setting_api_access_token(logger, config_settings),
+        REGION: load_settings_region(logger, config_settings),
         EXPORT_PATH: load_setting_export_path(logger, config_settings),
         TIMEZONE: load_setting_export_timezone(logger, config_settings),
         EXPORT_PROFILES: load_setting_export_profile_mapping(logger, config_settings),
@@ -570,7 +597,7 @@ def configure(logger, path_to_config_file, export_formats):
 
     config_settings = load_config_settings(logger, path_to_config_file)
     config_settings[EXPORT_FORMATS] = export_formats
-    sc_client = sp.SafetyCulture(config_settings[API_TOKEN])
+    sc_client = sp.SafetyCulture(config_settings[API_TOKEN], config_settings[REGION])
 
     if config_settings[EXPORT_PATH] is not None:
         create_directory_if_not_exists(logger, config_settings[EXPORT_PATH])
