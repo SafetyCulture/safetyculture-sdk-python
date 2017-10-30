@@ -596,7 +596,7 @@ def configure(logger, path_to_config_file, export_formats):
 
     config_settings = load_config_settings(logger, path_to_config_file)
     config_settings[EXPORT_FORMATS] = export_formats
-    sc_client = sp.SafetyCulture(config_settings[API_TOKEN])
+    sc_client = sp.SafetyCulture(config_settings[API_TOKEN], config_settings[REGION])
 
     if config_settings[EXPORT_PATH] is not None:
         create_directory_if_not_exists(logger, config_settings[EXPORT_PATH])
