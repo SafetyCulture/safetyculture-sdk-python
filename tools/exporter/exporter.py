@@ -926,7 +926,7 @@ def loop(logger, sc_client, settings):
     :param sc_client:  instance of SafetyCulture SDK object
     :param settings:   dictionary containing config settings values
     """
-    sync_delay_in_seconds = load_setting_sync_delay(logger, settings)
+    sync_delay_in_seconds = settings[SYNC_DELAY_IN_SECONDS]
     while True:
         sync_exports(logger, settings, sc_client)
         logger.info('Next check will be in ' + str(sync_delay_in_seconds) + ' seconds. Waiting...')
