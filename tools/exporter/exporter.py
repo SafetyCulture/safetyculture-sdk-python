@@ -121,7 +121,7 @@ def load_setting_api_access_token(logger, config_settings):
         log_critical_error(logger, ex, 'Exception parsing API token from config.yaml')
         return None
 
-def load_settings_region(logger, config_settings):
+def load_setting_hosting_region(logger, config_settings):
     """
     Attempt to parse API token from config settings
 
@@ -130,7 +130,7 @@ def load_settings_region(logger, config_settings):
     :return:                 API token if valid, else None
     """
     try:
-        region = config_settings['API']['region']
+        region = config_settings['API']['region'].upper()
         if region in [USA]:
             logger.debug('Loading region from config file.')
             logger.debug('Setting region to "' + region + '"')
@@ -534,7 +534,7 @@ def parse_export_filename(header_items, filename_item_id):
     return None
 
 
-def get_filename_item_id(logger, config_settings):
+def load_setting_filename_item_id(logger, config_settings):
     """
     Attempt to parse item_id for file naming from config settings
 
@@ -580,11 +580,11 @@ def load_config_settings(logger, path_to_config_file):
     config_settings = yaml.safe_load(open(path_to_config_file))
     settings = {
         API_TOKEN: load_setting_api_access_token(logger, config_settings),
-        REGION: load_settings_region(logger, config_settings),
+        REGION: load_setting_hosting_region(logger, config_settings),
         EXPORT_PATH: load_setting_export_path(logger, config_settings),
         TIMEZONE: load_setting_export_timezone(logger, config_settings),
         EXPORT_PROFILES: load_setting_export_profile_mapping(logger, config_settings),
-        FILENAME_ITEM_ID: get_filename_item_id(logger, config_settings),
+        FILENAME_ITEM_ID: load_setting_filename_item_id(logger, config_settings),
         SYNC_DELAY_IN_SECONDS: load_setting_sync_delay(logger, config_settings),
         EXPORT_INACTIVE_ITEMS_TO_CSV: load_export_inactive_items_to_csv(logger, config_settings),
         MEDIA_SYNC_OFFSET_IN_SECONDS: load_setting_media_sync_offset(logger, config_settings)
