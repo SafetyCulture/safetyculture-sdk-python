@@ -45,11 +45,18 @@ ACTIONS_SYNC_MARKER_FILENAME = 'last_successful_actions_export.txt'
 # Whether to export inactive items to CSV
 DEFAULT_EXPORT_INACTIVE_ITEMS_TO_CSV = True
 
-# specifies which datacenter the customers data is stored at. Can be usa, aus, or uk
-DEFAULT_REGION = 'usa'
-
 # When exporting actions to CSV, if property is None, print this value to CSV
 EMPTY_RESPONSE = ''
+
+# accepted configuration options for hosting region.
+# hosting region specifies which datacenter the customers data is stored at.
+USA = 'US'
+AUSTRALIA = 'AU'
+EUROPE = 'EU'
+UNITED_KINGDOM = 'UK'
+
+# default hosting region
+DEFAULT_HOSTING_REGION = USA
 
 # Properties kept in settings dictionary which takes its values from config.YAML
 API_TOKEN = 'api_token'
@@ -67,7 +74,7 @@ EXPORT_FORMATS = 'export_formats'
 DEFAULT_CONFIG_FILE_YAML = [
     'API:',
     '\n    token: ',
-    '\n    region:',
+    '\n    hosting_region:',
     '\nexport_options:',
     '\n    export_path:',
     '\n    timezone:',
@@ -124,17 +131,17 @@ def load_settings_region(logger, config_settings):
     """
     try:
         region = config_settings['API']['region']
-        if region in ['usa']:
+        if region in [USA]:
             logger.debug('Loading region from config file.')
             logger.debug('Setting region to "' + region + '"')
             return region
         else:
-            logger.warning('No valid region specified in config file. Currently only "usa" is supported')
-            logger.info('API region defaulting to "' + DEFAULT_REGION + '"')
-            return DEFAULT_REGION
+            logger.warning('No valid region specified in config file. Currently only' + USA + 'is supported')
+            logger.info('API region defaulting to "' + DEFAULT_HOSTING_REGION + '"')
+            return DEFAULT_HOSTING_REGION
     except Exception as ex:
-        log_critical_error(logger, ex, 'Exception parsing API region from config.yaml. Defaulting to default: ' + DEFAULT_REGION)
-        return DEFAULT_REGION
+        log_critical_error(logger, ex, 'Exception parsing API region from config.yaml. Defaulting to default: ' + DEFAULT_HOSTING_REGION)
+        return DEFAULT_HOSTING_REGION
 
 def load_export_inactive_items_to_csv(logger, config_settings):
     """

@@ -20,6 +20,12 @@ DEFAULT_EXPORT_FORMAT = 'pdf'
 GUID_PATTERN = '[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}$'
 HTTP_USER_AGENT_ID = 'safetyculture-python-sdk'
 
+# accepted configuration options for hosting region.
+# hosting region specifies which datacenter the customers data is stored at.
+USA = 'US'
+AUSTRALIA = 'AU'
+EUROPE = 'EU'
+UNITED_KINGDOM = 'UK'
 
 def get_user_api_token(logger):
     """
@@ -44,16 +50,17 @@ def get_user_api_token(logger):
 
 
 class SafetyCulture:
-    def __init__(self, api_token, api_region='usa'):
+    def __init__(self, api_token, api_region=USA):
         self.current_dir = os.getcwd()
         self.log_dir = self.current_dir + '/log/'
-
-        if api_region == 'usa':
+        if api_region == USA:
             self.api_url = 'https://api.safetyculture.io/'
-        elif api_region == 'uk':
-            pass
-        elif api_region == 'aus':
-            pass
+        elif api_region == UNITED_KINGDOM:
+            self.api_url = 'https://api.safetyculture.io/'
+        elif api_region == AUSTRALIA:
+            self.api_url = 'https://api.safetyculture.io/'
+        elif api_region == EUROPE:
+            self.api_url = 'https://api.safetyculture.io/'
 
         self.audit_url = self.api_url + 'audits/'
         self.template_search_url = self.api_url + 'templates/search?field=template_id&field=name'
