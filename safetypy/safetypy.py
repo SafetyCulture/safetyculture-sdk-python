@@ -55,11 +55,7 @@ class SafetyCulture:
         self.log_dir = self.current_dir + '/log/'
         if api_region == USA:
             self.api_url = 'https://api.safetyculture.io/'
-        elif api_region == UNITED_KINGDOM:
-            self.api_url = 'https://api.safetyculture.io/'
         elif api_region == AUSTRALIA:
-            self.api_url = 'https://api.safetyculture.io/'
-        elif api_region == EUROPE:
             self.api_url = 'https://api.safetyculture.io/'
 
         self.audit_url = self.api_url + 'audits/'

@@ -52,8 +52,6 @@ EMPTY_RESPONSE = ''
 # hosting region specifies which datacenter the customers data is stored at.
 USA = 'US'
 AUSTRALIA = 'AU'
-EUROPE = 'EU'
-UNITED_KINGDOM = 'UK'
 
 # default hosting region
 DEFAULT_HOSTING_REGION = USA
