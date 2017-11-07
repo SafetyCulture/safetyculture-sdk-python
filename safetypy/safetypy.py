@@ -21,7 +21,7 @@ GUID_PATTERN = '[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-F
 HTTP_USER_AGENT_ID = 'safetyculture-python-sdk'
 
 # accepted configuration options for hosting region.
-# hosting region specifies which datacenter the customers data is stored at.
+# hosting region specifies which datacenter the customer's data is stored at
 USA = 'US'
 AUSTRALIA = 'AU'
 

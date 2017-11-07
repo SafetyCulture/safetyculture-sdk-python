@@ -193,7 +193,7 @@ Things you can configure:
 
 |  Setting | Description  |
 |---|---|
-| hosting_region | the region your iAuditor data is hosted. Defaults to US. Can be one of US, AU, EU, or UK | 
+| hosting_region | the region your iAuditor data is hosted. Can be US or AU. Defaults to US. |
 | export_path  | absolute or relative path to the directory where to save exported data to  |
 | timezone |  an Olson timezone to be used in generated audit reports. If invalid or missing, reports will use the timezone local to the computer running the export tool |
 | filename  |  an audit item ID whose response is going to be used to name the files of exported audit reports. Can only be an item with a response type of `text` from the header section of the audit such as Audit Title, Document No., Client / Site, Prepared By, Personnel, or any custom header item which has a 'text' type response |
