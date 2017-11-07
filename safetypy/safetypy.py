@@ -24,8 +24,6 @@ HTTP_USER_AGENT_ID = 'safetyculture-python-sdk'
 # hosting region specifies which datacenter the customers data is stored at.
 USA = 'US'
 AUSTRALIA = 'AU'
-EUROPE = 'EU'
-UNITED_KINGDOM = 'UK'
 
 def get_user_api_token(logger):
     """
@@ -56,7 +54,7 @@ class SafetyCulture:
         if api_region == USA:
             self.api_url = 'https://api.safetyculture.io/'
         elif api_region == AUSTRALIA:
-            self.api_url = 'https://api.safetyculture.io/'
+            self.api_url = 'https://api.au.safetyculture.com/'
 
         self.audit_url = self.api_url + 'audits/'
         self.template_search_url = self.api_url + 'templates/search?field=template_id&field=name'
