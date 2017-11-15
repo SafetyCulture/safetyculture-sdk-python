@@ -395,7 +395,11 @@ class SafetyCulture:
         actions_url = self.api_url + 'actions/search'
         response = self.authenticated_request_post(
             actions_url,
-            data=json.dumps({"modified_at": {"from": str(date_modified)}, "offset": offset})
+            data=json.dumps({
+                "modified_at": {"from": str(date_modified)},
+                "offset": offset,
+                "status": [0, 10, 50, 60]
+            })
         )
         result = self.parse_json(response.content) if response.status_code == requests.codes.ok else None
         self.log_http_status(response.status_code, 'GET actions')
