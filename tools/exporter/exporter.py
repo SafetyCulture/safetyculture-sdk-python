@@ -335,15 +335,17 @@ def save_exported_actions_to_csv_file(logger, export_path, actions_array):
     filename = ACTIONS_EXPORT_FILENAME
     file_path = os.path.join(export_path, filename)
     logger.info('Exporting ' + str(len(actions_array)) + ' actions to ' + file_path)
-    file_path = os.path.join(export_path, filename)
-    actions_csv = open(file_path, 'ab')
-    actions_csv_wr = csv.writer(actions_csv, dialect='excel', quoting=csv.QUOTE_ALL)
-    actions_csv_wr.writerow([
-        'actionId', 'description', 'assignee', 'priority', 'priorityCode', 'status', 'statusCode', 'dueDatetime',
-        'audit', 'auditId', 'linkedToItem', 'linkedToItemId', 'creatorName', 'creatorId', 'createdDatetime',
-        'modifiedDatetime', 'completedDatetime'
-    ])
-
+    if os.path.isfile(file_path):
+        actions_csv = open(file_path, 'ab')
+        actions_csv_wr = csv.writer(actions_csv, dialect='excel', quoting=csv.QUOTE_ALL)
+    else:
+        actions_csv = open(file_path, 'wb')
+        actions_csv_wr = csv.writer(actions_csv, dialect='excel', quoting=csv.QUOTE_ALL)
+        actions_csv_wr.writerow([
+            'actionId', 'description', 'assignee', 'priority', 'priorityCode', 'status', 'statusCode', 'dueDatetime',
+            'audit', 'auditId', 'linkedToItem', 'linkedToItemId', 'creatorName', 'creatorId', 'createdDatetime',
+            'modifiedDatetime', 'completedDatetime'
+        ])
     for action in actions_array:
         actions_list = transform_action_object_to_list(action)
         actions_csv_wr.writerow(actions_list)
