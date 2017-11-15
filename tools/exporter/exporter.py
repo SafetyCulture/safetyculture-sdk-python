@@ -42,14 +42,26 @@ SYNC_MARKER_FILENAME = 'last_successful.txt'
 # The file that stores the ISO date/time string of the last successful actions export
 ACTIONS_SYNC_MARKER_FILENAME = 'last_successful_actions_export.txt'
 
+# the file that stores all exported actions in CSV format
+ACTIONS_EXPORT_FILENAME = 'iauditor_actions.csv'
+
 # Whether to export inactive items to CSV
 DEFAULT_EXPORT_INACTIVE_ITEMS_TO_CSV = True
 
 # When exporting actions to CSV, if property is None, print this value to CSV
 EMPTY_RESPONSE = ''
 
+# accepted configuration options for hosting region.
+# hosting region specifies which datacenter the customers data is stored at.
+USA = 'US'
+AUSTRALIA = 'AU'
+
+# default hosting region
+DEFAULT_HOSTING_REGION = USA
+
 # Properties kept in settings dictionary which takes its values from config.YAML
 API_TOKEN = 'api_token'
+REGION = 'region'
 EXPORT_PATH = 'export_path'
 TIMEZONE = 'timezone'
 EXPORT_PROFILES = 'export_profiles'
@@ -63,6 +75,7 @@ EXPORT_FORMATS = 'export_formats'
 DEFAULT_CONFIG_FILE_YAML = [
     'API:',
     '\n    token: ',
+    '\n    hosting_region:',
     '\nexport_options:',
     '\n    export_path:',
     '\n    timezone:',
@@ -109,6 +122,29 @@ def load_setting_api_access_token(logger, config_settings):
         log_critical_error(logger, ex, 'Exception parsing API token from config.yaml')
         return None
 
+def load_setting_hosting_region(logger, config_settings):
+    """
+    Attempt to parse API token from config settings
+
+    :param logger:           the logger
+    :param config_settings:  config settings loaded from config file
+    :return:                 API token if valid, else None
+    """
+    try:
+        region = config_settings['API']['region']
+        if region:
+            region = region.upper()
+        if region in [USA]:
+            logger.debug('Loading region from config file.')
+            logger.debug('Setting region to "' + region + '"')
+            return region
+        else:
+            logger.info('No valid region specified in config file. Currently only' + USA + 'is supported')
+            logger.info('API region defaulting to "' + DEFAULT_HOSTING_REGION + '"')
+            return DEFAULT_HOSTING_REGION
+    except Exception as ex:
+        log_critical_error(logger, ex, 'Exception parsing API region from config.yaml. Defaulting to default: ' + DEFAULT_HOSTING_REGION)
+        return DEFAULT_HOSTING_REGION
 
 def load_export_inactive_items_to_csv(logger, config_settings):
     """
@@ -321,8 +357,7 @@ def save_web_report_link_to_file(logger, export_dir, web_report_data):
 
 def save_exported_actions_to_csv_file(logger, export_path, actions_array):
     """
-    Write Actions to 'AUDIT_ID-actions.csv' on disk at specified location
-    Any existing file with the same name will be overwritten
+    Write Actions to 'iauditor_actions.csv' on disk at specified location
     :param logger:          the logger
     :param export_path:     path to directory for exports
     :param actions_array:   Array of action objects to be converted to CSV and saved to disk
@@ -330,18 +365,20 @@ def save_exported_actions_to_csv_file(logger, export_path, actions_array):
     if not actions_array:
         logger.info('No actions returned after ' + get_last_successful_actions_export(logger))
         return
-    filename = 'iauditor_actions.csv'
+    filename = ACTIONS_EXPORT_FILENAME
     file_path = os.path.join(export_path, filename)
     logger.info('Exporting ' + str(len(actions_array)) + ' actions to ' + file_path)
-    file_path = os.path.join(export_path, filename)
-    actions_csv = open(file_path, 'ab')
-    actions_csv_wr = csv.writer(actions_csv, dialect='excel', quoting=csv.QUOTE_ALL)
-    actions_csv_wr.writerow([
-        'actionId', 'description', 'assignee', 'priority', 'priorityCode', 'status', 'statusCode', 'dueDatetime',
-        'audit', 'auditId', 'linkedToItem', 'linkedToItemId', 'creatorName', 'creatorId', 'createdDatetime',
-        'modifiedDatetime', 'completedDatetime'
-    ])
-
+    if os.path.isfile(file_path):
+        actions_csv = open(file_path, 'ab')
+        actions_csv_wr = csv.writer(actions_csv, dialect='excel', quoting=csv.QUOTE_ALL)
+    else:
+        actions_csv = open(file_path, 'wb')
+        actions_csv_wr = csv.writer(actions_csv, dialect='excel', quoting=csv.QUOTE_ALL)
+        actions_csv_wr.writerow([
+            'actionId', 'description', 'assignee', 'priority', 'priorityCode', 'status', 'statusCode', 'dueDatetime',
+            'audit', 'auditId', 'linkedToItem', 'linkedToItemId', 'creatorName', 'creatorId', 'createdDatetime',
+            'modifiedDatetime', 'completedDatetime'
+        ])
     for action in actions_array:
         actions_list = transform_action_object_to_list(action)
         actions_csv_wr.writerow(actions_list)
@@ -501,7 +538,7 @@ def parse_export_filename(header_items, filename_item_id):
     return None
 
 
-def get_filename_item_id(logger, config_settings):
+def load_setting_filename_item_id(logger, config_settings):
     """
     Attempt to parse item_id for file naming from config settings
 
@@ -547,10 +584,11 @@ def load_config_settings(logger, path_to_config_file):
     config_settings = yaml.safe_load(open(path_to_config_file))
     settings = {
         API_TOKEN: load_setting_api_access_token(logger, config_settings),
+        REGION: load_setting_hosting_region(logger, config_settings),
         EXPORT_PATH: load_setting_export_path(logger, config_settings),
         TIMEZONE: load_setting_export_timezone(logger, config_settings),
         EXPORT_PROFILES: load_setting_export_profile_mapping(logger, config_settings),
-        FILENAME_ITEM_ID: get_filename_item_id(logger, config_settings),
+        FILENAME_ITEM_ID: load_setting_filename_item_id(logger, config_settings),
         SYNC_DELAY_IN_SECONDS: load_setting_sync_delay(logger, config_settings),
         EXPORT_INACTIVE_ITEMS_TO_CSV: load_export_inactive_items_to_csv(logger, config_settings),
         MEDIA_SYNC_OFFSET_IN_SECONDS: load_setting_media_sync_offset(logger, config_settings)
@@ -570,7 +608,7 @@ def configure(logger, path_to_config_file, export_formats):
 
     config_settings = load_config_settings(logger, path_to_config_file)
     config_settings[EXPORT_FORMATS] = export_formats
-    sc_client = sp.SafetyCulture(config_settings[API_TOKEN])
+    sc_client = sp.SafetyCulture(config_settings[API_TOKEN], config_settings[REGION])
 
     if config_settings[EXPORT_PATH] is not None:
         create_directory_if_not_exists(logger, config_settings[EXPORT_PATH])

@@ -20,6 +20,10 @@ DEFAULT_EXPORT_FORMAT = 'pdf'
 GUID_PATTERN = '[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}$'
 HTTP_USER_AGENT_ID = 'safetyculture-python-sdk'
 
+# accepted configuration options for hosting region.
+# hosting region specifies which datacenter the customer's data is stored at
+USA = 'US'
+AUSTRALIA = 'AU'
 
 def get_user_api_token(logger):
     """
@@ -44,11 +48,14 @@ def get_user_api_token(logger):
 
 
 class SafetyCulture:
-    def __init__(self, api_token):
+    def __init__(self, api_token, api_region=USA):
         self.current_dir = os.getcwd()
         self.log_dir = self.current_dir + '/log/'
+        if api_region == USA:
+            self.api_url = 'https://api.safetyculture.io/'
+        elif api_region == AUSTRALIA:
+            self.api_url = 'https://api.au.safetyculture.com/'
 
-        self.api_url = 'https://api.safetyculture.io/'
         self.audit_url = self.api_url + 'audits/'
         self.template_search_url = self.api_url + 'templates/search?field=template_id&field=name'
         self.response_set_url = self.api_url + 'response_sets'
@@ -388,7 +395,11 @@ class SafetyCulture:
         actions_url = self.api_url + 'actions/search'
         response = self.authenticated_request_post(
             actions_url,
-            data=json.dumps({"modified_at": {"from": str(date_modified)}, "offset": offset})
+            data=json.dumps({
+                "modified_at": {"from": str(date_modified)},
+                "offset": offset,
+                "status": [0, 10, 50, 60]
+            })
         )
         result = self.parse_json(response.content) if response.status_code == requests.codes.ok else None
         self.log_http_status(response.status_code, 'GET actions')

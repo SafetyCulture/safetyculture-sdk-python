@@ -1,5 +1,6 @@
 API:
     token: YOUR_IAUDITOR_API_TOKEN
+    region:
 export_options:
     export_path:
     timezone:

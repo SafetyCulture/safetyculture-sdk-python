@@ -193,6 +193,7 @@ Things you can configure:
 
 |  Setting | Description  |
 |---|---|
+| hosting_region | the region your iAuditor data is hosted. Can be US or AU. Defaults to US. |
 | export_path  | absolute or relative path to the directory where to save exported data to  |
 | timezone |  an Olson timezone to be used in generated audit reports. If invalid or missing, reports will use the timezone local to the computer running the export tool |
 | filename  |  an audit item ID whose response is going to be used to name the files of exported audit reports. Can only be an item with a response type of `text` from the header section of the audit such as Audit Title, Document No., Client / Site, Prepared By, Personnel, or any custom header item which has a 'text' type response |
@@ -206,19 +207,20 @@ Here is an example customised config.yaml:
 ```
 API:
     token: YOUR_IAUDITOR_API_TOKEN
+    hosting_regions: US
 export_options:
     export_path: /Users/Monty/Dropbox
     timezone: America/Chicago
     filename: f3245d40-ea77-11e1-aff1-0800200c9a66
     csv:
         export_inactive_items: false
-export_profiles:
-    template_3E631E46F466411B9C09AD804886A8B4:E15A6525-EFA5-4835-92F0-D11CA9F364F3
-    template_3E631E46F466411B9C09AD804886A8B4:E50645A1-2851-4E92-B4EA-60C5CE7981BE
-    ...
-    ...
-sync_delay_in_seconds: 36000
-media_sync_offset_in_seconds: 600
+    export_profiles:
+        template_3E631E46F466411B9C09AD804886A8B4:E15A6525-EFA5-4835-92F0-D11CA9F364F3
+        template_3E631E46F466411B9C09AD804886A8B4:E50645A1-2851-4E92-B4EA-60C5CE7981BE
+        ...
+        ...
+    sync_delay_in_seconds: 36000
+    media_sync_offset_in_seconds: 600
 ```
 
 Note: Templates for which there is no export profile id listed in the config file will be exported without a profile applied
