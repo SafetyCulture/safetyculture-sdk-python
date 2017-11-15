@@ -42,6 +42,9 @@ SYNC_MARKER_FILENAME = 'last_successful.txt'
 # The file that stores the ISO date/time string of the last successful actions export
 ACTIONS_SYNC_MARKER_FILENAME = 'last_successful_actions_export.txt'
 
+# the file that stores all exported actions in CSV format
+ACTIONS_EXPORT_FILENAME = 'iauditor_actions.csv'
+
 # Whether to export inactive items to CSV
 DEFAULT_EXPORT_INACTIVE_ITEMS_TO_CSV = True
 
@@ -321,8 +324,7 @@ def save_web_report_link_to_file(logger, export_dir, web_report_data):
 
 def save_exported_actions_to_csv_file(logger, export_path, actions_array):
     """
-    Write Actions to 'AUDIT_ID-actions.csv' on disk at specified location
-    Any existing file with the same name will be overwritten
+    Write Actions to 'iauditor_actions.csv' on disk at specified location
     :param logger:          the logger
     :param export_path:     path to directory for exports
     :param actions_array:   Array of action objects to be converted to CSV and saved to disk
@@ -330,7 +332,7 @@ def save_exported_actions_to_csv_file(logger, export_path, actions_array):
     if not actions_array:
         logger.info('No actions returned after ' + get_last_successful_actions_export(logger))
         return
-    filename = 'iauditor_actions.csv'
+    filename = ACTIONS_EXPORT_FILENAME
     file_path = os.path.join(export_path, filename)
     logger.info('Exporting ' + str(len(actions_array)) + ' actions to ' + file_path)
     file_path = os.path.join(export_path, filename)
