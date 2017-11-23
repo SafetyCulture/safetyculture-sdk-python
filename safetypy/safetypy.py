@@ -52,6 +52,8 @@ class SafetyCulture:
         self.audit_url = self.api_url + 'audits/'
         self.template_search_url = self.api_url + 'templates/search?field=template_id&field=name'
         self.response_set_url = self.api_url + 'response_sets'
+        self.get_groups_url = self.api_url + 'share/connections'
+        self.groups_url = self.api_url + 'groups'
         
         self.create_directory_if_not_exists(self.log_dir)
         self.configure_logging()
@@ -491,6 +493,31 @@ class SafetyCulture:
         response = self.authenticated_request_delete(url)
         log_message = 'on DELETE for response_set: {0}'.format(responseset_id)
         self.log_http_status(response.status_code, log_message)
+
+    def get_orgs(self):
+        """
+        GET organisations and groups of the requesting user
+        :return: organisation and groups of the user
+        """
+        # response = self.authenticated_request_get(self.get_groups_url)
+        response = self.authenticated_request_get('https://sandpit-api.safetyculture.io/share/connections')
+        # result = self.parse_json(response.content) if response.status_code == requests.codes.ok else None
+        log_message = 'on GET for organisations and groups'
+        self.log_http_status(response.status_code, log_message)
+
+        return response
+
+    def get_users_of_groups(self, group_id):
+        """
+        GET all the users of the organisations or group
+        :param group_id: id of organisation or group
+        :return: array of users
+        """
+        url = 'https://sandpit-api.safetyculture.io/groups/{0}/users'.format(group_id)
+        response = self.authenticated_request_get(url)
+        log_message = 'on GET for users of group: {0}'.format(group_id)
+        self.log_http_status(response.status_code, log_message)
+        return response.content
 
     @staticmethod
     def log_http_status(status_code, message):
