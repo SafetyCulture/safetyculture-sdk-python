@@ -58,7 +58,7 @@ def main():
 
 
 def create_csv(csv_map):
-    with open('tools/export_user/mycsvfile.csv', 'wb') as f:
+    with open('tools/export_user/user.csv', 'wb') as f:
         fields = ['email', 'lastname', 'firstname', 'groups']
         w = csv.DictWriter(f, fields)
         w.writeheader()

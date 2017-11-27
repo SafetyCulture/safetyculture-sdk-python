@@ -315,6 +315,26 @@ To update your Global Response Set, add one or more rows to the spreadsheet. To 
 
 Caveat: deleting a response, and then re-adding the same response later will result in iAuditor Analytics dashboard treating these as different responses. This is because the new response will have a different internal identifier than the deleted response had. To update a response while keeping the same internal identifier you will need to use the response set API directly, instead of this tool. See the iAuditor developer portal for more details.
 
+### The Export User tool
+
+This tool exports User data automatically into a CSV.
+The Export User tool writes to a file named `user.csv`. If it does not already exist, `user.csv` is created.
+
+To export users into a CSV file:
+Navigate into `safetyculture-sdk-python/tools/export_user`
+Run the iAuditor export tool directly:
+```
+python exporter.py --token <YOUR_IAUDITOR_API_TOKEN>
+```
+
+`user.csv` consists of the following columns
+- email
+- lastname
+- firstname
+- groups
+
+The fields `groups` lists all groups seperated by a comma as a delimiter . All fields are string values.
+
 ## SafetyCulture Python SDK
 1. Import `safetypy` into a Python module or Python interpreter: 
 ```
