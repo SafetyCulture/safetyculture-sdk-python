@@ -1,76 +1,73 @@
-# import sys
-# import os
-# from safetypy import safetypy as sp
-# sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 import argparse
-import datetime
-import errno
 import logging
 import os
-import re
 import sys
-import yaml
+reload(sys)
+sys.setdefaultencoding('utf-8')
 import json
-import requests
 import csv
-from xlrd import open_workbook
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 from safetypy import safetypy as sp
+from collections import OrderedDict
 
 # Possible values here are DEBUG, INFO, WARN, ERROR and CRITICAL
 LOG_LEVEL = logging.DEBUG
 
 DEFAULT_CONFIG_FILENAME = 'config.yaml'
 def main():
-    sc_client = sp.SafetyCulture('b9b278f0cd8825ceac18a585115163ea56001c3589eb6b3c5bcd13c3b4f13550')
-    print("1111111111")
-    response = sc_client.get_orgs()
-    # json_load = json.load(response)
-    json_load = json.loads(response.content)
-    org_role_id = ""
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-t', '--token', required=True)
+    args = parser.parse_args()
+    api_token = args.token
+    sc_client = sp.SafetyCulture(api_token)
+    my_groups_and_orgs = json.loads(sc_client.get_my_groups().content)
+    org_id = ""
     groups_list = []
-    user_map = dict()
+    user_map={}
 
-    for i in json_load['groups']:
+    for i in my_groups_and_orgs['groups']:
         if i['type'] == 'organisation':
-            org_role_id = i['id']
-            json_load = json.loads(sc_client.get_users_of_groups(org_role_id))
-            for i in json_load['users']:
+            org_id = i['id']
+            users_of_org = json.loads(sc_client.get_users_of_groups(org_id))
+            for i in users_of_org['users']:
                 if i['status'] == 'active':
                     email = i['email']
-                    user_map[email] = list()
+                    user_map[email] = {'groups': [], 'firstname': i['firstname'], 'lastname': i['lastname'] }
 
-        elif i['type'] == 'group':
-            groups_list.append(i['id'])
-
-    print "ROLE ID ::: " + org_role_id
+    json_all_groups = json.loads(sc_client.get_all_groups_in_org().content)
+    for group in json_all_groups['groups']:
+        groups_list.append(group['id'])
 
     for group in groups_list:
-        json_load = json.loads(sc_client.get_users_of_groups(group))
-        # print json_load
-        # user_map = {}
-        for user in json_load['users']:
-            email = user['email']
-            # print user_map[email]
+        users_in_group = json.loads(sc_client.get_users_of_groups(group))
+
+        for i in json_all_groups['groups']:
+            if i['id'] == group:
+                group_name = i['name']
+        for user in users_in_group['users']:
+            if user['status'] == 'active':
+                email = user['email']
             if email in user_map:
-                user_map[email].append(str(group))
+                if group_name not in user_map[email]['groups']:
+                    user_map[email]['groups'].append(str(group_name))
             else:
-                user_map[email] = [group]
+                user_map[email]['groups'] = [group_name]
 
-    for i in user_map:
-        print i, user_map[i]
-
-    create_csv(user_map)
+    sorted_user_map = OrderedDict(sorted(user_map.items(), key = lambda t: t[0]))
+    create_csv(sorted_user_map)
 
 
 def create_csv(csv_map):
     with open('tools/export_user/mycsvfile.csv', 'wb') as f:
-        w = csv.writer(f)
-        w.writerows(csv_map.items())
+        fields = ['email', 'lastname', 'firstname', 'groups']
+        w = csv.DictWriter(f, fields)
+        w.writeheader()
+        for key, val in sorted(csv_map.items()):
+            val['groups'] = ", ".join(val['groups'])
+            row = {'email': key}
+            row.update(val)
+            w.writerow(row)
 
 
 if __name__ == '__main__':
     main()
-
-
-
