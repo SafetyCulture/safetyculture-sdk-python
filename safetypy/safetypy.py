@@ -494,15 +494,21 @@ class SafetyCulture:
         log_message = 'on DELETE for response_set: {0}'.format(responseset_id)
         self.log_http_status(response.status_code, log_message)
 
-    def get_my_groups(self):
+    def get_my_org(self):
         """
-        GET organisations and groups of the requesting user
-        :return: organisation and groups of the user
+        GET organisation ID of the requesting user
+        :return: organisation ID of the user
         """
         response = self.authenticated_request_get(self.get_my_groups_url)
         log_message = 'on GET for organisations and groups of requesting user'
         self.log_http_status(response.status_code, log_message)
-        return response
+        my_groups_and_orgs = json.loads(response.content)
+        org_id=""
+        for i in my_groups_and_orgs['groups']:
+            if i['type'] != 'organisation':
+                continue
+            org_id = i['id']
+        return org_id
 
     def get_all_groups_in_org(self):
         """
@@ -524,6 +530,7 @@ class SafetyCulture:
         response = self.authenticated_request_get(url)
         log_message = 'on GET for users of group: {0}'.format(group_id)
         self.log_http_status(response.status_code, log_message)
+
         return response.content
 
     @staticmethod
