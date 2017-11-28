@@ -503,11 +503,7 @@ class SafetyCulture:
         log_message = 'on GET for organisations and groups of requesting user'
         self.log_http_status(response.status_code, log_message)
         my_groups_and_orgs = json.loads(response.content)
-        org_id=""
-        for i in my_groups_and_orgs['groups']:
-            if i['type'] != 'organisation':
-                continue
-            org_id = i['id']
+        org_id = [group['id'] for group in my_groups_and_orgs['groups'] if group['type'] == "organisation"][0]
         return org_id
 
     def get_all_groups_in_org(self):
