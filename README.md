@@ -317,23 +317,24 @@ Caveat: deleting a response, and then re-adding the same response later will res
 
 ### The Export User tool
 
-This tool exports User data automatically into a CSV.
-The Export User tool writes to a file named `user.csv`. If it does not already exist, `user.csv` is created.
+This tool exports User data automatically into a CSV file.
+The Export User tool writes to a file named `iauditor_users.csv`. If it exists, the file gets overwritten with up to date user information from iAuditor.
 
-To export users into a CSV file:
-Navigate into `safetyculture-sdk-python/tools/export_user`
-Run the iAuditor export tool directly:
+To export users to a CSV file:
+Open a command-line terminal and navigate to the directory called `safetyculture-sdk-python/tools/export_user`
+Run the following command:
 ```
 python exporter.py --token <YOUR_IAUDITOR_API_TOKEN>
 ```
 
-`user.csv` consists of the following columns
+The exported CSV file columns contain the following user information:
 - email
 - lastname
 - firstname
 - groups
 
-The fields `groups` lists all groups seperated by a comma as a delimiter . All fields are string values.
+The field groups contains a comma-separated list of all iAuditor groups the user is a member of. All fields are string values.
+If the group name contains a comma, it will be listed as is.
 
 ## SafetyCulture Python SDK
 1. Import `safetypy` into a Python module or Python interpreter: 

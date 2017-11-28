@@ -509,14 +509,14 @@ class SafetyCulture:
     def get_all_groups_in_org(self):
         """
         GET all groups in the requesting user's organisation
-        :return: organisation and groups of the user
+        :return: all groups of the organisation
         """
         response = self.authenticated_request_get(self.all_groups_url)
         log_message = 'on GET for all groups of organisation'
         self.log_http_status(response.status_code, log_message)
         return response
 
-    def get_users_of_groups(self, group_id):
+    def get_users_of_group(self, group_id):
         """
         GET all the users of the organisations or group
         :param group_id: ID of organisation or group

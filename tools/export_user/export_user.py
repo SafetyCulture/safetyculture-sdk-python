@@ -11,6 +11,9 @@ from safetypy import safetypy as sp
 from collections import OrderedDict
 import pydash
 from pydash import _
+# the file that stores all exported users in CSV format
+USER_EXPORT_FILENAME = 'iauditor_users.csv'
+
 
 # Possible values here are DEBUG, INFO, WARN, ERROR and CRITICAL
 LOG_LEVEL = logging.DEBUG
@@ -27,18 +30,18 @@ def main():
     groups_list = []
     user_map = {}
 
-    users_of_org = json.loads(sc_client.get_users_of_groups(org_id))
-    for i in users_of_org['users']:
-        if i['status'] != 'active':
+    users_of_org = json.loads(sc_client.get_users_of_group(org_id))
+    for user in users_of_org['users']:
+        if user['status'] != 'active':
             continue
-        email = i['email']
-        user_map[email] = {'groups': [], 'firstname': i['firstname'], 'lastname': i['lastname']}
+        email = user['email']
+        user_map[email] = {'groups': [], 'firstname': user['firstname'], 'lastname': user['lastname']}
 
     json_all_groups = json.loads(sc_client.get_all_groups_in_org().content)
     groups_list = [g['id'] for g in json_all_groups['groups']]
 
     for group_id in groups_list:
-        users_in_group = json.loads(sc_client.get_users_of_groups(group_id))
+        users_in_group = json.loads(sc_client.get_users_of_group(group_id))
         groups = json_all_groups['groups']
         target_group = _.find(groups, {'id': group_id})
         group_name = target_group['name']
@@ -58,7 +61,7 @@ def main():
 
 
 def create_csv(csv_map):
-    with open('tools/export_user/user.csv', 'wb') as f:
+    with open('tools/export_user/'+ USER_EXPORT_FILENAME , 'wb') as f:
         fields = ['email', 'lastname', 'firstname', 'groups']
         w = csv.DictWriter(f, fields)
         w.writeheader()
