@@ -8,6 +8,10 @@ Contains:
 
 * The Import Global Response Set (GRS) Tool for importing and updating response sets from a spreadsheet
 
+* The Export Users Tool to export a list of all users and their groups from iAuditor into a spreadsheet
+
+* The Import Users Tool to import a list of users from a spreadsheet into iAuditor and assign them to groups
+
 ## iAuditor Export Tool 
 
 ### First Time Install and Run 
@@ -315,52 +319,58 @@ To update your Global Response Set, add one or more rows to the spreadsheet. To 
 
 Caveat: deleting a response, and then re-adding the same response later will result in iAuditor Analytics dashboard treating these as different responses. This is because the new response will have a different internal identifier than the deleted response had. To update a response while keeping the same internal identifier you will need to use the response set API directly, instead of this tool. See the iAuditor developer portal for more details.
 
-### The Export User tool
+### The Export Users tool
 
-This tool exports User data automatically into a CSV file.
-The Export User tool writes to a file named `iauditor_users.csv`. If it exists, the file gets overwritten with up to date user information from iAuditor.
+This tool exports a list of users and their groups from iAuditor into a CSV file named `iauditor_users.csv`.
 
-To export users to a CSV file:
-Open a command-line terminal and navigate to the directory called `safetyculture-sdk-python/tools/export_user`
+To run it:
+Open a command-line terminal and navigate to the directory called `safetyculture-sdk-python/tools/export_user`.
 Run the following command:
 ```
 python export_user.py --token <YOUR_IAUDITOR_API_TOKEN>
 ```
-
-The exported CSV file will be stored in the current working directory of the user.
+The exported CSV file will be saved in the current working directory.
+If the file already exists, it is overwritten.
 The exported CSV file columns contain the following user information:
 - email
 - lastname
 - firstname
 - groups
 
-The field groups contains a comma-separated list of all iAuditor groups the user is a member of. All fields are string values.
-If the group name contains a comma, it will be listed as is.
+The field `groups` contains a comma-separated list of all iAuditor groups the user is a member of. All fields are string values.
+Note: comma-separated group names are not supported. If a group name contains a comma, it will be listed as is.
 
-### The Import User tool
+### The Import Users tool
 
-This tool imports User data automatically from a CSV file into iAuditor.
-The Import User tool reads from a file specified in the file path.
+This tool imports a list of users from a CSV file and assigns them to the specified groups in iAuditor in the organisation of the user whose API token is used.
+The input file specified in the command line arguments has the following structure:
 
-To import users from a CSV file:
+| email| lastname| firstname| groups|
+|---|---|---|---|
+|johnsmith@example.com |Smith|John|Group 1, Group 2|
+|johndoe@example.com|Doe|John|Group 3|
+|jasonR@example.com|R|Jason| |
+
+See `example_user.csv` in `safetyculture-sdk-python/tools/import_user` for an example.
+
+The first row must contain the column headings and will be ignored by the tool.
+
+The groups specified must have been created in iAuditor before running the tool. If a group doesn't exist, the user will not be added to that group.
+
+To run the tool:
 Open a command-line terminal and navigate to the directory called `safetyculture-sdk-python/tools/import_user`
+Run the following command:
 ```
-python import_user.py --token <YOUR_IAUDITOR_API_TOKEN> --file <FULL_PATH_TO_CSV_FILE>
+python import_users.py --token <YOUR_IAUDITOR_API_TOKEN> --file <FULL_PATH_TO_CSV_FILE>
 ```
-The imported CSV file columns contain the following user information:
-- email
-- lastname
-- firstname
-- groups
-
-The field groups must contain a comma-separated list of all iAuditor groups the user is a member of. All fields must be string values.
-If the user is not in IAuditor, the user will be added to iAuditor first and then added to the groups listed in the groups field. If no groups are specified,
+If the user already exists in the organisation in iAuditor, then the user will be added to all the groups in the `groups` field.
+If the user is not in iAuditor, the user will be added to iAuditor first and then added to the groups listed in the `groups` field. If no groups are specified,
 the user is only added to the organisation.
-If the user is in IAuditor, then the user will be added to all the groups in the groups field.
 
-Caveat: deleting a group from the csv, does not remove the user from the group
-
-See example_user.csv in `safetyculture-sdk-python/tools/import_user`.
+Known Limitations:
+If two or more groups have the same name, the user will be added to only one of those groups.
+If a user already belongs to a group, when that group is removed from the list of groups in the relevant CSV field,
+the user is not removed from that group currently. Support for this will be added in the future.
 
 ## SafetyCulture Python SDK
 1. Import `safetypy` into a Python module or Python interpreter: 
