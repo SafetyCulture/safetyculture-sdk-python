@@ -7,12 +7,13 @@ setup(name = 'safetyculture-sdk-python',
       author = 'SafetyCulture',
       author_email = 'integrations@safetyculture.io',
       include_package_data=True,
-      packages = ['safetypy', 'tools', 'tools/exporter', 'tools/import_grs', 'tools/export_user'],
+      packages = ['safetypy', 'tools', 'tools/exporter', 'tools/import_grs', 'tools/export_user', 'tools/import_user'],
       entry_points = {
             'console_scripts': [
                   'iauditor_exporter = tools.exporter.exporter:main',
                   'import_grs = tools.import_grs.import_grs:main',
-                  'export_user = tools.export_user.export_user:main'
+                  'export_user = tools.export_user.export_user:main',
+                  'import_user = tools.import_user.import_user:main'
             ],
       },
       long_description=open('README.md', 'r').read(),
