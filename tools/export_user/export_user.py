@@ -61,7 +61,8 @@ def main():
 
 
 def create_csv(csv_map):
-    with open('tools/export_user/'+ USER_EXPORT_FILENAME , 'wb') as f:
+    dirpath = os.getcwd()
+    with open(dirpath + '/' + USER_EXPORT_FILENAME, 'wb') as f:
         fields = ['email', 'lastname', 'firstname', 'groups']
         w = csv.DictWriter(f, fields)
         w.writeheader()

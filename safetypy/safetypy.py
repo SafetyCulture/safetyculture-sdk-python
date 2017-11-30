@@ -54,6 +54,7 @@ class SafetyCulture:
         self.response_set_url = self.api_url + 'response_sets'
         self.get_my_groups_url = self.api_url + 'share/connections'
         self.all_groups_url = self.api_url + 'groups'
+        self.add_users_url = self.api_url + 'users'
         
         self.create_directory_if_not_exists(self.log_dir)
         self.configure_logging()
@@ -527,6 +528,31 @@ class SafetyCulture:
         log_message = 'on GET for users of group: {0}'.format(group_id)
         self.log_http_status(response.status_code, log_message)
 
+        return response.content
+
+    def add_user_to_org(self, user_data):
+        """
+        POST adds a user to organisation
+        :param user_data: data of the user to be added
+        :return: userID of the user created in the organisation
+        """
+        url = self.add_users_url
+        print url
+        response = self.authenticated_request_post(url, json.dumps(user_data))
+        log_message = 'on POST for adding a user to organisation'
+        self.log_http_status(response.status_code, log_message)
+        return response.content
+
+    def add_user_to_group(self, group_id, user_data):
+        """
+        POST adds a user to organisation
+        :param user_data: contains user ID of user to be added
+        :return: userID of the user created in the organisation
+        """
+        url = '{0}/{1}/users'.format(self.all_groups_url, group_id)
+        response = self.authenticated_request_post(url, json.dumps(user_data))
+        log_message = 'on POST for adding a user to group'
+        self.log_http_status(response.status_code, log_message)
         return response.content
 
     @staticmethod

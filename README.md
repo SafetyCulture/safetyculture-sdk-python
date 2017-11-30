@@ -324,9 +324,10 @@ To export users to a CSV file:
 Open a command-line terminal and navigate to the directory called `safetyculture-sdk-python/tools/export_user`
 Run the following command:
 ```
-python exporter.py --token <YOUR_IAUDITOR_API_TOKEN>
+python export_user.py --token <YOUR_IAUDITOR_API_TOKEN>
 ```
 
+The exported CSV file will be stored in the current working directory of the user.
 The exported CSV file columns contain the following user information:
 - email
 - lastname
@@ -335,6 +336,31 @@ The exported CSV file columns contain the following user information:
 
 The field groups contains a comma-separated list of all iAuditor groups the user is a member of. All fields are string values.
 If the group name contains a comma, it will be listed as is.
+
+### The Import User tool
+
+This tool imports User data automatically from a CSV file into iAuditor.
+The Import User tool reads from a file specified in the file path.
+
+To import users from a CSV file:
+Open a command-line terminal and navigate to the directory called `safetyculture-sdk-python/tools/import_user`
+```
+python import_user.py --token <YOUR_IAUDITOR_API_TOKEN> --file <FULL_PATH_TO_CSV_FILE>
+```
+The imported CSV file columns contain the following user information:
+- email
+- lastname
+- firstname
+- groups
+
+The field groups must contain a comma-separated list of all iAuditor groups the user is a member of. All fields must be string values.
+If the user is not in IAuditor, the user will be added to iAuditor first and then added to the groups listed in the groups field. If no groups are specified,
+the user is only added to the organisation.
+If the user is in IAuditor, then the user will be added to all the groups in the groups field.
+
+Caveat: deleting a group from the csv, does not remove the user from the group
+
+See example_user.csv in `safetyculture-sdk-python/tools/import_user`.
 
 ## SafetyCulture Python SDK
 1. Import `safetypy` into a Python module or Python interpreter: 
