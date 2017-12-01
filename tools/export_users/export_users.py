@@ -52,10 +52,9 @@ def main():
             email = user['email']
             if email in user_map:
                 if group_name not in user_map[email]['groups']:
-                    user_map[email]['groups'].append(str(group_name))
+                    user_map[email]['groups'].append(group_name)
             else:
                 user_map[email]['groups'] = [group_name]
-
     sorted_user_map = OrderedDict(sorted(user_map.items(), key=lambda t: t[0]))
     create_csv(sorted_user_map)
 

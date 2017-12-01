@@ -324,20 +324,27 @@ Caveat: deleting a response, and then re-adding the same response later will res
 This tool exports a list of users and their groups from iAuditor into a CSV file named `iauditor_users.csv`.
 
 To run it:
-Open a command-line terminal and navigate to the directory called `safetyculture-sdk-python/tools/export_user`.
+Open a command-line terminal and navigate to the directory called `safetyculture-sdk-python/tools/export_users`.
 Run the following command:
 ```
-python export_user.py --token <YOUR_IAUDITOR_API_TOKEN>
+python export_users.py --token <YOUR_IAUDITOR_API_TOKEN>
 ```
 The exported CSV file will be saved in the current working directory.
 If the file already exists, it is overwritten.
-The exported CSV file columns contain the following user information:
+The exported CSV file columns contain the following user information and structure:
 - email
 - lastname
 - firstname
 - groups
 
-The field `groups` contains a comma-separated list of all iAuditor groups the user is a member of. All fields are string values.
+
+| email| lastname| firstname| groups|
+|---|---|---|---|
+|johnsmith@example.com |Smith|John|Group 1, Group 2|
+|johndoe@example.com|Doe|John|Group 3|
+|jasonR@example.com|R|Jason| |
+
+The field **groups** contains a comma-separated list of all iAuditor groups the user is a member of. All fields are string values.
 Note: comma-separated group names are not supported. If a group name contains a comma, it will be listed as is.
 
 ### The Import Users tool
@@ -351,20 +358,20 @@ The input file specified in the command line arguments has the following structu
 |johndoe@example.com|Doe|John|Group 3|
 |jasonR@example.com|R|Jason| |
 
-See `example_user.csv` in `safetyculture-sdk-python/tools/import_user` for an example.
+See `example_user.csv` in `safetyculture-sdk-python/tools/import_users` for an example.
 
 The first row must contain the column headings and will be ignored by the tool.
 
 The groups specified must have been created in iAuditor before running the tool. If a group doesn't exist, the user will not be added to that group.
 
 To run the tool:
-Open a command-line terminal and navigate to the directory called `safetyculture-sdk-python/tools/import_user`
+Open a command-line terminal and navigate to the directory called `safetyculture-sdk-python/tools/import_users`
 Run the following command:
 ```
 python import_users.py --token <YOUR_IAUDITOR_API_TOKEN> --file <FULL_PATH_TO_CSV_FILE>
 ```
-If the user already exists in the organisation in iAuditor, then the user will be added to all the groups in the `groups` field.
-If the user is not in iAuditor, the user will be added to iAuditor first and then added to the groups listed in the `groups` field. If no groups are specified,
+If the user already exists in the organisation in iAuditor, then the user will be added to all the groups in the **groups** field.
+If the user is not in iAuditor, the user will be added to iAuditor first and then added to the groups listed in the **groups** field. If no groups are specified,
 the user is only added to the organisation.
 
 Known Limitations:
