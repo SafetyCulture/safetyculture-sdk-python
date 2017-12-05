@@ -372,13 +372,13 @@ python import_users.py --token <YOUR_IAUDITOR_API_TOKEN> --file <FULL_PATH_TO_CS
 ```
 If the user already exists in the organisation in iAuditor, then the user will be added to all the groups in the **groups** field.
 If the user is not in iAuditor, the user will be added to iAuditor first and then added to the groups listed in the **groups** field. If no groups are specified,
-the user is only added to the organisation.
+the user is only added to the organisation. If the user is not in the CSV file but is present in iAuditor, the user will be deactivated in iAuditor.
+If a user already belongs to a group, when that group is removed from the list of groups in the relevant CSV field,
+the user is removed from that group.
 
 Known Limitations:
 If two or more groups have the same name, the user will be added to only one of those groups.
-If a user already belongs to a group, when that group is removed from the list of groups in the relevant CSV field,
-the user is not removed from that group currently. Support for this will be added in the future.
-
+Note: Adding a deactivated user in the CSV will ca
 ## SafetyCulture Python SDK
 1. Import `safetypy` into a Python module or Python interpreter: 
 ```
