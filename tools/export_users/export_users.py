@@ -18,15 +18,11 @@ USER_EXPORT_FILENAME = 'iauditor_users.csv'
 # Possible values here are DEBUG, INFO, WARN, ERROR and CRITICAL
 LOG_LEVEL = logging.DEBUG
 
-def get_all_users():
+def get_all_users(api_token):
     """
     Exports a dictionary of all active users from iAuditor organisation and their associated groups
     :return: A sorted dictionary of all active users and their associated groups
     """
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-t', '--token', required=True)
-    args = parser.parse_args()
-    api_token = args.token
     sc_client = sp.SafetyCulture(api_token)
     org_id = sc_client.get_my_org()
     groups_list = []
@@ -85,7 +81,12 @@ def create_csv(user_data, csv_output_filepath):
 
 
 if __name__ == '__main__':
-    exported_users = get_all_users()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-t', '--token', required=True)
+    args = parser.parse_args()
+    api_token = args.token
+
+    exported_users = get_all_users(api_token)
     for user in exported_users:
         del exported_users[user]['user_id']
     create_csv(exported_users, csv_output_filepath=USER_EXPORT_FILENAME)

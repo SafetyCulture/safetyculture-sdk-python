@@ -1,5 +1,4 @@
 # -*- coding: utf8 -*-
-
 import argparse
 import datetime
 import errno
@@ -113,27 +112,24 @@ def execute_actions(all_group_details, sc_client):
                 sc_client.remove_user(target_group['id'], user_id)
 
 
-def main():
+def sync_users(api_token, input_filepath):
     """
     Load local User data, get system User data, compare and add users to system
     """
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-f', '--file', required=True)
-    parser.add_argument('-t', '--token', required=True)
-    args = parser.parse_args()
-    # input_filepath='/Users/mrinali/projects/safetyculture-sdk-python/iauditor_users.csv'
-    input_filepath = args.file
-    api_token = args.token
-
     sc_client = sp.SafetyCulture(api_token)
 
     all_group_details = json.loads(sc_client.get_all_groups_in_org().content)
-    server_users = export_users.get_all_users()
+    server_users = export_users.get_all_users(api_token)
 
     process_desired_state(server_users, input_filepath)
     process_server_state(server_users, input_filepath)
     execute_actions(all_group_details, sc_client)
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-t', '--token', required=True)
+    parser.add_argument('-f', '--file', required=True)
+    args = parser.parse_args()
+    api_token = args.token
+    input_filepath = args.file
+    sync_users(api_token, input_filepath)

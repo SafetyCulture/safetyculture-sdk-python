@@ -506,8 +506,7 @@ class SafetyCulture:
         GET the organisation ID of the requesting user
         :return: The organisation ID of the user
         """
-        response = self.authenticated_request_get('https://sandpit-api.safetyculture.io/share/connections')
-        # response = self.authenticated_request_get(self.get_my_groups_url)
+        response = self.authenticated_request_get(self.get_my_groups_url)
         log_message = 'on GET for organisations and groups of requesting user'
         self.log_http_status(response.status_code, log_message)
         my_groups_and_orgs = json.loads(response.content)
@@ -519,8 +518,7 @@ class SafetyCulture:
         GET all the groups in the requesting user's organisation
         :return: all the groups of the organisation
         """
-        response = self.authenticated_request_get('https://sandpit-api.safetyculture.io/groups')
-        # response = self.authenticated_request_get(self.all_groups_url)
+        response = self.authenticated_request_get(self.all_groups_url)
         log_message = 'on GET for all groups of organisation'
         self.log_http_status(response.status_code, log_message)
         return response
@@ -531,8 +529,7 @@ class SafetyCulture:
         :param group_id: ID of organisation or group
         :return: array of users
         """
-        # url = '{0}/{1}/users'.format(self.all_groups_url, group_id)
-        url = '{0}/{1}/users'.format('https://sandpit-api.safetyculture.io/groups', group_id)
+        url = '{0}/{1}/users'.format(self.all_groups_url, group_id)
         response = self.authenticated_request_get(url)
         log_message = 'on GET for users of group: {0}'.format(group_id)
         self.log_http_status(response.status_code, log_message)
@@ -545,8 +542,7 @@ class SafetyCulture:
         :param user_data: data of the user to be added
         :return: userID of the user created in the organisation
         """
-        # url = self.add_users_url
-        url = 'https://sandpit-api.safetyculture.io/users'
+        url = self.add_users_url
         response = self.authenticated_request_post(url, json.dumps(user_data))
         log_message = 'on POST for adding a user to organisation'
         self.log_http_status(response.status_code, log_message)
@@ -558,8 +554,7 @@ class SafetyCulture:
         :param user_data: contains user ID of user to be added
         :return: userID of the user created in the organisation
         """
-        # url = '{0}/{1}/users'.format(self.all_groups_url, group_id)
-        url = '{0}/{1}/users'.format('https://sandpit-api.safetyculture.io/groups', group_id)
+        url = '{0}/{1}/users'.format(self.all_groups_url, group_id)
         response = self.authenticated_request_post(url, json.dumps(user_data))
         log_message = 'on POST for adding a user to group'
         self.log_http_status(response.status_code, log_message)
@@ -571,8 +566,7 @@ class SafetyCulture:
         :param user_id: The ID of the user to update
         :return:  None
         """
-        # url = '{0}/{1}'.format(self.add_users_url, user_id)
-        url = '{0}/{1}'.format('https://sandpit-api.safetyculture.io/users', user_id)
+        url = '{0}/{1}'.format(self.add_users_url, user_id)
         response = self.authenticated_request_put(url, json.dumps(user_data))
         log_message = 'on PUT for updating a user'
         self.log_http_status(response.status_code, log_message)
@@ -585,8 +579,7 @@ class SafetyCulture:
         :param user_id: The ID of the user to remove
         :return: {ok: true} on successful deletion
         """
-        # url = '{0}/{1}/users/{2}'.format(self.all_groups_url, role_id, user_id)
-        url = '{0}/{1}/users/{2}'.format('https://sandpit-api.safetyculture.io/groups', role_id, user_id)
+        url = '{0}/{1}/users/{2}'.format(self.all_groups_url, role_id, user_id)
         response = self.authenticated_request_delete(url)
         log_message = 'on DELETE for user from group'
         self.log_http_status(response.status_code, log_message)
