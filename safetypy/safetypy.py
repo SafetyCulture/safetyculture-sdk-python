@@ -503,8 +503,8 @@ class SafetyCulture:
 
     def get_my_org(self):
         """
-        GET organisation ID of the requesting user
-        :return: organisation ID of the user
+        GET the organisation ID of the requesting user
+        :return: The organisation ID of the user
         """
         response = self.authenticated_request_get('https://sandpit-api.safetyculture.io/share/connections')
         # response = self.authenticated_request_get(self.get_my_groups_url)
@@ -516,8 +516,8 @@ class SafetyCulture:
 
     def get_all_groups_in_org(self):
         """
-        GET all groups in the requesting user's organisation
-        :return: all groups of the organisation
+        GET all the groups in the requesting user's organisation
+        :return: all the groups of the organisation
         """
         response = self.authenticated_request_get('https://sandpit-api.safetyculture.io/groups')
         # response = self.authenticated_request_get(self.all_groups_url)

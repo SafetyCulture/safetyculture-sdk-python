@@ -22,7 +22,7 @@ actions = {}
 
 def process_desired_state(server_state, desired_state):
     """
-    Processes the user provided input file and compares with the user data on the server
+    Processes the user provided input file and determines any actions that need to happen because the server state is different than the desired state
     :param server_state: The list of all users and their associated groups in the server
     :param desired_state: The input provided by the user
     :return: None
@@ -49,7 +49,7 @@ def process_desired_state(server_state, desired_state):
 
 def process_server_state(server_state, desired_state):
     """
-    Processes the user data as per the server and compares with the input file provided by user
+    Determines any actions that need to happen because the server state is different than the desired state
     :param server_state: The list of all users and their associated groups in the server
     :param desired_state: The input provided by the user
     :return: None
@@ -78,10 +78,10 @@ def process_server_state(server_state, desired_state):
                 if group_diff != []:
                     actions[user] = {'action': 'remove from group', 'groups': group_diff, 'user_id': server_state[user]['user_id']}
 
-def execute_actions(json_all_groups, sc_client):
+def execute_actions(all_group_details, sc_client):
     """
     Syncs the user base as per the user provided input file
-    :param json_all_groups: All the group details in the organisation of requesting user
+    :param all_group_details: All the group details in the organisation of requesting user
     :param sc_client: Client to access the SafetyCulture methods
     :return: None
     """
@@ -92,13 +92,13 @@ def execute_actions(json_all_groups, sc_client):
             user_id = json.loads(sc_client.add_user_to_org(data))['user']['user_id']
             if group_list != []:
                 for group_name in group_list:
-                    target_group = _.find(json_all_groups['groups'], {'name': group_name})
+                    target_group = _.find(all_group_details['groups'], {'name': group_name})
                     sc_client.add_user_to_group(target_group['id'], { 'user_id': user_id })
 
         if actions[keys]['action'] == 'add to group':
             user_id = actions[keys]['user_id']
             for group_name in group_list:
-                target_group = _.find(json_all_groups['groups'], {'name': group_name})
+                target_group = _.find(all_group_details['groups'], {'name': group_name})
                 sc_client.add_user_to_group(target_group['id'], {'user_id': user_id})
 
         if actions[keys]['action'] == 'deactivate':
@@ -109,7 +109,7 @@ def execute_actions(json_all_groups, sc_client):
         if actions[keys]['action'] == 'remove from group':
             user_id = actions[keys]['user_id']
             for group_name in group_list:
-                target_group = _.find(json_all_groups['groups'], {'name': group_name})
+                target_group = _.find(all_group_details['groups'], {'name': group_name})
                 sc_client.remove_user(target_group['id'], user_id)
 
 
@@ -122,20 +122,18 @@ def main():
     parser.add_argument('-f', '--file', required=True)
     parser.add_argument('-t', '--token', required=True)
     args = parser.parse_args()
-    # file_path='/Users/mrinali/projects/safetyculture-sdk-python/iauditor_users.csv'
-    file_path = args.file
+    # input_filepath='/Users/mrinali/projects/safetyculture-sdk-python/iauditor_users.csv'
+    input_filepath = args.file
     api_token = args.token
 
     sc_client = sp.SafetyCulture(api_token)
 
-    json_all_groups = json.loads(sc_client.get_all_groups_in_org().content)
+    all_group_details = json.loads(sc_client.get_all_groups_in_org().content)
     server_users = export_users.get_all_users()
 
-    process_desired_state(server_users, file_path)
-    process_server_state(server_users, file_path)
-    execute_actions(json_all_groups, sc_client)
-
-
+    process_desired_state(server_users, input_filepath)
+    process_server_state(server_users, input_filepath)
+    execute_actions(all_group_details, sc_client)
 
 if __name__ == '__main__':
     main()

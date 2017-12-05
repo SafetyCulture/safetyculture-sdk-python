@@ -18,12 +18,10 @@ USER_EXPORT_FILENAME = 'iauditor_users.csv'
 # Possible values here are DEBUG, INFO, WARN, ERROR and CRITICAL
 LOG_LEVEL = logging.DEBUG
 
-DEFAULT_CONFIG_FILENAME = 'config.yaml'
-
 def get_all_users():
     """
-    Exports a dictionary of all users from iAuditor organisation and their associated groups
-    :return: A sorted dictionary of all users and their associated groups
+    Exports a dictionary of all active users from iAuditor organisation and their associated groups
+    :return: A sorted dictionary of all active users and their associated groups
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('-t', '--token', required=True)
@@ -41,12 +39,12 @@ def get_all_users():
         email = user['email']
         user_map[email] = {'groups': [], 'firstname': user['firstname'], 'lastname': user['lastname'], 'user_id': user['user_id']}
 
-    json_all_groups = json.loads(sc_client.get_all_groups_in_org().content)
-    groups_list = [g['id'] for g in json_all_groups['groups']]
+    all_group_details = json.loads(sc_client.get_all_groups_in_org().content)
+    groups_list = [g['id'] for g in all_group_details['groups']]
 
     for group_id in groups_list:
         users_in_group = json.loads(sc_client.get_users_of_group(group_id))
-        groups = json_all_groups['groups']
+        groups = all_group_details['groups']
         target_group = _.find(groups, {'id': group_id})
         group_name = target_group['name']
 

@@ -345,7 +345,7 @@ The exported CSV file columns contain the following user information and structu
 |jasonR@example.com|R|Jason| |
 
 The field **groups** contains a comma-separated list of all iAuditor groups the user is a member of. All fields are string values.
-Note: comma-separated group names are not supported. If a group name contains a comma, it will be listed as is.
+Note: comma-separated group names are not supported. If group names contains commas, it will be listed as is.
 
 ### The Import Users tool
 
@@ -358,17 +358,17 @@ The input file specified in the command line arguments has the following structu
 |johndoe@example.com|Doe|John|Group 3|
 |jasonR@example.com|R|Jason| |
 
-See `example_user.csv` in `safetyculture-sdk-python/tools/import_users` for an example.
+See `example_user.csv` in `safetyculture-sdk-python/tools/sync_users` for an example.
 
 The first row must contain the column headings and will be ignored by the tool.
 
 The groups specified must have been created in iAuditor before running the tool. If a group doesn't exist, the user will not be added to that group.
 
 To run the tool:
-Open a command-line terminal and navigate to the directory called `safetyculture-sdk-python/tools/import_users`
+Open a command-line terminal and navigate to the directory called `safetyculture-sdk-python/tools/sync_users`
 Run the following command:
 ```
-python import_users.py --token <YOUR_IAUDITOR_API_TOKEN> --file <FULL_PATH_TO_CSV_FILE>
+python sync_users.py --token <YOUR_IAUDITOR_API_TOKEN> --file <FULL_PATH_TO_CSV_FILE>
 ```
 If the user already exists in the organisation in iAuditor, then the user will be added to all the groups in the **groups** field.
 If the user is not in iAuditor, the user will be added to iAuditor first and then added to the groups listed in the **groups** field. If no groups are specified,
