@@ -378,7 +378,8 @@ the user is removed from that group.
 
 Known Limitations:
 If two or more groups have the same name, the user will be added to only one of those groups.
-Note: Adding a deactivated user in the CSV will ca
+Note: Adding a deactivated user in the CSV will not activate the user currently. Support for this will be added in future.
+
 ## SafetyCulture Python SDK
 1. Import `safetypy` into a Python module or Python interpreter: 
 ```
