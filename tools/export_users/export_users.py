@@ -20,7 +20,11 @@ LOG_LEVEL = logging.DEBUG
 
 DEFAULT_CONFIG_FILENAME = 'config.yaml'
 
-def main():
+def get_all_users():
+    """
+    Exports a dictionary of all users from iAuditor organisation and their associated groups
+    :return: A sorted dictionary of all users and their associated groups
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument('-t', '--token', required=True)
     args = parser.parse_args()
@@ -35,7 +39,7 @@ def main():
         if user['status'] != 'active':
             continue
         email = user['email']
-        user_map[email] = {'groups': [], 'firstname': user['firstname'], 'lastname': user['lastname']}
+        user_map[email] = {'groups': [], 'firstname': user['firstname'], 'lastname': user['lastname'], 'user_id': user['user_id']}
 
     json_all_groups = json.loads(sc_client.get_all_groups_in_org().content)
     groups_list = [g['id'] for g in json_all_groups['groups']]
@@ -50,27 +54,41 @@ def main():
             if user['status'] != 'active':
                 continue
             email = user['email']
+            user_map[email]['user_id'] = user['user_id']
             if email in user_map:
                 if group_name not in user_map[email]['groups']:
                     user_map[email]['groups'].append(str(group_name))
+                    user_map[email]['groups'].append(str(group_id))
+
             else:
                 user_map[email]['groups'] = [group_name]
+                user_map[email]['groups'] = [group_name]
+
     sorted_user_map = OrderedDict(sorted(user_map.items(), key=lambda t: t[0]))
-    create_csv(sorted_user_map)
+    return sorted_user_map
 
-
-def create_csv(csv_map):
-    dirpath = os.getcwd()
-    with open(dirpath + '/' + USER_EXPORT_FILENAME, 'wb') as f:
+def create_csv(user_data, csv_output_filepath):
+    """
+    Creates a CSV file with exported user data
+    :param user_data: The exported user data
+    :param csv_output_filepath: The output file to save
+    :return: None
+    """
+    full_output_path = os.path.join(os.getcwd(), csv_output_filepath)
+    with open(full_output_path, 'wb') as f:
         fields = ['email', 'lastname', 'firstname', 'groups']
         w = csv.DictWriter(f, fields)
         w.writeheader()
-        for key, val in sorted(csv_map.items()):
-            val['groups'] = ", ".join(val['groups'])
+        for key, val in sorted(user_data.items()):
+            val['groups'] = ", ".join(val['groups'][0::2])
             row = {'email': key}
             row.update(val)
             w.writerow(row)
 
 
 if __name__ == '__main__':
-    main()
+    exported_users = get_all_users()
+    for user in exported_users:
+        del exported_users[user]['user_id']
+    create_csv(exported_users, csv_output_filepath=USER_EXPORT_FILENAME)
+

@@ -1,3 +1,5 @@
+# -*- coding: utf8 -*-
+
 import argparse
 import datetime
 import errno
@@ -13,9 +15,103 @@ from pydash import _
 from xlrd import open_workbook
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 from safetypy import safetypy as sp
-
+from tools.export_users import export_users
 # Possible values here are DEBUG, INFO, WARN, ERROR and CRITICAL
 LOG_LEVEL = logging.DEBUG
+actions = {}
+
+def process_desired_state(server_state, desired_state):
+    """
+    Processes the user provided input file and compares with the user data on the server
+    :param server_state: The list of all users and their associated groups in the server
+    :param desired_state: The input provided by the user
+    :return: None
+    """
+    group_id =[]
+    with open(desired_state) as csvDataFile:
+        csvReader = csv.reader(csvDataFile)
+        next(csvReader, None)
+        for email, lastname, firstname, groups in csvReader:
+            group_list = []
+            if groups != "":
+                group_list = groups.split(",")
+                group_list = [group.strip(' ') for group in group_list]
+            if email not in [user for user in server_state]:
+                actions[email] = {'action': 'add', 'groups': group_list, 'user_id':'', 'user_data': {'firstname': firstname, 'lastname': lastname, 'email': email} }
+            else:
+                group_names_server = server_state[email]['groups'][0::2]
+                group_names_desired = groups.split(',')
+                group_names_desired = [group.strip(' ') for group in group_names_desired]
+                group_diff = [i for i in group_names_desired if i not in group_names_server]
+                if group_diff != []:
+                    actions[email] = {'action': 'add to group', 'groups': group_diff, 'user_id': server_state[email]['user_id'] }
+
+
+def process_server_state(server_state, desired_state):
+    """
+    Processes the user data as per the server and compares with the input file provided by user
+    :param server_state: The list of all users and their associated groups in the server
+    :param desired_state: The input provided by the user
+    :return: None
+    """
+    with open(desired_state) as csvDataFile:
+        csvReader = csv.reader(csvDataFile)
+        next(csvReader, None)
+        userlist = {}
+
+        for row in csvReader:
+            email = row[0]
+            userlist[email] = {'groups': row[3]}
+
+        emails = userlist.keys()
+
+        for user, _ in server_state.items():
+
+            if user not in emails:
+                actions[user] = {'action': 'deactivate', 'groups': [], 'user_id': server_state[user]['user_id']}
+            else:
+                group_diff = []
+                group_names_server = server_state[user]['groups'][0::2]
+                group_names_desired = userlist[user]['groups'].split(',')
+                group_names_desired = [group.strip(' ') for group in group_names_desired]
+                group_diff = [i for i in group_names_server if i not in group_names_desired]
+                if group_diff != []:
+                    actions[user] = {'action': 'remove from group', 'groups': group_diff, 'user_id': server_state[user]['user_id']}
+
+def execute_actions(json_all_groups, sc_client):
+    """
+    Syncs the user base as per the user provided input file
+    :param json_all_groups: All the group details in the organisation of requesting user
+    :param sc_client: Client to access the SafetyCulture methods
+    :return: None
+    """
+    for keys in actions.keys():
+        group_list = actions[keys]['groups']
+        if actions[keys]['action'] == 'add':
+            data = actions[keys]['user_data']
+            user_id = json.loads(sc_client.add_user_to_org(data))['user']['user_id']
+            if group_list != []:
+                for group_name in group_list:
+                    target_group = _.find(json_all_groups['groups'], {'name': group_name})
+                    sc_client.add_user_to_group(target_group['id'], { 'user_id': user_id })
+
+        if actions[keys]['action'] == 'add to group':
+            user_id = actions[keys]['user_id']
+            for group_name in group_list:
+                target_group = _.find(json_all_groups['groups'], {'name': group_name})
+                sc_client.add_user_to_group(target_group['id'], {'user_id': user_id})
+
+        if actions[keys]['action'] == 'deactivate':
+            user_id = actions[keys]['user_id']
+            data = {'status': 'inactive'}
+            sc_client.update_user(user_id, data)
+
+        if actions[keys]['action'] == 'remove from group':
+            user_id = actions[keys]['user_id']
+            for group_name in group_list:
+                target_group = _.find(json_all_groups['groups'], {'name': group_name})
+                sc_client.remove_user(target_group['id'], user_id)
+
 
 def main():
     """
@@ -26,39 +122,19 @@ def main():
     parser.add_argument('-f', '--file', required=True)
     parser.add_argument('-t', '--token', required=True)
     args = parser.parse_args()
+    # file_path='/Users/mrinali/projects/safetyculture-sdk-python/iauditor_users.csv'
     file_path = args.file
     api_token = args.token
 
     sc_client = sp.SafetyCulture(api_token)
 
-    org_id = sc_client.get_my_org()
-    users_of_org = json.loads(sc_client.get_users_of_group(org_id))
     json_all_groups = json.loads(sc_client.get_all_groups_in_org().content)
+    server_users = export_users.get_all_users()
 
-    with open(file_path) as csvDataFile:
-        csvReader = csv.reader(csvDataFile)
-        next(csvReader, None)
-        for email, firstname, lastname, groups in csvReader:
-            group_list=[]
-            if groups != "":
-                group_list = groups.split(",")
-                group_list = [group.strip(' ') for group in group_list]
-            if email not in [user['email'] for user in users_of_org['users']]:
-                user_data = { 'firstname': firstname, 'lastname': lastname, 'email': email }
-                user_id = json.loads(sc_client.add_user_to_org(user_data))['user']['user_id']
-                if group_list:
-                    for group_name in group_list:
-                        target_group = _.find(json_all_groups['groups'], {'name': group_name})
-                        sc_client.add_user_to_group(target_group['id'], { 'user_id': user_id })
-            else:
-                if group_list:
-                    for group_name in group_list:
-                        target_user = _.find(users_of_org['users'], {'email': email})
-                        target_group = _.find(json_all_groups['groups'], {'name': group_name})
-                        payload = {
-                            'user_id': target_user['user_id']
-                        }
-                        sc_client.add_user_to_group(target_group['id'], payload)
+    process_desired_state(server_users, file_path)
+    process_server_state(server_users, file_path)
+    execute_actions(json_all_groups, sc_client)
+
 
 
 if __name__ == '__main__':
