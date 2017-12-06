@@ -42,9 +42,8 @@ def process_desired_state(server_state, desired_state):
                 group_names_desired = groups.split(',')
                 group_names_desired = [group.strip(' ') for group in group_names_desired]
                 group_diff = [i for i in group_names_desired if i not in group_names_server]
-                if group_diff != []:
+                if group_diff != [] and group_diff != ['']:
                     actions[email] = {'action': 'add to group', 'groups': group_diff, 'user_id': server_state[email]['user_id'] }
-
 
 def process_server_state(server_state, desired_state):
     """
@@ -74,7 +73,7 @@ def process_server_state(server_state, desired_state):
                 group_names_desired = userlist[user]['groups'].split(',')
                 group_names_desired = [group.strip(' ') for group in group_names_desired]
                 group_diff = [i for i in group_names_server if i not in group_names_desired]
-                if group_diff != []:
+                if group_diff != [] and group_diff != ['']:
                     actions[user] = {'action': 'remove from group', 'groups': group_diff, 'user_id': server_state[user]['user_id']}
 
 def execute_actions(all_group_details, sc_client):
@@ -88,17 +87,22 @@ def execute_actions(all_group_details, sc_client):
         group_list = actions[keys]['groups']
         if actions[keys]['action'] == 'add':
             data = actions[keys]['user_data']
-            user_id = json.loads(sc_client.add_user_to_org(data))['user']['user_id']
-            if group_list != []:
-                for group_name in group_list:
-                    target_group = _.find(all_group_details['groups'], {'name': group_name})
-                    sc_client.add_user_to_group(target_group['id'], { 'user_id': user_id })
+            response = json.loads(sc_client.add_user_to_org(data))
+            if response:
+                user_id = response['user']['user_id']
+                if group_list != []:
+                    for group_name in group_list:
+                        target_group = _.find(all_group_details['groups'], {'name': group_name})
+                        if target_group:
+                            data = {'user_id': user_id}
+                            sc_client.add_user_to_group(target_group['id'], data)
 
         if actions[keys]['action'] == 'add to group':
             user_id = actions[keys]['user_id']
             for group_name in group_list:
                 target_group = _.find(all_group_details['groups'], {'name': group_name})
-                sc_client.add_user_to_group(target_group['id'], {'user_id': user_id})
+                if target_group:
+                    sc_client.add_user_to_group(target_group['id'], {'user_id': user_id})
 
         if actions[keys]['action'] == 'deactivate':
             user_id = actions[keys]['user_id']
@@ -109,7 +113,8 @@ def execute_actions(all_group_details, sc_client):
             user_id = actions[keys]['user_id']
             for group_name in group_list:
                 target_group = _.find(all_group_details['groups'], {'name': group_name})
-                sc_client.remove_user(target_group['id'], user_id)
+                if target_group:
+                    sc_client.remove_user(target_group['id'], user_id)
 
 
 def sync_users(api_token, input_filepath):

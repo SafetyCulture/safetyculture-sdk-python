@@ -47,7 +47,6 @@ class SafetyCulture:
     def __init__(self, api_token):
         self.current_dir = os.getcwd()
         self.log_dir = self.current_dir + '/log/'
-
         self.api_url = 'https://api.safetyculture.io/'
         self.audit_url = self.api_url + 'audits/'
         self.template_search_url = self.api_url + 'templates/search?field=template_id&field=name'
@@ -521,7 +520,7 @@ class SafetyCulture:
         response = self.authenticated_request_get(self.all_groups_url)
         log_message = 'on GET for all groups of organisation'
         self.log_http_status(response.status_code, log_message)
-        return response
+        return response if response.status_code == requests.codes.ok else None
 
     def get_users_of_group(self, group_id):
         """
@@ -533,8 +532,7 @@ class SafetyCulture:
         response = self.authenticated_request_get(url)
         log_message = 'on GET for users of group: {0}'.format(group_id)
         self.log_http_status(response.status_code, log_message)
-
-        return response.content
+        return response.content if response.status_code == requests.codes.ok else None
 
     def add_user_to_org(self, user_data):
         """
@@ -546,7 +544,7 @@ class SafetyCulture:
         response = self.authenticated_request_post(url, json.dumps(user_data))
         log_message = 'on POST for adding a user to organisation'
         self.log_http_status(response.status_code, log_message)
-        return response.content
+        return response.content if response.status_code == requests.codes.ok else None
 
     def add_user_to_group(self, group_id, user_data):
         """
@@ -558,7 +556,7 @@ class SafetyCulture:
         response = self.authenticated_request_post(url, json.dumps(user_data))
         log_message = 'on POST for adding a user to group'
         self.log_http_status(response.status_code, log_message)
-        return response.content
+        return response.content if response.status_code == requests.codes.ok else None
 
     def update_user(self, user_id, user_data):
         """
@@ -570,7 +568,7 @@ class SafetyCulture:
         response = self.authenticated_request_put(url, json.dumps(user_data))
         log_message = 'on PUT for updating a user'
         self.log_http_status(response.status_code, log_message)
-        return response
+        return response if response.status_code == requests.codes.ok else None
 
     def remove_user(self, role_id, user_id):
         """
@@ -583,7 +581,7 @@ class SafetyCulture:
         response = self.authenticated_request_delete(url)
         log_message = 'on DELETE for user from group'
         self.log_http_status(response.status_code, log_message)
-        return response
+        return response if response.status_code == requests.codes.ok else None
 
     @staticmethod
     def log_http_status(status_code, message):

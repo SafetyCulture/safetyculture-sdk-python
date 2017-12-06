@@ -365,6 +365,7 @@ The input file specified in the command line arguments has the following structu
 See `example_user_listing.csv` in `safetyculture-sdk-python/tools/sync_users` for an example.
 
 The first row must contain the column headings and will be ignored by the tool.
+Any row that contains more than one groups, must surround the list of groups with double quotes.
 
 To run the tool:
 Open a command-line terminal and navigate to the directory called `safetyculture-sdk-python/tools/sync_users`
