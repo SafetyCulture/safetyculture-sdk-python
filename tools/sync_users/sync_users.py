@@ -36,7 +36,7 @@ def process_desired_state(server_state, desired_state):
                 group_list = groups.split(",")
                 group_list = [group.strip(' ') for group in group_list]
             if email not in [user for user in server_state]:
-                actions[email] = {'action': 'add', 'groups': group_list, 'user_id':'', 'user_data': {'firstname': firstname, 'lastname': lastname, 'email': email} }
+                actions[email] = {'action': 'add', 'groups': group_list, 'user_id':'', 'user_data': {'firstname': firstname, 'lastname': lastname, 'email': email, 'reset_password_required': True} }
             else:
                 group_names_server = server_state[email]['groups'][0::2]
                 group_names_desired = groups.split(',')
