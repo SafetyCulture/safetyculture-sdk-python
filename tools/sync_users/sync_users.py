@@ -15,6 +15,7 @@ from xlrd import open_workbook
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 from safetypy import safetypy as sp
 from tools.export_users import export_users
+from tools.import_grs import import_grs
 # Possible values here are DEBUG, INFO, WARN, ERROR and CRITICAL
 LOG_LEVEL = logging.DEBUG
 actions = {}
@@ -122,6 +123,23 @@ def sync_users(api_token, input_filepath):
     Load local User data, get system User data, compare and add users to system
     """
     sc_client = sp.SafetyCulture(api_token)
+    logger = import_grs.configure_logger()
+
+    # Validating the CSV input first
+    dataValidator = open(input_filepath,'r')
+    reader= csv.reader(dataValidator)
+    header = next(reader)
+    if header != ['email', 'lastname', 'firstname', 'groups']:
+        logger.info('Header Missing')
+        return
+    for data in reader:
+        if len(data) != 4:
+            logger.info('Invalid row length: %s' % data)
+            return
+        data[0] = str(data[0])
+        data[1] = str(data[1])
+        data[2] = str(data[2])
+        data[3] = str(data[3])
 
     all_group_details = json.loads(sc_client.get_all_groups_in_org().content)
     server_users = export_users.get_all_users(api_token)
