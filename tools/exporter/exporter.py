@@ -680,7 +680,7 @@ def initial_setup(logger):
     logger.info("Default config file successfully created at {0}.".format(path_to_config_file))
     os.chdir(exports_folder_name)
     choice = input('Would you like to start exporting audits from:\n  1. The beginning of time\n  '
-                   '2. Today\n  Enter 1 or 2: ')
+                   '2. Now\n  Enter 1 or 2: ')
     if choice == '1':
         logger.info('Audit exporting set to start from earliest audits available')
         get_last_successful(logger)

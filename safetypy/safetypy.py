@@ -47,11 +47,13 @@ class SafetyCulture:
     def __init__(self, api_token):
         self.current_dir = os.getcwd()
         self.log_dir = self.current_dir + '/log/'
-
         self.api_url = 'https://api.safetyculture.io/'
         self.audit_url = self.api_url + 'audits/'
         self.template_search_url = self.api_url + 'templates/search?field=template_id&field=name'
         self.response_set_url = self.api_url + 'response_sets'
+        self.get_my_groups_url = self.api_url + 'share/connections'
+        self.all_groups_url = self.api_url + 'groups'
+        self.add_users_url = self.api_url + 'users'
         
         self.create_directory_if_not_exists(self.log_dir)
         self.configure_logging()
@@ -81,6 +83,12 @@ class SafetyCulture:
     def authenticated_request_post(self, url, data):
         self.custom_http_headers['content-type'] = 'application/json'
         response = requests.post(url, data, headers=self.custom_http_headers)
+        del self.custom_http_headers['content-type']
+        return response
+
+    def authenticated_request_put(self, url, data):
+        self.custom_http_headers['content-type'] = 'application/json'
+        response = requests.put(url, data, headers=self.custom_http_headers)
         del self.custom_http_headers['content-type']
         return response
 
@@ -491,6 +499,89 @@ class SafetyCulture:
         response = self.authenticated_request_delete(url)
         log_message = 'on DELETE for response_set: {0}'.format(responseset_id)
         self.log_http_status(response.status_code, log_message)
+
+    def get_my_org(self):
+        """
+        GET the organisation ID of the requesting user
+        :return: The organisation ID of the user
+        """
+        response = self.authenticated_request_get(self.get_my_groups_url)
+        log_message = 'on GET for organisations and groups of requesting user'
+        self.log_http_status(response.status_code, log_message)
+        my_groups_and_orgs = json.loads(response.content)
+        org_id = [group['id'] for group in my_groups_and_orgs['groups'] if group['type'] == "organisation"][0]
+        return org_id
+
+    def get_all_groups_in_org(self):
+        """
+        GET all the groups in the requesting user's organisation
+        :return: all the groups of the organisation
+        """
+        response = self.authenticated_request_get(self.all_groups_url)
+        log_message = 'on GET for all groups of organisation'
+        self.log_http_status(response.status_code, log_message)
+        return response if response.status_code == requests.codes.ok else None
+
+    def get_users_of_group(self, group_id):
+        """
+        GET all the users of the organisations or group
+        :param group_id: ID of organisation or group
+        :return: array of users
+        """
+        url = '{0}/{1}/users'.format(self.all_groups_url, group_id)
+        response = self.authenticated_request_get(url)
+        log_message = 'on GET for users of group: {0}'.format(group_id)
+        self.log_http_status(response.status_code, log_message)
+        return response.content if response.status_code == requests.codes.ok else None
+
+    def add_user_to_org(self, user_data):
+        """
+        POST adds a user to organisation
+        :param user_data: data of the user to be added
+        :return: userID of the user created in the organisation
+        """
+        url = self.add_users_url
+        response = self.authenticated_request_post(url, json.dumps(user_data))
+        log_message = 'on POST for adding a user to organisation'
+        self.log_http_status(response.status_code, log_message)
+        return response.content if response.status_code == requests.codes.ok else None
+
+    def add_user_to_group(self, group_id, user_data):
+        """
+        POST adds a user to organisation
+        :param user_data: contains user ID of user to be added
+        :return: userID of the user created in the organisation
+        """
+        url = '{0}/{1}/users'.format(self.all_groups_url, group_id)
+        response = self.authenticated_request_post(url, json.dumps(user_data))
+        log_message = 'on POST for adding a user to group'
+        self.log_http_status(response.status_code, log_message)
+        return response.content if response.status_code == requests.codes.ok else None
+
+    def update_user(self, user_id, user_data):
+        """
+        PUT updates user details such as user status(active/inactive)
+        :param user_id: The ID of the user to update
+        :return:  None
+        """
+        url = '{0}/{1}'.format(self.add_users_url, user_id)
+        response = self.authenticated_request_put(url, json.dumps(user_data))
+        log_message = 'on PUT for updating a user'
+        self.log_http_status(response.status_code, log_message)
+        return response if response.status_code == requests.codes.ok else None
+
+    def remove_user(self, role_id, user_id):
+        """
+        Removes a user from an group/organisation
+        :param role_id: The ID of the group or organisation
+        :param user_id: The ID of the user to remove
+        :return: {ok: true} on successful deletion
+        """
+        url = '{0}/{1}/users/{2}'.format(self.all_groups_url, role_id, user_id)
+        response = self.authenticated_request_delete(url)
+        log_message = 'on DELETE for user from group'
+        self.log_http_status(response.status_code, log_message)
+        return response if response.status_code == requests.codes.ok else None
 
     @staticmethod
     def log_http_status(status_code, message):
