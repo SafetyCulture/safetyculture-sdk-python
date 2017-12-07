@@ -142,7 +142,7 @@ def sync_users(api_token, input_filepath):
         data[3] = str(data[3])
 
     all_group_details = json.loads(sc_client.get_all_groups_in_org().content)
-    server_users = export_users.get_all_users(api_token)
+    server_users = export_users.get_all_users_and_groups(api_token)
 
     process_desired_state(server_users, input_filepath)
     process_server_state(server_users, input_filepath)

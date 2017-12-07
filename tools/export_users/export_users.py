@@ -11,14 +11,14 @@ from safetypy import safetypy as sp
 from collections import OrderedDict
 import pydash
 from pydash import _
+
 # the file that stores all exported users in CSV format
 USER_EXPORT_FILENAME = 'iauditor_users.csv'
-
 
 # Possible values here are DEBUG, INFO, WARN, ERROR and CRITICAL
 LOG_LEVEL = logging.DEBUG
 
-def get_all_users(api_token):
+def get_all_users_and_groups(api_token):
     """
     Exports a dictionary of all active users from iAuditor organisation and their associated groups
     :return: A sorted dictionary of all active users and their associated groups
@@ -61,7 +61,7 @@ def get_all_users(api_token):
     sorted_user_map = OrderedDict(sorted(user_map.items(), key=lambda t: t[0]))
     return sorted_user_map
 
-def create_csv(user_data, csv_output_filepath):
+def save_users_and_groups_to_csv(user_data, csv_output_filepath):
     """
     Creates a CSV file with exported user data
     :param user_data: The exported user data
@@ -86,8 +86,9 @@ if __name__ == '__main__':
     args = parser.parse_args()
     api_token = args.token
 
-    exported_users = get_all_users(api_token)
+    exported_users = get_all_users_and_groups(api_token)
     for user in exported_users:
+        # removing the user ID to keep the CSV output user-friendly
         del exported_users[user]['user_id']
-    create_csv(exported_users, csv_output_filepath=USER_EXPORT_FILENAME)
+    save_users_and_groups_to_csv(exported_users, csv_output_filepath=USER_EXPORT_FILENAME)
 
