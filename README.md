@@ -349,8 +349,8 @@ Note: Group names that contain commas are not supported. If a group name contain
 ### The Sync Users tool
 
 This tool updates the organisation users in iAuditor from a CSV file. After running this tool, users in iAuditor and their corresponding groups will match the contents of the CSV file. The groups specified in the CSV file must have been created in iAuditor before running the tool. If a group doesn't exist, the user will not be added to that group. To use this tool you need to have Admin permissions in the organisation.
-Caveat: Any users added in iAuditor without using this tool which are not listed in the CSV file, will be removed from iAuditor after running this tool.
-If you want to keep all users, run the Export Users tool and modify the file that is generated to reflect the desired user state.
+
+Caveat: Any users added in iAuditor without using this tool which are not listed in the CSV file, will be removed from iAuditor after running this tool. If you want to keep all users, run the Export Users tool and modify the file that is generated to reflect the desired user state.
 
 The input file specified in the command line arguments has the following structure:
 
