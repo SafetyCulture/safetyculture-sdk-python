@@ -321,7 +321,7 @@ Caveat: deleting a response, and then re-adding the same response later will res
 
 ### The Export Users tool
 
-This tool exports a list of users and their groups from iAuditor into a CSV file named `iauditor_users.csv`.
+This tool exports a list of users and their groups from iAuditor into a CSV file named `iauditor_users.csv`. To use this tool you need to have Admin permissions in the organisation.
 
 To run it:
 Open a command-line terminal and navigate to the directory called `safetyculture-sdk-python/tools/export_users`.
@@ -337,19 +337,18 @@ The exported CSV file columns contain the following user information and structu
 - firstname
 - groups
 
-
 | email| lastname| firstname| groups|
 |---|---|---|---|
 |johnsmith@example.com |Smith|John|Group 1, Group 2|
 |johndoe@example.com|Doe|John|Group 3|
 |jasonR@example.com|R|Jason| |
 
-The field **groups** contains a comma-separated list of all iAuditor groups the user is a member of. All fields are string values.
+The field `groups` contains a comma-separated list of all iAuditor groups the user is a member of. All fields are string values.
 Note: Group names that contain commas are not supported. If a group name contains a comma, no user will be assigned to it and you may see errors in the logs.
 
 ### The Sync Users tool
 
-This tool updates the organisation users in iAuditor from a CSV file. After running this tool, users in iAuditor and their corresponding groups will match the contents of the CSV file. The groups specified in the CSV file must have been created in iAuditor before running the tool. If a group doesn't exist, the user will not be added to that group.
+This tool updates the organisation users in iAuditor from a CSV file. After running this tool, users in iAuditor and their corresponding groups will match the contents of the CSV file. The groups specified in the CSV file must have been created in iAuditor before running the tool. If a group doesn't exist, the user will not be added to that group. To use this tool you need to have Admin permissions in the organisation.
 Caveat: Any users added in iAuditor without using this tool which are not listed in the CSV file, will be removed from iAuditor after running this tool.
 If you want to keep all users, run the Export Users tool and modify the file that is generated to reflect the desired user state.
 
@@ -371,15 +370,12 @@ Run the following command:
 ```
 python sync_users.py --token <YOUR_IAUDITOR_API_TOKEN> --file <FULL_PATH_TO_CSV_FILE>
 ```
-If the user already exists in the organisation in iAuditor, then the user will be added to all the groups in the `groups` field.
-If the user is not in iAuditor, the user will be added to iAuditor first and then added to the groups listed in the `groups` field. If no groups are specified,
-the user is only added to the organisation. If the user is not in the CSV file but is present in iAuditor, the user will be deactivated in iAuditor.
-If a user already belongs to a group, when that group is removed from the list of groups in the relevant CSV field,
-the user is removed from that group in iAuditor after running the tool.
+If the user already exists in the organisation in iAuditor, then the user will be added to all the groups in the `groups` field. If the user is not in iAuditor, the user will be added to iAuditor first and then added to the groups listed in the `groups` field. If no groups are specified,
+the user is only added to the organisation. If the user is not in the CSV file but is present in iAuditor, the user will be deactivated in iAuditor. If a user already belongs to a group, when that group is removed from the list of groups in the relevant CSV field, the user is removed from that group in iAuditor after running the tool.
 
 #### Known Limitations:
 1. If two or more groups have the same name, the user will be added to only one of those groups.
-2. Adding a deactivated user in the CSV will cause the user to remain in deactivated state. This will be revisited in the future.
+2. Adding a user in the CSV when that user exists on the server but is deactivated then the user will not be activated.
 3. Adding an already invited user will log an error and have no effect.
 
 ## SafetyCulture Python SDK
