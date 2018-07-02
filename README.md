@@ -16,9 +16,16 @@ Contains:
 
 ### First Time Install and Run 
 
-You will need to have [Python 2.7 or higher](https://www.python.org/downloads/) and [Pip](https://pip.pypa.io/en/stable/installing/) installed on your computer.
+You will need to have [Python 2.7 or higher](https://www.python.org/downloads/) and [Pip](https://pip.pypa.io/en/stable/installing/) installed on your computer. If you are using Windows, make sure to select the option to "Add Python to PATH" during the installation process. Also, Windows users may need to prepend the following commands with
+```
+python -m 
+```
+i.e. 
+```
+python -m pip install safetyculture-sdk-python
+```
 
-Run the following commands from your terminal: 
+To install the Python SDK, run the following commands from your terminal: 
 
 1. Install the SDK and tools
 ```
@@ -30,7 +37,7 @@ pip install safetyculture-sdk-python
 iauditor_exporter --setup
 ```
 
-3. Go to the newly created folder 
+3. Navigate into to the newly created folder 
 ```
 cd iauditor_exports_folder
 ```
