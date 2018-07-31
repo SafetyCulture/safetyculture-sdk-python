@@ -500,7 +500,8 @@ def parse_export_filename(audit_json, filename_item_id):
     """
     if filename_item_id is None:
         return None
-    # Audit title header item has been deprecated by SafetyCulture. Audit title now stored in audit_data.name property.
+    # Not all Audits will actually contain an Audit Title item. For examples, when Audit Title rules are set, the Audit Title item is not going to be included by default.
+    # When this item ID is specified in the custom export filename configuration, the audit_data.name property will be used to populate the data as it covers all cases.
     if filename_item_id == AUDIT_TITLE_ITEM_ID and 'audit_data' in audit_json.keys() and 'name' in audit_json['audit_data'].keys():
         print('I am returning the audit data name: ' + audit_json['audit_data']['name'])
         return audit_json['audit_data']['name'].replace('/','_')
