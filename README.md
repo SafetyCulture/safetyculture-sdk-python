@@ -236,6 +236,8 @@ Note: Templates for which there is no export profile id listed in the config fil
 
 ### Naming the exported files
 
+Note that the Audit Title field has been deprecated by SafetyCulture in favour of the Audit Title Rule. However, setting Audit Title as the export filename will still work for audits using the new Audit Title Rule functionality.
+
 When configuring a custom filename convention in export settings (in `config.yaml`) you can provide an audit item ID from the ones below to cause all exported audit reports be named after the response of that particular item in the audit.
 
 Here are some standard item IDs
