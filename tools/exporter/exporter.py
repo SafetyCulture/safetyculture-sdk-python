@@ -51,7 +51,8 @@ DEFAULT_EXPORT_INACTIVE_ITEMS_TO_CSV = True
 # When exporting actions to CSV, if property is None, print this value to CSV
 EMPTY_RESPONSE = ''
 
-# If user specifies this for the export filename, the audit_data.name property is used.
+# Not all Audits will actually contain an Audit Title item. For examples, when Audit Title rules are set, the Audit Title item is not going to be included by default.
+# When this item ID is specified in the custom export filename configuration, the audit_data.name property will be used to populate the data as it covers all cases.
 AUDIT_TITLE_ITEM_ID = 'f3245d40-ea77-11e1-aff1-0800200c9a66'
 
 # Properties kept in settings dictionary which takes its values from config.YAML
