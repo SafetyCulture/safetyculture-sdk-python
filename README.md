@@ -236,6 +236,8 @@ Note: Templates for which there is no export profile id listed in the config fil
 
 ### Naming the exported files
 
+Note that when automatic Audit Title rules are set on the template, the Audit will not contain an Audit Title field by default. Regardless, the export filename setting will still work as expected using the automatically generated Audit name.
+
 When configuring a custom filename convention in export settings (in `config.yaml`) you can provide an audit item ID from the ones below to cause all exported audit reports be named after the response of that particular item in the audit.
 
 Here are some standard item IDs

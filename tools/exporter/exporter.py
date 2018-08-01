@@ -51,6 +51,10 @@ DEFAULT_EXPORT_INACTIVE_ITEMS_TO_CSV = True
 # When exporting actions to CSV, if property is None, print this value to CSV
 EMPTY_RESPONSE = ''
 
+# Not all Audits will actually contain an Audit Title item. For examples, when Audit Title rules are set, the Audit Title item is not going to be included by default.
+# When this item ID is specified in the custom export filename configuration, the audit_data.name property will be used to populate the data as it covers all cases.
+AUDIT_TITLE_ITEM_ID = 'f3245d40-ea77-11e1-aff1-0800200c9a66'
+
 # Properties kept in settings dictionary which takes its values from config.YAML
 API_TOKEN = 'api_token'
 EXPORT_PATH = 'export_path'
@@ -66,7 +70,7 @@ EXPORT_FORMATS = 'export_formats'
 DEFAULT_CONFIG_FILE_YAML = [
     'API:',
     '\n    token: ',
-    '\nexport_options:',
+    '\nexport_options:',    
     '\n    export_path:',
     '\n    timezone:',
     '\n    filename:',
@@ -487,7 +491,7 @@ def get_last_successful_actions_export(logger):
     return last_successful_actions_export
 
 
-def parse_export_filename(header_items, filename_item_id):
+def parse_export_filename(audit_json, filename_item_id):
     """
     Get 'response' value of specified header item to use for export file name
 
@@ -497,7 +501,11 @@ def parse_export_filename(header_items, filename_item_id):
     """
     if filename_item_id is None:
         return None
-    for item in header_items:
+    # Not all Audits will actually contain an Audit Title item. For examples, when Audit Title rules are set, the Audit Title item is not going to be included by default.
+    # When this item ID is specified in the custom export filename configuration, the audit_data.name property will be used to populate the data as it covers all cases.
+    if filename_item_id == AUDIT_TITLE_ITEM_ID and 'audit_data' in audit_json.keys() and 'name' in audit_json['audit_data'].keys():
+        return audit_json['audit_data']['name'].replace('/','_')
+    for item in audit_json['header_items']:
         if item['item_id'] == filename_item_id:
             if 'responses' in item.keys():
                 if 'text' in item['responses'].keys() and item['responses']['text'].strip() != '':
@@ -803,7 +811,7 @@ def process_audit(logger, settings, sc_client, audit):
     export_profile_id = None
     if settings[EXPORT_PROFILES] is not None and template_id in settings[EXPORT_PROFILES].keys():
         export_profile_id = settings[EXPORT_PROFILES][template_id]
-    export_filename = parse_export_filename(audit_json['header_items'], settings[FILENAME_ITEM_ID]) or audit_id
+    export_filename = parse_export_filename(audit_json, settings[FILENAME_ITEM_ID]) or audit_id
     for export_format in settings[EXPORT_FORMATS]:
         if export_format in ['pdf', 'docx']:
             export_audit_pdf_word(logger, sc_client, settings, audit_id, export_profile_id, export_format, export_filename)
