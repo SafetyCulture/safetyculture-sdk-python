@@ -70,7 +70,7 @@ EXPORT_FORMATS = 'export_formats'
 DEFAULT_CONFIG_FILE_YAML = [
     'API:',
     '\n    token: ',
-    '\nexport_options:',
+    '\nexport_options:',    
     '\n    export_path:',
     '\n    timezone:',
     '\n    filename:',
@@ -504,7 +504,6 @@ def parse_export_filename(audit_json, filename_item_id):
     # Not all Audits will actually contain an Audit Title item. For examples, when Audit Title rules are set, the Audit Title item is not going to be included by default.
     # When this item ID is specified in the custom export filename configuration, the audit_data.name property will be used to populate the data as it covers all cases.
     if filename_item_id == AUDIT_TITLE_ITEM_ID and 'audit_data' in audit_json.keys() and 'name' in audit_json['audit_data'].keys():
-        print('I am returning the audit data name: ' + audit_json['audit_data']['name'])
         return audit_json['audit_data']['name'].replace('/','_')
     for item in audit_json['header_items']:
         if item['item_id'] == filename_item_id:
