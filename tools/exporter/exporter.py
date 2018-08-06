@@ -758,7 +758,7 @@ def sync_exports(logger, settings, sc_client):
     """
     if 'actions' in settings[EXPORT_FORMATS]:
         export_actions(logger, settings, sc_client)
-    if not bool(set(settings[EXPORT_FORMATS]) & {'pdf', 'docx', 'csv', 'media', 'web-report-link'}):
+    if not bool(set(settings[EXPORT_FORMATS]) & {'pdf', 'docx', 'csv', 'media', 'web-report-link', 'json'}):
         return
     last_successful = get_last_successful(logger)
     list_of_audits = sc_client.discover_audits(modified_after=last_successful)
@@ -852,7 +852,7 @@ def export_audit_json(logger, settings, audit_json, export_filename):
     """
     export_format = 'json'
     export_doc = json.dumps(audit_json, indent=4)
-    save_exported_document(logger, settings[EXPORT_PATH], export_doc, export_filename, export_format)
+    save_exported_document(logger, settings[EXPORT_PATH], export_doc.encode(), export_filename, export_format)
 
 
 def export_audit_csv(settings, audit_json):
