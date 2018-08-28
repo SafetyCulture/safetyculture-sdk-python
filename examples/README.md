@@ -1,6 +1,7 @@
 # SafetyCulture Python SDK Example Scripts
 
-Requirements
+In order to import SafetyCulture Python SDK modules into your own scripts, you'll need it installed.
+We recommend installing in a Python Virtual environment using PipEnv:
 * Install Pipenv
 ```
 $ brew install pipenv
