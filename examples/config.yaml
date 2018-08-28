@@ -1,5 +1,5 @@
 API:
-    token: API_AUTHENTICATION_TOKEN
+    token: YOUR_API_ACCESS_TOKEN
 export_options:
     export_path:
     timezone:
