@@ -12,6 +12,8 @@ Contains:
 
 * The Sync Users Tool allows you to use a spreadsheet to keep your users and their group associations up to date and automatically reflect that in iAuditor.
 
+* Examples of how to import individual modules of the SDK into your own scripts.
+
 ## iAuditor Export Tool 
 
 ### First Time Install and Run 
@@ -311,7 +313,7 @@ Once you have successfully used this tool to extract audit reports, the next tim
 
 IMPORTANT: Exporting large numbers of audits in bulk over and over again may result in your account being throttled or your API token revoked.
 
-## The Import Global Response Sets (GRS) tool
+### The Import Global Response Sets (GRS) tool
 
 This tool helps maintain Global Response Sets up to date by importing them automatically from a Microsoft Excel spreadsheet (xls or xlsx, version 2 or higher).
 
@@ -381,7 +383,11 @@ python sync_users.py --token <YOUR_IAUDITOR_API_TOKEN> --file <FULL_PATH_TO_CSV_
 ```
 If the user already exists in the organisation in iAuditor, then the user will be added to all the groups in the `groups` field. If the user is not in iAuditor, the user will be added to iAuditor first and then added to the groups listed in the `groups` field. If no groups are specified, the user is only added to the organisation. If the user is not in the CSV file but is present in iAuditor, the user will be deactivated in iAuditor. If a user already belongs to a group, when that group is removed from the list of groups in the relevant CSV field, the user is removed from that group in iAuditor after running the tool.
 
-#### Known Limitations:
+### Importing SafetyCulture Python SDK Modules into your own scripts 
+
+See example scripts in `./examples/`
+
+### Known Limitations:
 1. If two or more groups have the same name, the user will be added to only one of those groups.
 2. Adding a user in the CSV when that user exists on the server but is deactivated then the user will not be activated.
 3. Adding an already invited user will log an error and have no effect.
