@@ -42,7 +42,10 @@ CSV_HEADER_ROW = [
     'PreparedBy',
     'Location',
     'Personnel',
-    'ClientSite'
+    'ClientSite',
+    'AuditSite',
+    'AuditArea',
+    'AuditRegion'
 ]
 
 # audit item empty response 
@@ -258,6 +261,9 @@ class CsvExporter:
         audit_data_as_list.append(self.get_header_item(header_data, 'Location'))
         audit_data_as_list.append(self.get_header_item(header_data, 'Personnel'))
         audit_data_as_list.append(self.get_header_item(header_data, 'ClientSite'))
+        audit_data_as_list.append(get_json_property(audit_data_property, 'site', 'name'))
+        audit_data_as_list.append(get_json_property(audit_data_property, 'site', 'area', 'name'))
+        audit_data_as_list.append(get_json_property(audit_data_property, 'site', 'region', 'name'))
         return audit_data_as_list
 
     @staticmethod
@@ -557,6 +563,7 @@ def main():
     """
     saves JSON file as CSV. Path to JSON file provided as command line argument
     """
+    print("here")
     for arg in sys.argv[1:]:
         audit_json = json.load(open(arg, 'r'))
         csv_exporter = CsvExporter(audit_json)
