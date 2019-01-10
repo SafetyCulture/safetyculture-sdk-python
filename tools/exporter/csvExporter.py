@@ -563,7 +563,6 @@ def main():
     """
     saves JSON file as CSV. Path to JSON file provided as command line argument
     """
-    print("here")
     for arg in sys.argv[1:]:
         audit_json = json.load(open(arg, 'r'))
         csv_exporter = CsvExporter(audit_json)
