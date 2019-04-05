@@ -9,3 +9,7 @@ tools/exporter/log/
 tools/exporter/last_successful.txt
 venv
 last_successful.txt
+safetyculture_sdk_python.egg-info/
+.eggs/
+build/
+dist/

@@ -43,7 +43,7 @@ def get_user_api_token(logger):
         return None
 
 
-class SafetyCulture:
+class SafetyCulture(object):
     def __init__(self, api_token):
         self.current_dir = os.getcwd()
         self.log_dir = self.current_dir + '/log/'
