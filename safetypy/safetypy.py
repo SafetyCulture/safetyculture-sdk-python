@@ -11,7 +11,6 @@ import sys
 import time
 import errno
 from builtins import input
-from datetime import datetime
 import requests
 from getpass import getpass
 
@@ -20,11 +19,24 @@ DEFAULT_EXPORT_FORMAT = 'pdf'
 GUID_PATTERN = '[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}$'
 HTTP_USER_AGENT_ID = 'safetyculture-python-sdk'
 
+# https://docs.python.org/2.7/howto/logging.html#configuring-logging-for-a-library
+try:
+    from logging import NullHandler
+except ImportError:
+    class NullHandler(logging.Handler):
+        def handle(self, record):
+            pass
+        def emit(self, record):
+            pass
+        def createLock(self):
+            self.lock = None
+logging.getLogger(__name__).addHandler(logging.NullHandler())
+
 
 def get_user_api_token(logger):
     """
     Generate iAuditor API Token
-    :param logger:  the logger
+    :param logger:  No longer used
     :return:        API Token if authenticated else None
     """
     username = input("iAuditor username: ")
@@ -39,7 +51,7 @@ def get_user_api_token(logger):
     if response.status_code == requests.codes.ok:
         return response.json()['access_token']
     else:
-        logger.error('An error occurred calling ' + generate_token_url + ': ' + str(response.json()))
+        logging.error('An error occurred calling ' + generate_token_url + ': ' + str(response.json()))
         return None
 
 
@@ -54,16 +66,13 @@ class SafetyCulture:
         self.get_my_groups_url = self.api_url + 'share/connections'
         self.all_groups_url = self.api_url + 'groups'
         self.add_users_url = self.api_url + 'users'
-        
-        self.create_directory_if_not_exists(self.log_dir)
-        self.configure_logging()
-        logger = logging.getLogger('sp_logger')
+
         try:
             token_is_valid = re.match('^[a-f0-9]{64}$', api_token)
             if token_is_valid:
                 self.api_token = api_token
             else:
-                logger.error('API token failed to match expected pattern')
+                logging.error('API token failed to match expected pattern')
                 self.api_token = None
         except Exception as ex:
             self.log_critical_error(ex, 'API token is missing or invalid. Exiting.')
@@ -74,7 +83,7 @@ class SafetyCulture:
                 'Authorization': 'Bearer ' + self.api_token
             }
         else:
-            logger.error('No valid API token parsed! Exiting.')
+            logging.error('No valid API token parsed! Exiting.')
             sys.exit(1)
 
     def authenticated_request_get(self, url):
@@ -112,32 +121,9 @@ class SafetyCulture:
         :param ex:       Exception instance to log
         :param message:  Descriptive message to describe exception
         """
-        logger = logging.getLogger('sp_logger')
 
-        if logger is not None:
-            logger.critical(message)
-            logger.critical(ex)
-
-    def configure_logging(self):
-        """
-        Configure logging to log to std output as well as to log file
-        """
-        log_level = logging.DEBUG
-
-        log_filename = datetime.now().strftime('%Y-%m-%d') + '.log'
-        sp_logger = logging.getLogger('sp_logger')
-        sp_logger.setLevel(log_level)
-        formatter = logging.Formatter('%(asctime)s : %(levelname)s : %(message)s')
-
-        fh = logging.FileHandler(filename=self.log_dir + log_filename)
-        fh.setLevel(log_level)
-        fh.setFormatter(formatter)
-        sp_logger.addHandler(fh)
-
-        sh = logging.StreamHandler(sys.stdout)
-        sh.setLevel(log_level)
-        sh.setFormatter(formatter)
-        sp_logger.addHandler(sh)
+        logging.critical(message)
+        logging.critical(ex)
 
     def create_directory_if_not_exists(self, path):
         """
@@ -166,8 +152,6 @@ class SafetyCulture:
         :return:                JSON object containing IDs of all audits returned by API
         """
 
-        logger = logging.getLogger('sp_logger')
-
         last_modified = modified_after if modified_after is not None else '2000-01-01T00:00:00.000Z'
 
         search_url = self.audit_url + 'search?field=audit_id&field=modified_at&order=asc&modified_after=' \
@@ -176,7 +160,7 @@ class SafetyCulture:
         log_string += 'template_id    = ' + str(template_id) + '\n'
         log_string += 'modified_after = ' + str(last_modified) + '\n'
         log_string += 'completed      = ' + str(completed) + '\n'
-        logger.info(log_string)
+        logging.info(log_string)
 
         if template_id is not None:
             search_url += '&template=' + template_id
@@ -294,27 +278,26 @@ class SafetyCulture:
             export_attempts = 1
             poll_status = self.authenticated_request_get(poll_url)
             status = poll_status.json()
-            logger = logging.getLogger('sp_logger')
             if 'status' in status.keys():
                 if status['status'] == 'IN PROGRESS':
-                    logger.info(str(status['status']) + ' : ' + audit_id)
+                    logging.info(str(status['status']) + ' : ' + audit_id)
                     time.sleep(delay_in_seconds)
                     return self.poll_for_export(audit_id, export_job_id)
 
                 elif status['status'] == 'SUCCESS':
-                    logger.info(str(status['status']) + ' : ' + audit_id)
+                    logging.info(str(status['status']) + ' : ' + audit_id)
                     return status['href']
 
                 else:
                     if export_attempts < 2:
                         export_attempts += 1
-                        logger.info('attempt # {0} exporting report for: ' + audit_id.format(str(export_attempts)))
+                        logging.info('attempt # {0} exporting report for: ' + audit_id.format(str(export_attempts)))
                         retry_id = self.get_export_job_id(audit_id)
                         return self.poll_for_export(audit_id, retry_id['id'])
                     else:
-                        logger.error('export for ' + audit_id + ' failed {0} times - skipping'.format(export_attempts))
+                        logging.error('export for ' + audit_id + ' failed {0} times - skipping'.format(export_attempts))
             else:
-                logger.critical('Unexpected response from API: {0}'.format(status))
+                logging.critical('Unexpected response from API: {0}'.format(status))
 
         else:
             self.log_critical_error(ValueError,
@@ -392,7 +375,6 @@ class SafetyCulture:
         :param page_length:     How many actions to fetch for each page of action results
         :return:                Array of action objects
         """
-        logger = logging.getLogger('sp_logger')
         actions_url = self.api_url + 'actions/search'
         response = self.authenticated_request_post(
             actions_url,
@@ -406,13 +388,12 @@ class SafetyCulture:
         self.log_http_status(response.status_code, 'GET actions')
         if result is None or None in [result.get('count'), result.get('offset'), result.get('total'), result.get('actions')]:
             return None
-        return self.get_page_of_actions(logger, date_modified, result, offset, page_length)
+        return self.get_page_of_actions(date_modified, result, offset, page_length)
 
-    def get_page_of_actions(self, logger, date_modified, previous_page, offset=0, page_length=100):
+    def get_page_of_actions(self, date_modified, previous_page, offset=0, page_length=100):
         """
         Returns a page of action search results
 
-        :param logger: the logger
         :param date_modified: fetch from that date onwards
         :param previous_page: a page of action search results
         :param offset: the index to start retrieving actions from
@@ -420,7 +401,7 @@ class SafetyCulture:
         :return: Array of action objects
         """
         if previous_page['count'] + previous_page['offset'] < previous_page['total']:
-            logger.info('Paging Actions. Offset: ' + str(offset + page_length) + '. Total: ' + str(previous_page['total']))
+            logging.info('Paging Actions. Offset: ' + str(offset + page_length) + '. Total: ' + str(previous_page['total']))
             next_page = self.get_audit_actions(date_modified, offset + page_length)
             if next_page is None:
                 return None
@@ -591,7 +572,6 @@ class SafetyCulture:
         :param status_code:  http status code to log
         :param message:      to describe where the status code was obtained
         """
-        logger = logging.getLogger('sp_logger')
         status_description = requests.status_codes._codes[status_code][0]
         log_string = str(status_code) + ' [' + status_description + '] status received ' + message
-        logger.info(log_string) if status_code == requests.codes.ok else logger.error(log_string)
+        logging.info(log_string) if status_code == requests.codes.ok else logging.error(log_string)
