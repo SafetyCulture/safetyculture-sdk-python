@@ -448,6 +448,8 @@ def get_last_successful(logger):
     if os.path.isfile(SYNC_MARKER_FILENAME):
         with open(SYNC_MARKER_FILENAME, 'r+') as last_run:
             last_successful = last_run.readlines()[0]
+            last_successful = last_successful.strip()
+
     else:
         beginning_of_time = '2000-01-01T00:00:00.000Z'
         last_successful = beginning_of_time
