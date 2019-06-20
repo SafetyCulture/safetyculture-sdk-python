@@ -208,7 +208,7 @@ Things you can configure:
 |---|---|
 | export_path  | absolute or relative path to the directory where to save exported data to  |
 | timezone |  an Olson timezone to be used in generated audit reports. If invalid or missing, reports will use the timezone local to the computer running the export tool |
-| filename  |  an audit item ID whose response is going to be used to name the files of exported audit reports. Can only be an item with a response type of `text` from the header section of the audit such as Audit Title, Document No., Client / Site, Prepared By, Personnel, or any custom header item which has a 'text' type response |
+| filename  |  an audit item ID whose response is going to be used to name the files of exported audit reports. Can only be an item with a response type of `text` from the header section of the audit such as Audit Title, Document No., Client / Site, Prepared By, Personnel, or any custom header item which has a 'text' type response (doesn't apply when exporting as CSV) |
 | export_profiles  | to apply an export profile transformation to particular templates, give here a list of export profile ids
 | sync_delay_in_seconds | time in seconds to wait after completing one export run, before running again
 | export_inactive_items | This setting only applies when exporting to CSV. Valid values are true (export all items) or false (do not export inactive items). Items that are nested under [Smart Field](https://support.safetyculture.com/templates/smart-fields/) will be 'inactive' if the smart field condition is not satisfied for these items.
@@ -237,6 +237,8 @@ media_sync_offset_in_seconds: 600
 Note: Templates for which there is no export profile id listed in the config file will be exported without a profile applied
 
 ### Naming the exported files
+
+(doesn't apply when exporting as CSV - names are always the template ID.)
 
 Note that when automatic Audit Title rules are set on the template, the Audit will not contain an Audit Title field by default. Regardless, the export filename setting will still work as expected using the automatically generated Audit name.
 
