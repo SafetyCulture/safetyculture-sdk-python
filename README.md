@@ -238,7 +238,7 @@ Note: Templates for which there is no export profile id listed in the config fil
 
 ### Naming the exported files
 
-(doesn't apply when exporting as CSV - names are always the template ID.)
+(Doesn't apply when exporting as CSV - names are always the template ID.)
 
 Note that when automatic Audit Title rules are set on the template, the Audit will not contain an Audit Title field by default. Regardless, the export filename setting will still work as expected using the automatically generated Audit name.
 
