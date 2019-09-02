@@ -253,7 +253,10 @@ class CsvExporter:
         audit_data_as_list.append(self.format_date_time(audit_data_property['date_modified']))
         audit_data_as_list.append(self.audit_id())
         audit_data_as_list.append(self.audit_json['template_id'])
-        audit_data_as_list.append(template_data_property['metadata']['name'])
+        if 'name' in template_data_property['metadata']: # check for rare case where very old templates/inspections may not include this key
+            audit_data_as_list.append(template_data_property['metadata']['name'])
+        else:
+            audit_data_as_list.append('Untitled Template')
         audit_data_as_list.append(template_data_property['authorship']['author'])
         audit_data_as_list.append(self.item_category)
         audit_data_as_list.append(self.get_header_item(header_data, 'DocumentNo'))
