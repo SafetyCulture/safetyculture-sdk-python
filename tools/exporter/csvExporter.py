@@ -71,6 +71,7 @@ SIGNATURE = 'signature'
 INFORMATION = 'information'
 MEDIA = 'media'
 RESPONSES = 'responses'
+TEMPERATURE = 'temperature'
 
 # maps smartfield conditional statement IDs to the corresponding text
 smartfield_conditional_id_to_statement_map = {
@@ -398,6 +399,8 @@ class CsvExporter:
             response = get_json_property(item, RESPONSES, 'text')
         elif item_type == INFORMATION and get_json_property(item, 'options', TYPE) == 'link':
             response = get_json_property(item, 'options', 'link')
+        elif item_type == 'temperature':
+            resposne = get_json_property(item, RESPONSES, 'temperature')
         elif item_type in ['dynamicfield', 'element', 'primeelement', 'asset', 'scanner', 'category', 'section',
                            INFORMATION]:
             pass
