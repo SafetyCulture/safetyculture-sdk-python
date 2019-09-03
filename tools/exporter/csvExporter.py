@@ -252,7 +252,10 @@ class CsvExporter:
         audit_data_as_list.append(self.format_date_time(audit_data_property['date_modified']))
         audit_data_as_list.append(self.audit_id())
         audit_data_as_list.append(self.audit_json['template_id'])
-        audit_data_as_list.append(template_data_property['metadata']['name'])
+        if 'name' in template_data_property['metadata']: # check for rare case where very old templates/inspections may not include this key
+            audit_data_as_list.append(template_data_property['metadata']['name'])
+        else:
+            audit_data_as_list.append('Untitled Template')
         audit_data_as_list.append(template_data_property['authorship']['author'])
         audit_data_as_list.append(self.item_category)
         audit_data_as_list.append(self.get_header_item(header_data, 'DocumentNo'))
@@ -398,6 +401,8 @@ class CsvExporter:
             response = get_json_property(item, RESPONSES, 'text')
         elif item_type == INFORMATION and get_json_property(item, 'options', TYPE) == 'link':
             response = get_json_property(item, 'options', 'link')
+        elif item_type == 'temperature':
+            response = get_json_property(item, RESPONSES, 'temperature')
         elif item_type in ['dynamicfield', 'element', 'primeelement', 'asset', 'scanner', 'category', 'section',
                            INFORMATION]:
             pass
