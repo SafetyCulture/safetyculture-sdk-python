@@ -71,7 +71,6 @@ SIGNATURE = 'signature'
 INFORMATION = 'information'
 MEDIA = 'media'
 RESPONSES = 'responses'
-TEMPERATURE = 'temperature'
 
 # maps smartfield conditional statement IDs to the corresponding text
 smartfield_conditional_id_to_statement_map = {
