@@ -319,8 +319,6 @@ class CsvExporter:
             row_array = self.item_properties_as_list(item) + self.common_audit_data()
             if get_json_property(item, INACTIVE) and not self.export_inactive_items:
                 continue
-            if get_json_property(item, 'type') == 'temperature':
-                print(row_array)
             self.audit_table.append(row_array)
         return self.audit_table
 
@@ -406,8 +404,6 @@ class CsvExporter:
             response = get_json_property(item, 'options', 'link')
         elif item_type == 'temperature':
             response = get_json_property(item, RESPONSES, 'temperature')
-            print("temperature found")
-            print(get_json_property(item, RESPONSES, 'temperature'))
         elif item_type in ['dynamicfield', 'element', 'primeelement', 'asset', 'scanner', 'category', 'section',
                            INFORMATION]:
             pass
