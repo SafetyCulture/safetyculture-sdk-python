@@ -17,6 +17,7 @@ setup(name = 'safetyculture-sdk-python',
             ],
       },
       long_description=open('README.md', 'r').read(),
+      long_description_content_type="text/markdown",
       install_requires = [
             'python-dateutil>=2.5.0',
             'pytz>=2015.7',
