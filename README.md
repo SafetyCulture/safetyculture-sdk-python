@@ -207,7 +207,6 @@ Things you can configure:
 |  Setting | Description  |
 |---|---|
 | export_path  | absolute or relative path to the directory where to save exported data to  |
-| timezone |  an Olson timezone to be used in generated audit reports. If invalid or missing, reports will use the timezone local to the computer running the export tool |
 | filename  |  an audit item ID whose response is going to be used to name the files of exported audit reports. Can only be an item with a response type of `text` from the header section of the audit such as Audit Title, Document No., Client / Site, Prepared By, Personnel, or any custom header item which has a 'text' type response (doesn't apply when exporting as CSV) |
 | preferences  | to apply a preference transformation to particular templates, give here a list of preference ids
 | sync_delay_in_seconds | time in seconds to wait after completing one export run, before running again
@@ -221,7 +220,6 @@ API:
     token: YOUR_IAUDITOR_API_TOKEN
 export_options:
     export_path: /Users/Monty/Dropbox
-    timezone: America/Chicago
     filename: f3245d40-ea77-11e1-aff1-0800200c9a66
     csv:
         export_inactive_items: false
