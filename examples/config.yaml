@@ -2,10 +2,9 @@ API:
     token: YOUR_API_ACCESS_TOKEN
 export_options:
     export_path:
-    timezone:
     filename:
     csv:
         export_inactive_items: false
-export_profiles:
+preferences:
 sync_delay_in_seconds: 36000
 media_sync_offset_in_seconds: 600

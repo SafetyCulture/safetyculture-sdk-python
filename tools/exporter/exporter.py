@@ -58,8 +58,7 @@ AUDIT_TITLE_ITEM_ID = 'f3245d40-ea77-11e1-aff1-0800200c9a66'
 # Properties kept in settings dictionary which takes its values from config.YAML
 API_TOKEN = 'api_token'
 EXPORT_PATH = 'export_path'
-TIMEZONE = 'timezone'
-EXPORT_PROFILES = 'export_profiles'
+PREFERENCES = 'preferences'
 FILENAME_ITEM_ID = 'filename_item_id'
 SYNC_DELAY_IN_SECONDS = 'sync_delay_in_seconds'
 EXPORT_INACTIVE_ITEMS_TO_CSV = 'export_inactive_items_to_csv'
@@ -72,11 +71,10 @@ DEFAULT_CONFIG_FILE_YAML = [
     '\n    token: ',
     '\nexport_options:',    
     '\n    export_path:',
-    '\n    timezone:',
     '\n    filename:',
     '\n    csv_options:',
     '\n        export_inactive_items: false',
-    '\n    export_profiles:',
+    '\n    preferences:',
     '\n    sync_delay_in_seconds:',
     '\n    media_sync_offset_in_seconds:',
 ]
@@ -165,29 +163,29 @@ def load_setting_sync_delay(logger, config_settings):
         return DEFAULT_SYNC_DELAY_IN_SECONDS
 
 
-def load_setting_export_profile_mapping(logger, config_settings):
+def load_setting_preference_mapping(logger, config_settings):
     """
-    Attempt to parse export_profile settings from config settings
+    Attempt to parse preference settings from config settings
 
     :param logger:           the logger
     :param config_settings:  config settings loaded from config file
-    :return:                 export profile mapping if valid, else None
+    :return:                 export preference mapping if valid, else None
     """
     try:
-        profile_mapping = {}
-        export_profile_settings = config_settings['export_options']['export_profiles']
-        if export_profile_settings is not None:
-            profile_lines = export_profile_settings.split(' ')
-            for profile in profile_lines:
-                template_id = profile[:profile.index(':')]
-                if template_id not in profile_mapping.keys():
-                    profile_mapping[template_id] = profile
-        return profile_mapping
+        preference_mapping = {}
+        preference_settings = config_settings['export_options']['preferences']
+        if preference_settings is not None:
+            preference_lines = preference_settings.split(' ')
+            for preference in preference_lines:
+                template_id = preference[:preference.index(':')]
+                if template_id not in preference_mapping.keys():
+                    preference_mapping[template_id] = preference
+        return preference_mapping
     except KeyError:
-        logger.debug('No export profile key in the configuration file')
+        logger.debug('No preference key in the configuration file')
         return None
     except Exception as ex:
-        log_critical_error(logger, ex, 'Exception getting export profiles from the configuration file')
+        log_critical_error(logger, ex, 'Exception getting preferences from the configuration file')
         return None
 
 
@@ -208,28 +206,6 @@ def load_setting_export_path(logger, config_settings):
     except Exception as ex:
         log_critical_error(logger, ex, 'Exception getting export path from the configuration file')
         return None
-
-
-def load_setting_export_timezone(logger, config_settings):
-    """
-    If a user supplied timezone is found in the config settings it will
-    be used to set the dates in the generated audit report, otherwise
-    a local timezone will be used.
-
-    :param logger:           the logger
-    :param config_settings:  config settings loaded from config file
-    :return:                 a timezone from config if valid, else local timezone for this machine
-    """
-    try:
-        timezone = config_settings['export_options']['timezone']
-        if timezone is None or timezone not in pytz.all_timezones:
-            timezone = get_localzone()
-            logger.info('No valid timezone found in config file, defaulting to local timezone')
-        return str(timezone)
-    except Exception as ex:
-        log_critical_error(logger, ex, 'Exception parsing timezone from config file')
-        timezone = get_localzone()
-        return str(timezone)
 
 
 def load_setting_media_sync_offset(logger, config_settings):
@@ -554,7 +530,7 @@ def load_config_settings(logger, path_to_config_file):
     :param logger:              the logger
     :param path_to_config_file: location of config file
     :return:                    settings dictionary containing values for:
-                                api_token, export_path, timezone, export_profiles,
+                                api_token, export_path, preferences,
                                 filename_item_id, sync_delay_in_seconds loaded from
                                 config file, media_sync_offset_in_seconds
     """
@@ -562,8 +538,7 @@ def load_config_settings(logger, path_to_config_file):
     settings = {
         API_TOKEN: load_setting_api_access_token(logger, config_settings),
         EXPORT_PATH: load_setting_export_path(logger, config_settings),
-        TIMEZONE: load_setting_export_timezone(logger, config_settings),
-        EXPORT_PROFILES: load_setting_export_profile_mapping(logger, config_settings),
+        PREFERENCES: load_setting_preference_mapping(logger, config_settings),
         FILENAME_ITEM_ID: get_filename_item_id(logger, config_settings),
         SYNC_DELAY_IN_SECONDS: load_setting_sync_delay(logger, config_settings),
         EXPORT_INACTIVE_ITEMS_TO_CSV: load_export_inactive_items_to_csv(logger, config_settings),
@@ -604,14 +579,14 @@ def parse_command_line_arguments(logger):
     :param logger:  the logger
     :return:        config_filename passed as argument if any, else DEFAULT_CONFIG_FILENAME
                     export_formats passed as argument if any, else 'pdf'
-                    list_export_profiles if passed as argument, else None
+                    list_epreferences if passed as argument, else None
                     do_loop False if passed as argument, else True
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', help='config file to use, defaults to ' + DEFAULT_CONFIG_FILENAME)
     parser.add_argument('--format', nargs='*', help='formats to download, valid options are pdf, '
                                                     'json, docx, csv, media, web-report-link, actions')
-    parser.add_argument('--list_export_profiles', nargs='*', help='display all export profiles, or restrict to specific'
+    parser.add_argument('--list_preferences', nargs='*', help='display all preferences, or restrict to specific'
                                                                   ' template_id if supplied as additional argument')
     parser.add_argument('--loop', nargs='*', help='execute continuously until interrupted')
     parser.add_argument('--setup', action='store_true', help='Automatically create new directory containing the '
@@ -647,7 +622,7 @@ def parse_command_line_arguments(logger):
 
     loop_enabled = True if args.loop is not None else False
 
-    return config_filename, export_formats, args.list_export_profiles, loop_enabled
+    return config_filename, export_formats, args.list_preferences, loop_enabled
 
 
 def initial_setup(logger):
@@ -813,13 +788,13 @@ def process_audit(logger, settings, sc_client, audit):
     logger.info('downloading ' + audit_id)
     audit_json = sc_client.get_audit(audit_id)
     template_id = audit_json['template_id']
-    export_profile_id = None
-    if settings[EXPORT_PROFILES] is not None and template_id in settings[EXPORT_PROFILES].keys():
-        export_profile_id = settings[EXPORT_PROFILES][template_id]
+    preference_id = None
+    if settings[PREFERENCES] is not None and template_id in settings[PREFERENCES].keys():
+        preference_id = settings[PREFERENCES][template_id]
     export_filename = parse_export_filename(audit_json, settings[FILENAME_ITEM_ID]) or audit_id
     for export_format in settings[EXPORT_FORMATS]:
         if export_format in ['pdf', 'docx']:
-            export_audit_pdf_word(logger, sc_client, settings, audit_id, export_profile_id, export_format, export_filename)
+            export_audit_pdf_word(logger, sc_client, settings, audit_id, preference_id, export_format, export_filename)
         elif export_format == 'json':
             export_audit_json(logger, settings, audit_json, export_filename)
         elif export_format == 'csv':
@@ -832,18 +807,18 @@ def process_audit(logger, settings, sc_client, audit):
     update_sync_marker_file(audit['modified_at'])
 
 
-def export_audit_pdf_word(logger, sc_client, settings, audit_id, export_profile_id, export_format, export_filename):
+def export_audit_pdf_word(logger, sc_client, settings, audit_id, preference_id, export_format, export_filename):
     """
     Save Audit to disk in PDF or MS Word format
     :param logger:      The logger
     :param sc_client:   instance of safetypy.SafetyCulture class
     :param settings:    Settings from command line and configuration file
     :param audit_id:    Unique audit UUID
-    :param export_profile_id:   Unique export profile UUID
+    :param preference_id:   Unique preference UUID
     :param export_format:       'pdf' or 'docx' string
     :param export_filename:     String indicating what to name the exported audit file
     """
-    export_doc = sc_client.get_export(audit_id, settings[TIMEZONE], export_profile_id, export_format)
+    export_doc = sc_client.get_export(audit_id, preference_id, export_format)
     save_exported_document(logger, settings[EXPORT_PATH], export_doc, export_filename, export_format)
 
 
@@ -953,11 +928,11 @@ def loop(logger, sc_client, settings):
 def main():
     try:
         logger = configure_logger()
-        path_to_config_file, export_formats, export_profiles_to_list, loop_enabled = parse_command_line_arguments(logger)
+        path_to_config_file, export_formats, preferences_to_list, loop_enabled = parse_command_line_arguments(logger)
         sc_client, settings = configure(logger, path_to_config_file, export_formats)
 
-        if export_profiles_to_list is not None:
-            show_preferences_and_exit(export_profiles_to_list, sc_client)
+        if preferences_to_list is not None:
+            show_preferences_and_exit(preferences_to_list, sc_client)
 
         if loop_enabled:
             loop(logger, sc_client, settings)

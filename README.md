@@ -209,7 +209,7 @@ Things you can configure:
 | export_path  | absolute or relative path to the directory where to save exported data to  |
 | timezone |  an Olson timezone to be used in generated audit reports. If invalid or missing, reports will use the timezone local to the computer running the export tool |
 | filename  |  an audit item ID whose response is going to be used to name the files of exported audit reports. Can only be an item with a response type of `text` from the header section of the audit such as Audit Title, Document No., Client / Site, Prepared By, Personnel, or any custom header item which has a 'text' type response (doesn't apply when exporting as CSV) |
-| export_profiles  | to apply an export profile transformation to particular templates, give here a list of export profile ids
+| preferences  | to apply a preference transformation to particular templates, give here a list of preference ids
 | sync_delay_in_seconds | time in seconds to wait after completing one export run, before running again
 | export_inactive_items | This setting only applies when exporting to CSV. Valid values are true (export all items) or false (do not export inactive items). Items that are nested under [Smart Field](https://support.safetyculture.com/templates/smart-fields/) will be 'inactive' if the smart field condition is not satisfied for these items.
 | media_sync_offset_in_seconds | time in seconds since an audit has been modified before it will by synced
@@ -225,7 +225,7 @@ export_options:
     filename: f3245d40-ea77-11e1-aff1-0800200c9a66
     csv:
         export_inactive_items: false
-export_profiles:
+preferences:
     template_3E631E46F466411B9C09AD804886A8B4:E15A6525-EFA5-4835-92F0-D11CA9F364F3
     template_3E631E46F466411B9C09AD804886A8B4:E50645A1-2851-4E92-B4EA-60C5CE7981BE
     ...
@@ -234,7 +234,7 @@ sync_delay_in_seconds: 36000
 media_sync_offset_in_seconds: 600
 ```
 
-Note: Templates for which there is no export profile id listed in the config file will be exported without a profile applied
+Note: Templates for which there is no preference id listed in the config file will be exported without a preference applied
 
 ### Naming the exported files
 
@@ -268,15 +268,15 @@ export_options:
 
 will result in all exported files named after the `Audit Title` field.
 
-### How to list available export profile IDs
-To list all available export profile IDs and their associated templates:
+### How to list available preference IDs
+To list all available preference IDs and their associated templates:
 
 ```
-iauditor_exporter --list_export_profiles
+iauditor_exporter --list_preferences
 ```
-To list export profile IDs associated with specific templates:
+To list preference IDs associated with specific templates:
 ```
-iauditor_exporter --list_export_profiles template_3E631E46F466411B9C09AD804886A8B4
+iauditor_exporter --list_preferences template_3E631E46F466411B9C09AD804886A8B4
 ```
 
 Multiple template IDs can be passed, separated by a space

@@ -35,16 +35,6 @@ class ExporterTestCase(unittest.TestCase):
         config_setting = {'export_options': {'export_path': r'C:\Users\Monty\Dropbox'}}
         self.assertEqual(exp.load_setting_export_path(logger, config_setting), config_setting['export_options']['export_path'])
 
-    def test_use_local_timezone_if_none_given(self):
-        config_settings = [{}, None, '']
-        for config_setting in config_settings:
-            message = '{0} should cause ' + str(get_localzone()) + ' to be returned'.format(str(config_setting))
-            self.assertEqual(exp.load_setting_export_timezone(logger, config_setting), (str(get_localzone())), msg=message)
-
-    def test_use_valid_timezone_from_settings_if_given(self):
-        config_setting = {'export_options': {'timezone': 'America/Chicago'}}
-        self.assertEqual(exp.load_setting_export_timezone(logger, config_setting), config_setting['export_options']['timezone'])
-
     def test_return_None_if_API_token_is_missing(self):
         config_settings = [{}, None, '']
         for config_setting in config_settings:
