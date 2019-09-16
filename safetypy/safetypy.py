@@ -300,12 +300,12 @@ class SafetyCulture:
             status = poll_status.json()
             logger = logging.getLogger('sp_logger')
             if 'status' in status.keys():
-                if status['status'] == 'IN PROGRESS':
+                if status['status'] == 'IN_PROGRESS':
                     logger.info(str(status['status']) + ' : ' + audit_id)
                     time.sleep(delay_in_seconds)
                     return self.poll_for_export(audit_id, export_job_id)
 
-                elif status['status'] == 'DONE':
+                elif status['status'] == 'SUCCESS':
                     logger.info(str(status['status']) + ' : ' + audit_id)
                     return status['url']
 
@@ -314,7 +314,7 @@ class SafetyCulture:
                         export_attempts += 1
                         logger.info('attempt # {0} exporting report for: ' + audit_id.format(str(export_attempts)))
                         retry_id = self.get_export_job_id(audit_id)
-                        return self.poll_for_export(audit_id, retry_id['id'])
+                        return self.poll_for_export(audit_id, retry_id['messageId'])
                     else:
                         logger.error('export for ' + audit_id + ' failed {0} times - skipping'.format(export_attempts))
             else:
