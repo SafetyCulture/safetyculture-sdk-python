@@ -226,14 +226,14 @@ class SafetyCulture:
         result = response.json() if response.status_code == requests.codes.ok else None
         return result
 
-    def get_export_job_id(self, audit_id, timezone=DEFAULT_EXPORT_TIMEZONE, export_profile_id=None,
+    def get_export_job_id(self, audit_id, timezone=DEFAULT_EXPORT_TIMEZONE, preference_id=None,
                           export_format=DEFAULT_EXPORT_FORMAT):
         """
         Request export job ID from API and return it
 
         :param audit_id:           audit_id to retrieve export_job_id for
         :param timezone:           timezone to apply to exports
-        :param export_profile_id:  export profile to apply to exports
+        :param preference_id:      preference to apply to exports
         :param export_format:      desired format of exported document
         :return:                   export job ID obtained from API
         """
@@ -242,15 +242,15 @@ class SafetyCulture:
             export_format = 'WORD' 
         export_data = {'format': export_format.upper()}
 
-        if export_profile_id is not None:
+        if preference_id is not None:
             profile_id_pattern = '^template_[a-fA-F0-9]{32}:' + GUID_PATTERN
-            profile_id_is_valid = re.match(profile_id_pattern, export_profile_id)
+            profile_id_is_valid = re.match(profile_id_pattern, preference_id)
             if profile_id_is_valid:
-                export_url += '&export_profile=' + export_profile_id
+                export_data['preference_id'] = preference_id.split(':')[1]
             else:
                 self.log_critical_error(ValueError,
-                                        'export_profile_id {0} does not match expected pattern'.format(
-                                            export_profile_id))
+                                        'preference_id {0} does not match expected pattern'.format(
+                                            preference_id))
 
         response = self.authenticated_request_post(export_url, data=json.dumps(export_data))
         result = response.json() if response.status_code == requests.codes.ok else None
