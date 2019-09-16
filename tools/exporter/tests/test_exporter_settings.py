@@ -15,11 +15,11 @@ logger = exp.configure_logger()
 
 class ExporterTestCase(unittest.TestCase):
 
-    def test_return_None_if_no_export_profile_mapping_was_given(self):
+    def test_return_None_if_no_preference_mapping_was_given(self):
         config_settings = [{}, None, '']
         for config_setting in config_settings:
             message = '{0} should cause None to be returned'.format(str(config_setting))
-            self.assertIsNone(exp.load_setting_export_profile_mapping(logger, config_setting), msg=message)
+            self.assertIsNone(exp.load_setting_preference_mapping(logger, config_setting), msg=message)
 
     def test_return_None_if_no_export_path_was_given(self):
         config_settings = [{}, None, '']
@@ -34,16 +34,6 @@ class ExporterTestCase(unittest.TestCase):
     def test_use_user_supplied_windows_style_export_path_if_given(self):
         config_setting = {'export_options': {'export_path': r'C:\Users\Monty\Dropbox'}}
         self.assertEqual(exp.load_setting_export_path(logger, config_setting), config_setting['export_options']['export_path'])
-
-    def test_use_local_timezone_if_none_given(self):
-        config_settings = [{}, None, '']
-        for config_setting in config_settings:
-            message = '{0} should cause ' + str(get_localzone()) + ' to be returned'.format(str(config_setting))
-            self.assertEqual(exp.load_setting_export_timezone(logger, config_setting), (str(get_localzone())), msg=message)
-
-    def test_use_valid_timezone_from_settings_if_given(self):
-        config_setting = {'export_options': {'timezone': 'America/Chicago'}}
-        self.assertEqual(exp.load_setting_export_timezone(logger, config_setting), config_setting['export_options']['timezone'])
 
     def test_return_None_if_API_token_is_missing(self):
         config_settings = [{}, None, '']

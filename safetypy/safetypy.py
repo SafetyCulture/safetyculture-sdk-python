@@ -1,6 +1,7 @@
 # coding=utf-8
 # Author: SafetyCulture
 # Copyright: © SafetyCulture 2016
+# pylint: disable=E1101
 
 import collections
 import json
@@ -15,8 +16,7 @@ from datetime import datetime
 import requests
 from getpass import getpass
 
-DEFAULT_EXPORT_TIMEZONE = 'Etc/UTC'
-DEFAULT_EXPORT_FORMAT = 'pdf'
+DEFAULT_EXPORT_FORMAT = 'PDF'
 GUID_PATTERN = '[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}$'
 HTTP_USER_AGENT_ID = 'safetyculture-python-sdk'
 
@@ -212,66 +212,44 @@ class SafetyCulture:
         self.log_http_status(response.status_code, log_message)
         return result
 
-    def get_export_profile_ids(self, template_id=None):
+    def get_preference_ids(self, template_id=None):
         """
-        Query API for all export profile IDs if no parameters are passed, else restrict to template_id passed
-        :param template_id: template_id to obtain export profiles for
-        :return:            JSON object containing template name: export profile pairs if no errors, or None
+        Query API for all preference IDs if no parameters are passed, else restrict to template_id passed
+        :param template_id: template_id to obtain export preferences for
+        :return:            JSON object containing list of preference objects
         """
-        profile_search_url = self.api_url + 'export_profiles/search'
+        preference_search_url = self.api_url + 'preferences/search'
         if template_id is not None:
-            profile_search_url += '?template=' + template_id
-        response = self.authenticated_request_get(profile_search_url)
+            preference_search_url += '?template_id=' + template_id
+        response = self.authenticated_request_get(preference_search_url)
         result = response.json() if response.status_code == requests.codes.ok else None
         return result
 
-    def get_export_profile(self, export_profile_id):
-        """
-        Query API for export profile corresponding to passed profile_id
-
-        :param export_profile_id:  Export profile ID of the profile to retrieve
-        :return:                   Export profile in JSON format
-        """
-        profile_id_pattern = '^template_[a-fA-F0-9]{32}:' + GUID_PATTERN
-        profile_id_is_valid = re.match(profile_id_pattern, export_profile_id)
-
-        if profile_id_is_valid:
-            export_profile_url = self.api_url + '/export_profiles/' + export_profile_id
-            response = self.authenticated_request_get(export_profile_url)
-            result = self.parse_json(response.content) if response.status_code == requests.codes.ok else None
-            log_message = 'on export profile retrieval of ' + export_profile_id
-
-            self.log_http_status(response.status_code, log_message)
-            return result
-        else:
-            self.log_critical_error(ValueError,
-                                    'export_profile_id {0} does not match expected pattern'.format(export_profile_id))
-            return None
-
-    def get_export_job_id(self, audit_id, timezone=DEFAULT_EXPORT_TIMEZONE, export_profile_id=None,
-                          export_format=DEFAULT_EXPORT_FORMAT):
+    def get_export_job_id(self, audit_id, preference_id=None, export_format=DEFAULT_EXPORT_FORMAT):
         """
         Request export job ID from API and return it
 
         :param audit_id:           audit_id to retrieve export_job_id for
-        :param timezone:           timezone to apply to exports
-        :param export_profile_id:  export profile to apply to exports
+        :param preference_id:      preference to apply to exports
         :param export_format:      desired format of exported document
         :return:                   export job ID obtained from API
         """
-        export_url = self.audit_url + audit_id + '/export?format=' + export_format + '&timezone=' + timezone
+        export_url = self.audit_url + audit_id + '/report'
+        if export_format == 'docx': # convert old command line format 
+            export_format = 'WORD' 
+        export_data = {'format': export_format.upper()}
 
-        if export_profile_id is not None:
-            profile_id_pattern = '^template_[a-fA-F0-9]{32}:' + GUID_PATTERN
-            profile_id_is_valid = re.match(profile_id_pattern, export_profile_id)
-            if profile_id_is_valid:
-                export_url += '&export_profile=' + export_profile_id
+        if preference_id is not None:
+            preference_id_pattern = '^template_[a-fA-F0-9]{32}:' + GUID_PATTERN
+            preference_id_is_valid = re.match(preference_id_pattern, preference_id)
+            if preference_id_is_valid:
+                export_data['preference_id'] = preference_id.split(':')[1]
             else:
                 self.log_critical_error(ValueError,
-                                        'export_profile_id {0} does not match expected pattern'.format(
-                                            export_profile_id))
+                                        'preference_id {0} does not match expected pattern'.format(
+                                            preference_id))
 
-        response = self.authenticated_request_post(export_url, data=None)
+        response = self.authenticated_request_post(export_url, data=json.dumps(export_data))
         result = response.json() if response.status_code == requests.codes.ok else None
         log_message = 'on request to ' + export_url
 
@@ -290,27 +268,27 @@ class SafetyCulture:
 
         if job_id_is_valid:
             delay_in_seconds = 5
-            poll_url = self.audit_url + audit_id + '/exports/' + export_job_id
+            poll_url = self.audit_url + audit_id + '/report/' + export_job_id
             export_attempts = 1
             poll_status = self.authenticated_request_get(poll_url)
             status = poll_status.json()
             logger = logging.getLogger('sp_logger')
             if 'status' in status.keys():
-                if status['status'] == 'IN PROGRESS':
+                if status['status'] == 'IN_PROGRESS':
                     logger.info(str(status['status']) + ' : ' + audit_id)
                     time.sleep(delay_in_seconds)
                     return self.poll_for_export(audit_id, export_job_id)
 
                 elif status['status'] == 'SUCCESS':
                     logger.info(str(status['status']) + ' : ' + audit_id)
-                    return status['href']
+                    return status['url']
 
                 else:
                     if export_attempts < 2:
                         export_attempts += 1
                         logger.info('attempt # {0} exporting report for: ' + audit_id.format(str(export_attempts)))
                         retry_id = self.get_export_job_id(audit_id)
-                        return self.poll_for_export(audit_id, retry_id['id'])
+                        return self.poll_for_export(audit_id, retry_id['messageId'])
                     else:
                         logger.error('export for ' + audit_id + ' failed {0} times - skipping'.format(export_attempts))
             else:
@@ -338,18 +316,16 @@ class SafetyCulture:
         except Exception as ex:
             self.log_critical_error(ex, 'Exception occurred while attempting download_export({0})'.format(export_href))
 
-    def get_export(self, audit_id, timezone=DEFAULT_EXPORT_TIMEZONE, export_profile_id=None,
-                   export_format=DEFAULT_EXPORT_FORMAT):
+    def get_export(self, audit_id, preference_id=None, export_format=DEFAULT_EXPORT_FORMAT):
         """
         Obtain exported document from API and return string representation of it
 
         :param audit_id:           audit_id of export to obtain
-        :param timezone:           timezone to apply to exports
-        :param export_profile_id:  ID of export profile to apply to exports
+        :param preference_id:  ID of preference to apply to exports
         :param export_format:      desired format of exported document
         :return:                   String representation of exported document
         """
-        export_job_id = self.get_export_job_id(audit_id, timezone, export_profile_id, export_format)['id']
+        export_job_id = self.get_export_job_id(audit_id, preference_id, export_format)['messageId']
         export_href = self.poll_for_export(audit_id, export_job_id)
 
         export_content = self.download_export(export_href)
