@@ -261,9 +261,7 @@ class SafetyCulture:
         :return:                   export job ID obtained from API
         """
         export_url = self.audit_url + audit_id + '/report'
-        export_data = {'format': 'PDF'}
-
-        print(export_data) 
+        export_data = {'format': export_format.upper()}
 
         if export_profile_id is not None:
             profile_id_pattern = '^template_[a-fA-F0-9]{32}:' + GUID_PATTERN
