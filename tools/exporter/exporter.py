@@ -716,12 +716,14 @@ def show_preferences_and_exit(list_preferences, sc_client):
 
     if len(list_preferences) > 0:
         for template_id in list_preferences:
-            profile = sc_client.get_preference_ids(template_id)
-            preference_id = str(profile['export_profiles'][0]['templates'][0]['name'])
-            profile_name = str(profile['export_profiles'][0]['name'])
-            profile_id = str(profile['export_profiles'][0]['id'])
-            print(row_format.format(template_name, profile_name, profile_id))
-            print(row_boundary)
+            preferences = sc_client.get_preference_ids(template_id)
+            for preference in preferences['preferences']:
+                preference_id = str(preference['id'])
+                preference_name = str(preference['label'])[:35]
+                is_global = str(preference['is_global'])
+                is_default = str(preference['is_default'])
+                print(row_format.format(preference_id, preference_name, is_global, is_default))
+                print(row_boundary)
         sys.exit()
     else:
         preferences = sc_client.get_preference_ids()

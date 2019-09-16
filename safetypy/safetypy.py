@@ -221,7 +221,7 @@ class SafetyCulture:
         """
         profile_search_url = self.api_url + 'preferences/search'
         if template_id is not None:
-            profile_search_url += '?template=' + template_id
+            profile_search_url += '?template_id=' + template_id
         response = self.authenticated_request_get(profile_search_url)
         result = response.json() if response.status_code == requests.codes.ok else None
         return result
