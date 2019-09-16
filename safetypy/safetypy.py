@@ -1,6 +1,7 @@
 # coding=utf-8
 # Author: SafetyCulture
 # Copyright: © SafetyCulture 2016
+# pylint: disable=E1101
 
 import collections
 import json
@@ -16,7 +17,7 @@ import requests
 from getpass import getpass
 
 DEFAULT_EXPORT_TIMEZONE = 'Etc/UTC'
-DEFAULT_EXPORT_FORMAT = 'pdf'
+DEFAULT_EXPORT_FORMAT = 'PDF'
 GUID_PATTERN = '[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}$'
 HTTP_USER_AGENT_ID = 'safetyculture-python-sdk'
 
@@ -259,7 +260,10 @@ class SafetyCulture:
         :param export_format:      desired format of exported document
         :return:                   export job ID obtained from API
         """
-        export_url = self.audit_url + audit_id + '/export?format=' + export_format + '&timezone=' + timezone
+        export_url = self.audit_url + audit_id + '/report'
+        export_data = {'format': 'PDF'}
+
+        print(export_data) 
 
         if export_profile_id is not None:
             profile_id_pattern = '^template_[a-fA-F0-9]{32}:' + GUID_PATTERN
@@ -271,7 +275,7 @@ class SafetyCulture:
                                         'export_profile_id {0} does not match expected pattern'.format(
                                             export_profile_id))
 
-        response = self.authenticated_request_post(export_url, data=None)
+        response = self.authenticated_request_post(export_url, data=json.dumps(export_data))
         result = response.json() if response.status_code == requests.codes.ok else None
         log_message = 'on request to ' + export_url
 
@@ -290,7 +294,7 @@ class SafetyCulture:
 
         if job_id_is_valid:
             delay_in_seconds = 5
-            poll_url = self.audit_url + audit_id + '/exports/' + export_job_id
+            poll_url = self.audit_url + audit_id + '/report/' + export_job_id
             export_attempts = 1
             poll_status = self.authenticated_request_get(poll_url)
             status = poll_status.json()
@@ -301,9 +305,9 @@ class SafetyCulture:
                     time.sleep(delay_in_seconds)
                     return self.poll_for_export(audit_id, export_job_id)
 
-                elif status['status'] == 'SUCCESS':
+                elif status['status'] == 'DONE':
                     logger.info(str(status['status']) + ' : ' + audit_id)
-                    return status['href']
+                    return status['url']
 
                 else:
                     if export_attempts < 2:
@@ -349,7 +353,7 @@ class SafetyCulture:
         :param export_format:      desired format of exported document
         :return:                   String representation of exported document
         """
-        export_job_id = self.get_export_job_id(audit_id, timezone, export_profile_id, export_format)['id']
+        export_job_id = self.get_export_job_id(audit_id, timezone, export_profile_id, export_format)['messageId']
         export_href = self.poll_for_export(audit_id, export_job_id)
 
         export_content = self.download_export(export_href)
