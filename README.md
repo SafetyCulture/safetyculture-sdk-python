@@ -267,12 +267,12 @@ export_options:
 will result in all exported files named after the `Audit Title` field.
 
 ### How to list available preference IDs
-To list all available preference IDs and their associated templates:
+To list all available global preference IDs and their associated templates:
 
 ```
 iauditor_exporter --list_preferences
 ```
-To list preference IDs associated with specific templates:
+To list global and template specific preference IDs associated with specific templates:
 ```
 iauditor_exporter --list_preferences template_3E631E46F466411B9C09AD804886A8B4
 ```
