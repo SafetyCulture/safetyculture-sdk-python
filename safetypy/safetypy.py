@@ -226,29 +226,6 @@ class SafetyCulture:
         result = response.json() if response.status_code == requests.codes.ok else None
         return result
 
-    def get_export_profile(self, export_profile_id):
-        """
-        Query API for export profile corresponding to passed profile_id
-
-        :param export_profile_id:  Export profile ID of the profile to retrieve
-        :return:                   Export profile in JSON format
-        """
-        profile_id_pattern = '^template_[a-fA-F0-9]{32}:' + GUID_PATTERN
-        profile_id_is_valid = re.match(profile_id_pattern, export_profile_id)
-
-        if profile_id_is_valid:
-            export_profile_url = self.api_url + '/export_profiles/' + export_profile_id
-            response = self.authenticated_request_get(export_profile_url)
-            result = self.parse_json(response.content) if response.status_code == requests.codes.ok else None
-            log_message = 'on export profile retrieval of ' + export_profile_id
-
-            self.log_http_status(response.status_code, log_message)
-            return result
-        else:
-            self.log_critical_error(ValueError,
-                                    'export_profile_id {0} does not match expected pattern'.format(export_profile_id))
-            return None
-
     def get_export_job_id(self, audit_id, timezone=DEFAULT_EXPORT_TIMEZONE, export_profile_id=None,
                           export_format=DEFAULT_EXPORT_FORMAT):
         """
