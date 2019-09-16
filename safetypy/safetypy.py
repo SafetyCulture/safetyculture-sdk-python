@@ -213,13 +213,13 @@ class SafetyCulture:
         self.log_http_status(response.status_code, log_message)
         return result
 
-    def get_export_profile_ids(self, template_id=None):
+    def get_preference_ids(self, template_id=None):
         """
         Query API for all export profile IDs if no parameters are passed, else restrict to template_id passed
         :param template_id: template_id to obtain export profiles for
         :return:            JSON object containing template name: export profile pairs if no errors, or None
         """
-        profile_search_url = self.api_url + 'export_profiles/search'
+        profile_search_url = self.api_url + 'preferences/search'
         if template_id is not None:
             profile_search_url += '?template=' + template_id
         response = self.authenticated_request_get(profile_search_url)
