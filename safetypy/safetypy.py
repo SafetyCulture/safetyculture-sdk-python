@@ -261,6 +261,8 @@ class SafetyCulture:
         :return:                   export job ID obtained from API
         """
         export_url = self.audit_url + audit_id + '/report'
+        if export_format == 'docx': # convert old command line format 
+            export_format = 'WORD' 
         export_data = {'format': export_format.upper()}
 
         if export_profile_id is not None:
