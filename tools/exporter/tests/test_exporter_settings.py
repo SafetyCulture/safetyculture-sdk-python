@@ -15,11 +15,11 @@ logger = exp.configure_logger()
 
 class ExporterTestCase(unittest.TestCase):
 
-    def test_return_None_if_no_export_profile_mapping_was_given(self):
+    def test_return_None_if_no_preference_mapping_was_given(self):
         config_settings = [{}, None, '']
         for config_setting in config_settings:
             message = '{0} should cause None to be returned'.format(str(config_setting))
-            self.assertIsNone(exp.load_setting_export_profile_mapping(logger, config_setting), msg=message)
+            self.assertIsNone(exp.load_setting_preference_mapping(logger, config_setting), msg=message)
 
     def test_return_None_if_no_export_path_was_given(self):
         config_settings = [{}, None, '']
