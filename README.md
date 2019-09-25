@@ -53,10 +53,17 @@ iauditor_exporter
 
 **Option 1 (re-use existing exports folder)**
 
-Install the latest version of the SDK and Export Tool: 
+Install the latest version of the SDK and Export Tool (you may need to substitute pip with pip3 depending on your configuration): 
 ```
 pip install safetyculture-sdk-python
 ```
+
+If the above command reports that everything is already up to date, run with the force command:
+```
+pip install safetyculture-sdk-python --force
+```
+
+
 
 Then navigate into your existing exporter folder. This is located within the cloned repository at `safetyculture-sdk-python/tools/exporter`
 and run `iauditor_exporter` from there. Export data will be saved in the existing `exports` folder, and the existing `last_successful.txt` file will 
