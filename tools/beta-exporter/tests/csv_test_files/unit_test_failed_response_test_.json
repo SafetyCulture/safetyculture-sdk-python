@@ -1,0 +1,303 @@
+{
+    "template_id": "template_af475eb93d1745c0b3d78b3a374e7449", 
+    "audit_id": "audit_b20000e6256949d9ba670ad2adab9ea6", 
+    "created_at": "2017-03-14T03:49:57.664Z", 
+    "modified_at": "2017-03-14T03:50:06.033Z", 
+    "audit_data": {
+        "score": 2, 
+        "total_score": 2, 
+        "score_percentage": 100, 
+        "name": "", 
+        "duration": 0, 
+        "authorship": {
+            "device_id": "8a582619-95e9-43e8-b671-5f316745b254", 
+            "owner": "Tony Oreglia", 
+            "owner_id": "user_fdd054fbf4ef4a069dfc86ff004e7a67", 
+            "author": "Tony Oreglia", 
+            "author_id": "user_fdd054fbf4ef4a069dfc86ff004e7a67"
+        }, 
+        "date_completed": "2017-03-14T03:50:05.897Z", 
+        "date_modified": "2017-03-14T03:50:05.899Z", 
+        "date_started": "2017-03-14T03:49:57.662Z"
+    }, 
+    "template_data": {
+        "authorship": {
+            "device_id": "8a582619-95e9-43e8-b671-5f316745b254", 
+            "owner": "Tony Oreglia", 
+            "owner_id": "user_fdd054fbf4ef4a069dfc86ff004e7a67", 
+            "author": "Tony Oreglia", 
+            "author_id": "user_fdd054fbf4ef4a069dfc86ff004e7a67"
+        }, 
+        "metadata": {
+            "description": "", 
+            "name": "failed response test"
+        }, 
+        "response_sets": {
+            "1719f13c-731e-48eb-9904-a272fec11299": {
+                "id": "1719f13c-731e-48eb-9904-a272fec11299", 
+                "responses": [
+                    {
+                        "id": "db925c40-b7c1-4105-9214-2e608b6bc05a", 
+                        "colour": "250,250,250", 
+                        "label": "horse", 
+                        "score": 1, 
+                        "short_label": "", 
+                        "enable_score": false
+                    }, 
+                    {
+                        "id": "d8e44c6e-9b64-4009-b256-441e26eb218b", 
+                        "colour": "250,250,250", 
+                        "label": "pig", 
+                        "score": 0, 
+                        "short_label": "", 
+                        "enable_score": false
+                    }, 
+                    {
+                        "id": "21b0aced-2d44-48da-9935-458ec7f1c93f", 
+                        "colour": "250,250,250", 
+                        "label": "spider", 
+                        "score": 0, 
+                        "short_label": "", 
+                        "enable_score": false
+                    }, 
+                    {
+                        "id": "da6e81a5-5d48-4e00-b28b-be87fcd9af31", 
+                        "colour": "250,250,250", 
+                        "label": "monkey", 
+                        "score": 0, 
+                        "short_label": "", 
+                        "enable_score": false
+                    }, 
+                    {
+                        "id": "6f5a61a9-1da0-43e1-9e24-2d37e68160ab", 
+                        "colour": "250,250,250", 
+                        "label": "fish", 
+                        "score": 0, 
+                        "short_label": "", 
+                        "enable_score": false
+                    }, 
+                    {
+                        "id": "d6c4e245-52e6-46b1-8649-f46166eb797d", 
+                        "colour": "250,250,250", 
+                        "label": "rocks", 
+                        "score": 0, 
+                        "short_label": "", 
+                        "enable_score": false
+                    }
+                ], 
+                "type": "list"
+            }, 
+            "6201a882-83c8-43bc-b102-205080604c19": {
+                "id": "6201a882-83c8-43bc-b102-205080604c19", 
+                "responses": [
+                    {
+                        "id": "2d85a110-0869-11e7-b67b-37b5b55312ec", 
+                        "colour": "250,250,250", 
+                        "label": "horse", 
+                        "score": 1, 
+                        "short_label": "", 
+                        "type": "text", 
+                        "enable_score": true
+                    }, 
+                    {
+                        "id": "2d8a8310-0869-11e7-b67b-37b5b55312ec", 
+                        "colour": "250,250,250", 
+                        "label": "monkey", 
+                        "score": 0, 
+                        "short_label": "", 
+                        "type": "text", 
+                        "enable_score": true
+                    }, 
+                    {
+                        "id": "2e537860-0869-11e7-b67b-37b5b55312ec", 
+                        "colour": "250,250,250", 
+                        "label": "spider", 
+                        "score": 1, 
+                        "short_label": "", 
+                        "type": "text", 
+                        "enable_score": true
+                    }, 
+                    {
+                        "id": "2e6a5bc0-0869-11e7-b67b-37b5b55312ec", 
+                        "colour": "250,250,250", 
+                        "label": "fish", 
+                        "score": 1, 
+                        "short_label": "", 
+                        "type": "text", 
+                        "enable_score": true
+                    }, 
+                    {
+                        "id": "2e7e58f0-0869-11e7-b67b-37b5b55312ec", 
+                        "colour": "250,250,250", 
+                        "label": "rocks", 
+                        "score": 1, 
+                        "short_label": "", 
+                        "type": "text", 
+                        "enable_score": true
+                    }
+                ], 
+                "type": "question"
+            }
+        }
+    }, 
+    "header_items": [
+        {
+            "item_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Title Page", 
+            "type": "section", 
+            "children": [
+                "f3245d46-ea77-11e1-aff1-0800200c9a66", 
+                "f3245d40-ea77-11e1-aff1-0800200c9a66", 
+                "f3245d41-ea77-11e1-aff1-0800200c9a66", 
+                "f3245d42-ea77-11e1-aff1-0800200c9a66", 
+                "f3245d43-ea77-11e1-aff1-0800200c9a66", 
+                "f3245d44-ea77-11e1-aff1-0800200c9a66", 
+                "f3245d45-ea77-11e1-aff1-0800200c9a66"
+            ]
+        }, 
+        {
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d46-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Document No.", 
+            "type": "textsingle", 
+            "responses": {
+                "text": "000001"
+            }
+        }, 
+        {
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d40-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Audit Title", 
+            "type": "textsingle"
+        }, 
+        {
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d41-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Client / Site", 
+            "type": "textsingle"
+        }, 
+        {
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d42-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Conducted on", 
+            "type": "datetime", 
+            "options": {
+                "weighting": 1, 
+                "enable_date": true, 
+                "enable_time": true
+            }, 
+            "responses": {
+                "datetime": "2017-03-14T03:49:59.000Z"
+            }
+        }, 
+        {
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d43-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Prepared by", 
+            "type": "textsingle", 
+            "responses": {
+                "text": "Tony Oreglia"
+            }
+        }, 
+        {
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d44-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Location", 
+            "type": "address", 
+            "responses": {}
+        }, 
+        {
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d45-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Personnel", 
+            "type": "text"
+        }
+    ], 
+    "items": [
+        {
+            "item_id": "901fd5e3-708a-4965-b128-8a2eddd3311e", 
+            "label": "Audit", 
+            "type": "section", 
+            "scoring": {
+                "combined_score": 2, 
+                "combined_max_score": 2, 
+                "combined_score_percentage": 100
+            }, 
+            "children": [
+                "836a5227-d042-43a4-b303-6e2a29fcf2eb", 
+                "119e6a32-fe1e-462b-9b18-7c775beb0385"
+            ]
+        }, 
+        {
+            "parent_id": "901fd5e3-708a-4965-b128-8a2eddd3311e", 
+            "item_id": "836a5227-d042-43a4-b303-6e2a29fcf2eb", 
+            "label": "all answers are failed responses", 
+            "type": "question", 
+            "scoring": {
+                "score": 1, 
+                "max_score": 1, 
+                "score_percentage": 100
+            }, 
+            "options": {
+                "weighting": 1, 
+                "response_set": "7bb1cb10-7020-11e2-bcfd-0800200c9a66", 
+                "failed_responses": [
+                    "8bcfbf00-e11b-11e1-9b23-0800200c9a66", 
+                    "8bcfbf01-e11b-11e1-9b23-0800200c9a66", 
+                    "8bcfbf02-e11b-11e1-9b23-0800200c9a66"
+                ]
+            }, 
+            "responses": {
+                "selected": [
+                    {
+                        "id": "8bcfbf00-e11b-11e1-9b23-0800200c9a66", 
+                        "type": "text", 
+                        "label": "Yes", 
+                        "short_label": "Y", 
+                        "colour": "162,182,58", 
+                        "image": "", 
+                        "enable_score": true, 
+                        "score": 1
+                    }
+                ], 
+                "failed": true
+            }
+        }, 
+        {
+            "parent_id": "901fd5e3-708a-4965-b128-8a2eddd3311e", 
+            "item_id": "119e6a32-fe1e-462b-9b18-7c775beb0385", 
+            "label": "all animals (and the rocks) are failed", 
+            "type": "question", 
+            "scoring": {
+                "score": 1, 
+                "max_score": 1, 
+                "score_percentage": 100
+            }, 
+            "options": {
+                "weighting": 1, 
+                "response_set": "6201a882-83c8-43bc-b102-205080604c19", 
+                "failed_responses": [
+                    "2d85a110-0869-11e7-b67b-37b5b55312ec", 
+                    "2d8a8310-0869-11e7-b67b-37b5b55312ec", 
+                    "2e537860-0869-11e7-b67b-37b5b55312ec", 
+                    "2e6a5bc0-0869-11e7-b67b-37b5b55312ec", 
+                    "2e7e58f0-0869-11e7-b67b-37b5b55312ec"
+                ]
+            }, 
+            "responses": {
+                "selected": [
+                    {
+                        "id": "2e6a5bc0-0869-11e7-b67b-37b5b55312ec", 
+                        "colour": "250,250,250", 
+                        "label": "fish", 
+                        "score": 1, 
+                        "short_label": "", 
+                        "type": "text", 
+                        "enable_score": true
+                    }
+                ], 
+                "failed": true
+            }
+        }
+    ]
+}

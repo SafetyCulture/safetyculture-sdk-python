@@ -1,0 +1,44 @@
+"ItemType","Label","Response","Comment","MediaHypertextReference","Latitude","Longitude","ItemScore","ItemMaxScore","ItemScorePercentage","Mandatory","FailedResponse","Inactive","ItemID","ResponseID","ParentID","AuditOwner","AuditAuthor","AuditName","AuditScore","AuditMaxScore","AuditScorePercentage","AuditDuration","DateStarted","DateCompleted","DateModified","AuditID","TemplateID","TemplateName","TemplateAuthor","ItemCategory","DocumentNo","ConductedOn","PreparedBy","Location","Personnel","ClientSite"
+"section","Title Page","","","","","","","","","False","False","False","f3245d39-ea77-11e1-aff1-0800200c9a66","","","Tony Oreglia","Tony Oreglia","Answered 6","6","10","60","32","04 March 2017 10:11 AM","04 March 2017 10:12 AM","04 March 2017 10:12 AM","audit_D82DDDACE8CC4ECB914BC71D1A7365E0","template_9e24a24722994a80b8f78b242d3e6ae8","single slider field","Tony Oreglia","","000001","2017-03-04T10:11:54.000Z","Tony Oreglia","7 Gilbert Street
+Dover Heights NSW 2030
+Australia
+(-33.8707769, 151.278377)","",""
+"textsingle","Document No.","000001","","","","","","","","False","False","False","f3245d46-ea77-11e1-aff1-0800200c9a66","","f3245d39-ea77-11e1-aff1-0800200c9a66","Tony Oreglia","Tony Oreglia","Answered 6","6","10","60","32","04 March 2017 10:11 AM","04 March 2017 10:12 AM","04 March 2017 10:12 AM","audit_D82DDDACE8CC4ECB914BC71D1A7365E0","template_9e24a24722994a80b8f78b242d3e6ae8","single slider field","Tony Oreglia","Title Page","000001","2017-03-04T10:11:54.000Z","Tony Oreglia","7 Gilbert Street
+Dover Heights NSW 2030
+Australia
+(-33.8707769, 151.278377)","",""
+"textsingle","Audit Title","Answered 6","","","","","","","","False","False","False","f3245d40-ea77-11e1-aff1-0800200c9a66","","f3245d39-ea77-11e1-aff1-0800200c9a66","Tony Oreglia","Tony Oreglia","Answered 6","6","10","60","32","04 March 2017 10:11 AM","04 March 2017 10:12 AM","04 March 2017 10:12 AM","audit_D82DDDACE8CC4ECB914BC71D1A7365E0","template_9e24a24722994a80b8f78b242d3e6ae8","single slider field","Tony Oreglia","Title Page","000001","2017-03-04T10:11:54.000Z","Tony Oreglia","7 Gilbert Street
+Dover Heights NSW 2030
+Australia
+(-33.8707769, 151.278377)","",""
+"textsingle","Client / Site","","","","","","","","","False","False","False","f3245d41-ea77-11e1-aff1-0800200c9a66","","f3245d39-ea77-11e1-aff1-0800200c9a66","Tony Oreglia","Tony Oreglia","Answered 6","6","10","60","32","04 March 2017 10:11 AM","04 March 2017 10:12 AM","04 March 2017 10:12 AM","audit_D82DDDACE8CC4ECB914BC71D1A7365E0","template_9e24a24722994a80b8f78b242d3e6ae8","single slider field","Tony Oreglia","Title Page","000001","2017-03-04T10:11:54.000Z","Tony Oreglia","7 Gilbert Street
+Dover Heights NSW 2030
+Australia
+(-33.8707769, 151.278377)","",""
+"datetime","Conducted on","04 March 2017 10:11 AM","","","","","","","","False","False","False","f3245d42-ea77-11e1-aff1-0800200c9a66","","f3245d39-ea77-11e1-aff1-0800200c9a66","Tony Oreglia","Tony Oreglia","Answered 6","6","10","60","32","04 March 2017 10:11 AM","04 March 2017 10:12 AM","04 March 2017 10:12 AM","audit_D82DDDACE8CC4ECB914BC71D1A7365E0","template_9e24a24722994a80b8f78b242d3e6ae8","single slider field","Tony Oreglia","Title Page","000001","2017-03-04T10:11:54.000Z","Tony Oreglia","7 Gilbert Street
+Dover Heights NSW 2030
+Australia
+(-33.8707769, 151.278377)","",""
+"textsingle","Prepared by","Tony Oreglia","","","","","","","","False","False","False","f3245d43-ea77-11e1-aff1-0800200c9a66","","f3245d39-ea77-11e1-aff1-0800200c9a66","Tony Oreglia","Tony Oreglia","Answered 6","6","10","60","32","04 March 2017 10:11 AM","04 March 2017 10:12 AM","04 March 2017 10:12 AM","audit_D82DDDACE8CC4ECB914BC71D1A7365E0","template_9e24a24722994a80b8f78b242d3e6ae8","single slider field","Tony Oreglia","Title Page","000001","2017-03-04T10:11:54.000Z","Tony Oreglia","7 Gilbert Street
+Dover Heights NSW 2030
+Australia
+(-33.8707769, 151.278377)","",""
+"address","Location","7 Gilbert Street
+Dover Heights NSW 2030
+Australia
+(-33.8707769, 151.278377)","",""," -33.8707769","151.278377","","","","False","False","False","f3245d44-ea77-11e1-aff1-0800200c9a66","","f3245d39-ea77-11e1-aff1-0800200c9a66","Tony Oreglia","Tony Oreglia","Answered 6","6","10","60","32","04 March 2017 10:11 AM","04 March 2017 10:12 AM","04 March 2017 10:12 AM","audit_D82DDDACE8CC4ECB914BC71D1A7365E0","template_9e24a24722994a80b8f78b242d3e6ae8","single slider field","Tony Oreglia","Title Page","000001","2017-03-04T10:11:54.000Z","Tony Oreglia","7 Gilbert Street
+Dover Heights NSW 2030
+Australia
+(-33.8707769, 151.278377)","",""
+"text","Personnel","","","","","","","","","False","False","False","f3245d45-ea77-11e1-aff1-0800200c9a66","","f3245d39-ea77-11e1-aff1-0800200c9a66","Tony Oreglia","Tony Oreglia","Answered 6","6","10","60","32","04 March 2017 10:11 AM","04 March 2017 10:12 AM","04 March 2017 10:12 AM","audit_D82DDDACE8CC4ECB914BC71D1A7365E0","template_9e24a24722994a80b8f78b242d3e6ae8","single slider field","Tony Oreglia","Title Page","000001","2017-03-04T10:11:54.000Z","Tony Oreglia","7 Gilbert Street
+Dover Heights NSW 2030
+Australia
+(-33.8707769, 151.278377)","",""
+"section","Audit","","","","","","6","10","60","False","False","False","e9b2ecaa-6d29-47a5-889b-d85710c0e662","","","Tony Oreglia","Tony Oreglia","Answered 6","6","10","60","32","04 March 2017 10:11 AM","04 March 2017 10:12 AM","04 March 2017 10:12 AM","audit_D82DDDACE8CC4ECB914BC71D1A7365E0","template_9e24a24722994a80b8f78b242d3e6ae8","single slider field","Tony Oreglia","","000001","2017-03-04T10:11:54.000Z","Tony Oreglia","7 Gilbert Street
+Dover Heights NSW 2030
+Australia
+(-33.8707769, 151.278377)","",""
+"slider","how old is your dog? ","6","","","","","6","10","60","False","False","False","50989550-ffda-4abe-a18a-5c1879b22acc","","e9b2ecaa-6d29-47a5-889b-d85710c0e662","Tony Oreglia","Tony Oreglia","Answered 6","6","10","60","32","04 March 2017 10:11 AM","04 March 2017 10:12 AM","04 March 2017 10:12 AM","audit_D82DDDACE8CC4ECB914BC71D1A7365E0","template_9e24a24722994a80b8f78b242d3e6ae8","single slider field","Tony Oreglia","Audit","000001","2017-03-04T10:11:54.000Z","Tony Oreglia","7 Gilbert Street
+Dover Heights NSW 2030
+Australia
+(-33.8707769, 151.278377)","",""

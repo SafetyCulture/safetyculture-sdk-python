@@ -1,0 +1,1365 @@
+{
+    "template_id": "template_c3dc25ed4bee4093b74f9fe06451ca80", 
+    "audit_id": "audit_db47c084b11f468db0b96e7e0f60c3f5", 
+    "created_at": "2016-06-02T22:50:24.067Z", 
+    "modified_at": "2016-06-06T05:39:24.865Z", 
+    "assets": [], 
+    "audit_data": {
+        "score": 2, 
+        "total_score": 40, 
+        "score_percentage": 5, 
+        "name": "", 
+        "duration": 37, 
+        "authorship": {
+            "device_id": "437020c1492eba13", 
+            "owner": "Tony Oreglia", 
+            "owner_id": "user_fdd054fbf4ef4a069dfc86ff004e7a67", 
+            "author": "Tony Oreglia", 
+            "author_id": "user_fdd054fbf4ef4a069dfc86ff004e7a67"
+        }, 
+        "date_completed": "2016-06-02T22:48:04.000Z", 
+        "date_modified": "2016-06-06T05:39:24.865Z", 
+        "date_started": "2016-06-02T22:46:27.000Z"
+    }, 
+    "template_data": {
+        "authorship": {
+            "device_id": "8a582619-95e9-43e8-b671-5f316745b254", 
+            "owner": "Tony Oreglia", 
+            "owner_id": "user_fdd054fbf4ef4a069dfc86ff004e7a67", 
+            "author": "Tony Oreglia", 
+            "author_id": "user_fdd054fbf4ef4a069dfc86ff004e7a67"
+        }, 
+        "metadata": {
+            "description": "Provides assessment performance in rugby competition. Can be done on one's self, or athlete under observation. \n\nThis template can be used by Athletic recruiters visiting a number of Athletes. \n\nThis template can be used by a coach, asking his players to self assess after each game. \n\nAnalytics in this case would be of huge value to teams, and recruiters. ", 
+            "name": "Rugby Union Contest Self Assessment", 
+            "image": {
+                "date_created": "2016-05-23T09:08:24.000Z", 
+                "file_ext": "jpg", 
+                "label": "Waverley_Rugby_Club_logo.jpg", 
+                "media_id": "09297e98-6925-4549-87d1-72c6d73fd3fa", 
+                "href": "https://api.safetyculture.io/audits/audit_db47c084b11f468db0b96e7e0f60c3f5/media/09297e98-6925-4549-87d1-72c6d73fd3fa"
+            }
+        }, 
+        "response_sets": {
+            "7492962B-61EF-4595-BF95-DCAE205D6AEB": {
+                "id": "7492962B-61EF-4595-BF95-DCAE205D6AEB", 
+                "responses": [
+                    {
+                        "id": "67ED2450-5899-4FD3-9947-30F41B0622D6", 
+                        "colour": "237,25,25", 
+                        "label": "offsides", 
+                        "score": 1, 
+                        "short_label": "", 
+                        "type": "text", 
+                        "enable_score": false
+                    }, 
+                    {
+                        "id": "3187E17C-5AD8-4F39-A0EF-6BC9B3FC3925", 
+                        "colour": "74,80,209", 
+                        "label": "knock on", 
+                        "score": 1, 
+                        "short_label": "", 
+                        "type": "text", 
+                        "enable_score": false
+                    }, 
+                    {
+                        "id": "320C1AA3-96DC-4B18-9E55-D5C9B83C84BE", 
+                        "colour": "21,222,65", 
+                        "label": "out of bounds", 
+                        "score": 1, 
+                        "short_label": "", 
+                        "type": "text", 
+                        "enable_score": false
+                    }, 
+                    {
+                        "id": "4FF5FB06-0960-406D-8A31-929CF6035E9E", 
+                        "colour": "41,209,189", 
+                        "label": "high tackle", 
+                        "score": 1, 
+                        "short_label": "", 
+                        "type": "text", 
+                        "enable_score": false
+                    }, 
+                    {
+                        "id": "9D3D62C2-87FD-4FF4-BD63-568A1D311824", 
+                        "colour": "240,217,16", 
+                        "label": "hands in the ruck", 
+                        "score": 1, 
+                        "short_label": "", 
+                        "type": "text", 
+                        "enable_score": false
+                    }, 
+                    {
+                        "id": "B30AD3E8-2049-4C1F-8B8A-5167575F0CBF", 
+                        "colour": "242,113,40", 
+                        "label": "not releasing tacklee", 
+                        "score": 1, 
+                        "short_label": "", 
+                        "type": "text", 
+                        "enable_score": false
+                    }, 
+                    {
+                        "id": "28F653B1-09B8-48FF-8D5B-DCBBE6C96A69", 
+                        "colour": "128,128,128", 
+                        "label": "not releasing ball once tackled", 
+                        "score": 1, 
+                        "short_label": "", 
+                        "type": "text", 
+                        "enable_score": false
+                    }, 
+                    {
+                        "id": "925A70BF-D24A-48B8-BFE1-5A00345DC0E3", 
+                        "colour": "128,128,128", 
+                        "label": "not wrapping tacklee", 
+                        "score": 1, 
+                        "short_label": "", 
+                        "type": "text", 
+                        "enable_score": false
+                    }, 
+                    {
+                        "id": "353FC692-B86C-4588-82D7-A995D4BE5B63", 
+                        "colour": "128,128,128", 
+                        "label": "off your feet in the ruck", 
+                        "score": 1, 
+                        "short_label": "", 
+                        "type": "text", 
+                        "enable_score": false
+                    }, 
+                    {
+                        "id": "BBF4B37F-F472-4498-992D-83A566A403A8", 
+                        "colour": "128,128,128", 
+                        "label": "not through the the gate ", 
+                        "score": 1, 
+                        "short_label": "", 
+                        "type": "text", 
+                        "enable_score": false
+                    }, 
+                    {
+                        "id": "B787ABF6-5E51-4180-B645-0C85F60E1F90", 
+                        "colour": "128,128,128", 
+                        "label": "other", 
+                        "score": 1, 
+                        "short_label": "", 
+                        "type": "text", 
+                        "enable_score": false
+                    }
+                ], 
+                "type": "list"
+            }, 
+            "795c6471-67c2-412c-a894-609f7958b96e": {
+                "id": "795c6471-67c2-412c-a894-609f7958b96e", 
+                "responses": [
+                    {
+                        "id": "db6c7370-20c6-11e6-98ce-57faf1ac8331", 
+                        "colour": "58,232,14", 
+                        "label": "Yes", 
+                        "score": 1, 
+                        "short_label": "Y", 
+                        "type": "text", 
+                        "enable_score": true
+                    }, 
+                    {
+                        "id": "db802280-20c6-11e6-98ce-57faf1ac8331", 
+                        "colour": "227,14,14", 
+                        "label": "No", 
+                        "score": 0, 
+                        "short_label": "N", 
+                        "type": "text", 
+                        "enable_score": true
+                    }, 
+                    {
+                        "id": "f94f8350-20c6-11e6-98ce-57faf1ac8331", 
+                        "colour": "250,242,242", 
+                        "label": "N/A", 
+                        "score": 0, 
+                        "short_label": "n/a", 
+                        "type": "text", 
+                        "enable_score": false
+                    }
+                ], 
+                "type": "question"
+            }
+        }
+    }, 
+    "header_items": [
+        {
+            "item_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Information", 
+            "type": "section", 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }, 
+            "children": [
+                "f3245d46-ea77-11e1-aff1-0800200c9a66", 
+                "f3245d40-ea77-11e1-aff1-0800200c9a66", 
+                "f3245d41-ea77-11e1-aff1-0800200c9a66", 
+                "f3245d42-ea77-11e1-aff1-0800200c9a66", 
+                "f3245d43-ea77-11e1-aff1-0800200c9a66", 
+                "f3245d44-ea77-11e1-aff1-0800200c9a66", 
+                "f3245d45-ea77-11e1-aff1-0800200c9a66"
+            ]
+        }, 
+        {
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d46-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Document No.", 
+            "type": "textsingle", 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": "1234"
+            }
+        }, 
+        {
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d40-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Audit Title", 
+            "type": "textsingle", 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d41-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Client / Site", 
+            "type": "textsingle", 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d42-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Conducted on", 
+            "type": "datetime", 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false, 
+                "enable_date": true, 
+                "enable_time": true
+            }, 
+            "responses": {
+                "datetime": "2016-06-02T22:46:27.000Z"
+            }
+        }, 
+        {
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d43-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Prepared by", 
+            "type": "textsingle", 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": "Tony Oreglia"
+            }
+        }, 
+        {
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d44-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Location", 
+            "type": "address", 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d45-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Personnel", 
+            "type": "text", 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }
+    ], 
+    "items": [
+        {
+            "item_id": "f67ee3a9-aa4e-4f39-94c5-38be26c7c8f5", 
+            "label": "Audit", 
+            "type": "section", 
+            "scoring": {
+                "combined_score": 2, 
+                "combined_max_score": 40, 
+                "combined_score_percentage": 5
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }, 
+            "children": [
+                "C25D8E80-D704-441E-B52A-5BE86A2B41E7", 
+                "18fda019-e426-4e52-a4dc-932dbdeb8385", 
+                "37ce2dfe-e6eb-492a-8004-39272065041b", 
+                "B80BA6DA-D656-4166-9FDD-DFA76764AF38", 
+                "469e415f-9803-47d2-becd-0a8997dcc504", 
+                "EA84ACF7-7BA7-4638-AA02-8613061F53C7", 
+                "08A28A04-BA00-4866-A90F-F8BED06E7372", 
+                "61FCF6CB-04F0-469B-A7DD-7F25D8FD6DC7", 
+                "22FB791C-9166-4B02-AA63-719BD9A69125", 
+                "EC3992CC-97EB-4C7F-8FF6-02E660C6BBC0", 
+                "DFBDC247-631A-4182-9051-4B2099374A71", 
+                "36995942-5C92-4989-9A61-38CD05E4658A"
+            ]
+        }, 
+        {
+            "parent_id": "f67ee3a9-aa4e-4f39-94c5-38be26c7c8f5", 
+            "item_id": "C25D8E80-D704-441E-B52A-5BE86A2B41E7", 
+            "label": "When was this game played?", 
+            "type": "datetime", 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false, 
+                "enable_date": true, 
+                "enable_time": true
+            }, 
+            "responses": {
+                "datetime": null
+            }
+        }, 
+        {
+            "parent_id": "f67ee3a9-aa4e-4f39-94c5-38be26c7c8f5", 
+            "item_id": "18fda019-e426-4e52-a4dc-932dbdeb8385", 
+            "label": "Who was this game played against? ", 
+            "type": "textsingle", 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "parent_id": "f67ee3a9-aa4e-4f39-94c5-38be26c7c8f5", 
+            "item_id": "37ce2dfe-e6eb-492a-8004-39272065041b", 
+            "label": "Preparation ", 
+            "type": "category", 
+            "scoring": {
+                "combined_score": 0, 
+                "combined_max_score": 7, 
+                "combined_score_percentage": 0
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }, 
+            "children": [
+                "cb651110-7e3d-4d14-b24d-b31145542426", 
+                "f9be0928-8ec1-439e-9b4c-0bb749c85978", 
+                "36c89360-3324-4fb1-b4b3-fce5d7c024bc", 
+                "ba45e4c6-bf28-4f46-962b-7eeda97ed704", 
+                "ae0fd9ea-35c5-4ae2-ad2e-1d189ce55f73", 
+                "ba6be8fa-2dd0-4269-b176-0cac6fb74a62", 
+                "84a89a6e-e6a9-4793-b0fb-b158597afb07"
+            ]
+        }, 
+        {
+            "parent_id": "37ce2dfe-e6eb-492a-8004-39272065041b", 
+            "item_id": "cb651110-7e3d-4d14-b24d-b31145542426", 
+            "label": "Did you come prepared with all necessary gear for the competition? ", 
+            "type": "question", 
+            "scoring": {
+                "score": 0, 
+                "max_score": 1, 
+                "score_percentage": 0
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "response_set": "795c6471-67c2-412c-a894-609f7958b96e", 
+                "failed_responses": [], 
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": ""
+            }
+        }, 
+        {
+            "parent_id": "37ce2dfe-e6eb-492a-8004-39272065041b", 
+            "item_id": "f9be0928-8ec1-439e-9b4c-0bb749c85978", 
+            "label": "Did you visualize doing the fundamentals successfully? Rucking, Tackling, Running", 
+            "type": "question", 
+            "scoring": {
+                "score": 0, 
+                "max_score": 1, 
+                "score_percentage": 0
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "response_set": "7bb1cb10-7020-11e2-bcfd-0800200c9a66", 
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": ""
+            }
+        }, 
+        {
+            "parent_id": "37ce2dfe-e6eb-492a-8004-39272065041b", 
+            "item_id": "36c89360-3324-4fb1-b4b3-fce5d7c024bc", 
+            "label": "Did hydrate the day before and day of the game? ", 
+            "type": "question", 
+            "scoring": {
+                "score": 0, 
+                "max_score": 1, 
+                "score_percentage": 0
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "response_set": "7bb1cb10-7020-11e2-bcfd-0800200c9a66", 
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": ""
+            }
+        }, 
+        {
+            "parent_id": "37ce2dfe-e6eb-492a-8004-39272065041b", 
+            "item_id": "ba45e4c6-bf28-4f46-962b-7eeda97ed704", 
+            "label": "Did you have a good dinner the night before, and healthy light breakfast / lunch day of?", 
+            "type": "question", 
+            "scoring": {
+                "score": 0, 
+                "max_score": 1, 
+                "score_percentage": 0
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "response_set": "7bb1cb10-7020-11e2-bcfd-0800200c9a66", 
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": ""
+            }
+        }, 
+        {
+            "parent_id": "37ce2dfe-e6eb-492a-8004-39272065041b", 
+            "item_id": "ae0fd9ea-35c5-4ae2-ad2e-1d189ce55f73", 
+            "label": "Did you get into the correct mindset the day before? Motivated, focused, ambitious, mean, confident", 
+            "type": "question", 
+            "scoring": {
+                "score": 0, 
+                "max_score": 1, 
+                "score_percentage": 0
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "response_set": "7bb1cb10-7020-11e2-bcfd-0800200c9a66", 
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": ""
+            }
+        }, 
+        {
+            "parent_id": "37ce2dfe-e6eb-492a-8004-39272065041b", 
+            "item_id": "ba6be8fa-2dd0-4269-b176-0cac6fb74a62", 
+            "label": "Did you get 2 conditioning sessions in the week of the game? ", 
+            "type": "question", 
+            "scoring": {
+                "score": 0, 
+                "max_score": 1, 
+                "score_percentage": 0
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "response_set": "7bb1cb10-7020-11e2-bcfd-0800200c9a66", 
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": ""
+            }
+        }, 
+        {
+            "parent_id": "37ce2dfe-e6eb-492a-8004-39272065041b", 
+            "item_id": "84a89a6e-e6a9-4793-b0fb-b158597afb07", 
+            "label": "Did you get 2 strength sessions in the week of the game? ", 
+            "type": "question", 
+            "scoring": {
+                "score": 0, 
+                "max_score": 1, 
+                "score_percentage": 0
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "response_set": "7bb1cb10-7020-11e2-bcfd-0800200c9a66", 
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": ""
+            }
+        }, 
+        {
+            "parent_id": "f67ee3a9-aa4e-4f39-94c5-38be26c7c8f5", 
+            "item_id": "B80BA6DA-D656-4166-9FDD-DFA76764AF38", 
+            "label": "Preparation ", 
+            "type": "category", 
+            "scoring": {
+                "combined_score": 0, 
+                "combined_max_score": 7, 
+                "combined_score_percentage": 0
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }, 
+            "children": [
+                "07a8c502-a7cc-43eb-b5f7-bb3e372e181b", 
+                "f46f94ce-3267-493c-822b-59ef3d88f0d9", 
+                "315a049e-7345-400c-bf92-81b60e18feb9", 
+                "6f794c13-0570-4870-912a-b66cf7ae83bb", 
+                "4a33cfc0-baab-41c9-931b-fbc30621ce5d", 
+                "76fd7b1d-1e9f-452d-8996-b61becb3985d", 
+                "626bfac9-6206-4350-b50d-d2e579a2ffdc"
+            ]
+        }, 
+        {
+            "parent_id": "B80BA6DA-D656-4166-9FDD-DFA76764AF38", 
+            "item_id": "07a8c502-a7cc-43eb-b5f7-bb3e372e181b", 
+            "label": "Did you come prepared with all necessary gear for the competition? ", 
+            "type": "question", 
+            "scoring": {
+                "score": 0, 
+                "max_score": 1, 
+                "score_percentage": 0
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "response_set": "795c6471-67c2-412c-a894-609f7958b96e", 
+                "failed_responses": [], 
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": ""
+            }
+        }, 
+        {
+            "parent_id": "B80BA6DA-D656-4166-9FDD-DFA76764AF38", 
+            "item_id": "f46f94ce-3267-493c-822b-59ef3d88f0d9", 
+            "label": "Did you visualize doing the fundamentals successfully? Rucking, Tackling, Running", 
+            "type": "question", 
+            "scoring": {
+                "score": 0, 
+                "max_score": 1, 
+                "score_percentage": 0
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "response_set": "7bb1cb10-7020-11e2-bcfd-0800200c9a66", 
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": ""
+            }
+        }, 
+        {
+            "parent_id": "B80BA6DA-D656-4166-9FDD-DFA76764AF38", 
+            "item_id": "315a049e-7345-400c-bf92-81b60e18feb9", 
+            "label": "Did hydrate the day before and day of the game? ", 
+            "type": "question", 
+            "scoring": {
+                "score": 0, 
+                "max_score": 1, 
+                "score_percentage": 0
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "response_set": "7bb1cb10-7020-11e2-bcfd-0800200c9a66", 
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": ""
+            }
+        }, 
+        {
+            "parent_id": "B80BA6DA-D656-4166-9FDD-DFA76764AF38", 
+            "item_id": "6f794c13-0570-4870-912a-b66cf7ae83bb", 
+            "label": "Did you have a good dinner the night before, and healthy light breakfast / lunch day of?", 
+            "type": "question", 
+            "scoring": {
+                "score": 0, 
+                "max_score": 1, 
+                "score_percentage": 0
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "response_set": "7bb1cb10-7020-11e2-bcfd-0800200c9a66", 
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": ""
+            }
+        }, 
+        {
+            "parent_id": "B80BA6DA-D656-4166-9FDD-DFA76764AF38", 
+            "item_id": "4a33cfc0-baab-41c9-931b-fbc30621ce5d", 
+            "label": "Did you get into the correct mindset the day before? Motivated, focused, ambitious, mean, confident", 
+            "type": "question", 
+            "scoring": {
+                "score": 0, 
+                "max_score": 1, 
+                "score_percentage": 0
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "response_set": "7bb1cb10-7020-11e2-bcfd-0800200c9a66", 
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": ""
+            }
+        }, 
+        {
+            "parent_id": "B80BA6DA-D656-4166-9FDD-DFA76764AF38", 
+            "item_id": "76fd7b1d-1e9f-452d-8996-b61becb3985d", 
+            "label": "Did you get 2 conditioning sessions in the week of the game? ", 
+            "type": "question", 
+            "scoring": {
+                "score": 0, 
+                "max_score": 1, 
+                "score_percentage": 0
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "response_set": "7bb1cb10-7020-11e2-bcfd-0800200c9a66", 
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": ""
+            }
+        }, 
+        {
+            "parent_id": "B80BA6DA-D656-4166-9FDD-DFA76764AF38", 
+            "item_id": "626bfac9-6206-4350-b50d-d2e579a2ffdc", 
+            "label": "Did you get 2 strength sessions in the week of the game? ", 
+            "type": "question", 
+            "scoring": {
+                "score": 0, 
+                "max_score": 1, 
+                "score_percentage": 0
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "response_set": "7bb1cb10-7020-11e2-bcfd-0800200c9a66", 
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": ""
+            }
+        }, 
+        {
+            "parent_id": "f67ee3a9-aa4e-4f39-94c5-38be26c7c8f5", 
+            "item_id": "469e415f-9803-47d2-becd-0a8997dcc504", 
+            "label": "Offence", 
+            "type": "category", 
+            "scoring": {
+                "combined_score": 0, 
+                "combined_max_score": 5, 
+                "combined_score_percentage": 0
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }, 
+            "children": [
+                "6af55f27-da0c-433b-933d-0b58ac5f5b74", 
+                "823557EF-98FA-47F0-9817-55E190021FFA", 
+                "9238D887-5190-4B5E-8BB9-C07FD53BEE90", 
+                "aec472ca-2562-4bd2-88d3-e59575eb94b8", 
+                "d1c3fb90-76b8-4990-80f8-537cdcfe06d6"
+            ]
+        }, 
+        {
+            "parent_id": "469e415f-9803-47d2-becd-0a8997dcc504", 
+            "item_id": "6af55f27-da0c-433b-933d-0b58ac5f5b74", 
+            "label": "Did you keep you eyes up, to see the competition, and protect your neck while carrying the ball? ", 
+            "type": "question", 
+            "scoring": {
+                "score": 0, 
+                "max_score": 1, 
+                "score_percentage": 0
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "response_set": "7bb1cb10-7020-11e2-bcfd-0800200c9a66", 
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": ""
+            }
+        }, 
+        {
+            "parent_id": "469e415f-9803-47d2-becd-0a8997dcc504", 
+            "item_id": "823557EF-98FA-47F0-9817-55E190021FFA", 
+            "label": "Did you run for the gaps between players when carrying the ball?", 
+            "type": "question", 
+            "scoring": {
+                "score": 0, 
+                "max_score": 1, 
+                "score_percentage": 0
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "response_set": "7bb1cb10-7020-11e2-bcfd-0800200c9a66", 
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": ""
+            }
+        }, 
+        {
+            "parent_id": "469e415f-9803-47d2-becd-0a8997dcc504", 
+            "item_id": "9238D887-5190-4B5E-8BB9-C07FD53BEE90", 
+            "label": "If you broke the line, did you look for support lines?", 
+            "type": "question", 
+            "scoring": {
+                "score": 0, 
+                "max_score": 1, 
+                "score_percentage": 0
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "response_set": "7bb1cb10-7020-11e2-bcfd-0800200c9a66", 
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": ""
+            }
+        }, 
+        {
+            "parent_id": "469e415f-9803-47d2-becd-0a8997dcc504", 
+            "item_id": "aec472ca-2562-4bd2-88d3-e59575eb94b8", 
+            "label": "Did you avoid letting your running lines 'drift' outward? ", 
+            "type": "question", 
+            "scoring": {
+                "score": 0, 
+                "max_score": 1, 
+                "score_percentage": 0
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "response_set": "7bb1cb10-7020-11e2-bcfd-0800200c9a66", 
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": ""
+            }
+        }, 
+        {
+            "parent_id": "469e415f-9803-47d2-becd-0a8997dcc504", 
+            "item_id": "d1c3fb90-76b8-4990-80f8-537cdcfe06d6", 
+            "label": "Did you communicate loudly, clearly, consistently with your pod? ", 
+            "type": "question", 
+            "scoring": {
+                "score": 0, 
+                "max_score": 1, 
+                "score_percentage": 0
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "response_set": "7bb1cb10-7020-11e2-bcfd-0800200c9a66", 
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": ""
+            }
+        }, 
+        {
+            "parent_id": "f67ee3a9-aa4e-4f39-94c5-38be26c7c8f5", 
+            "item_id": "EA84ACF7-7BA7-4638-AA02-8613061F53C7", 
+            "label": "Around the Ruck", 
+            "type": "category", 
+            "scoring": {
+                "combined_score": 0, 
+                "combined_max_score": 13, 
+                "combined_score_percentage": 0
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }, 
+            "children": [
+                "1CA62F6F-D7F8-4FCF-A25A-6E5A6DA67557", 
+                "60E1E1CE-AFE7-46A4-A03A-0AD1190E561D", 
+                "ACACB940-159C-4290-91AB-71C001BCB8AD", 
+                "410464F8-EB05-4A81-88A0-CB103CF23B52"
+            ]
+        }, 
+        {
+            "parent_id": "EA84ACF7-7BA7-4638-AA02-8613061F53C7", 
+            "item_id": "1CA62F6F-D7F8-4FCF-A25A-6E5A6DA67557", 
+            "label": "Did you do a squeeze ball whenever possible?", 
+            "type": "question", 
+            "scoring": {
+                "score": 0, 
+                "max_score": 1, 
+                "score_percentage": 0
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "response_set": "7bb1cb10-7020-11e2-bcfd-0800200c9a66", 
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": ""
+            }
+        }, 
+        {
+            "parent_id": "EA84ACF7-7BA7-4638-AA02-8613061F53C7", 
+            "item_id": "60E1E1CE-AFE7-46A4-A03A-0AD1190E561D", 
+            "label": "Did I allow any stolen ball when I was the primary support runner?", 
+            "type": "question", 
+            "scoring": {
+                "score": 0, 
+                "max_score": 1, 
+                "score_percentage": 0
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "response_set": "7bb1cb10-7020-11e2-bcfd-0800200c9a66", 
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": ""
+            }, 
+            "children": [
+                "F30AF105-C5F6-46C3-8DAC-7D06E9DB5867"
+            ]
+        }, 
+        {
+            "parent_id": "60E1E1CE-AFE7-46A4-A03A-0AD1190E561D", 
+            "item_id": "F30AF105-C5F6-46C3-8DAC-7D06E9DB5867", 
+            "label": "", 
+            "type": "smartfield", 
+            "reference_item_profile_ids": [], 
+            "evaluation": false, 
+            "options": {
+                "values": [
+                    "8bcfbf00-e11b-11e1-9b23-0800200c9a66"
+                ], 
+                "weighting": 1, 
+                "condition": "3f206182-e4f6-11e1-aff1-0800200c9a66", 
+                "is_mandatory": false
+            }, 
+            "children": [
+                "38913979-2543-4E0B-87CD-5F1743F2BC0D"
+            ]
+        }, 
+        {
+            "parent_id": "F30AF105-C5F6-46C3-8DAC-7D06E9DB5867", 
+            "item_id": "38913979-2543-4E0B-87CD-5F1743F2BC0D", 
+            "label": "Describe what I can do to stop the stolen ball in the future?", 
+            "type": "text", 
+            "reference_item_profile_ids": [], 
+            "inactive": true, 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "parent_id": "EA84ACF7-7BA7-4638-AA02-8613061F53C7", 
+            "item_id": "ACACB940-159C-4290-91AB-71C001BCB8AD", 
+            "label": "Did I work to join the ruck lower then my opponent?", 
+            "type": "question", 
+            "scoring": {
+                "score": 0, 
+                "max_score": 1, 
+                "score_percentage": 0
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "response_set": "7bb1cb10-7020-11e2-bcfd-0800200c9a66", 
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": ""
+            }
+        }, 
+        {
+            "parent_id": "EA84ACF7-7BA7-4638-AA02-8613061F53C7", 
+            "item_id": "410464F8-EB05-4A81-88A0-CB103CF23B52", 
+            "label": "How many ruck penalties did I get dinged for?", 
+            "type": "slider", 
+            "scoring": {
+                "score": 0, 
+                "max_score": 10, 
+                "score_percentage": 0
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "increment": 1, 
+                "max": 10, 
+                "min": 0, 
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "value": 0
+            }
+        }, 
+        {
+            "parent_id": "f67ee3a9-aa4e-4f39-94c5-38be26c7c8f5", 
+            "item_id": "08A28A04-BA00-4866-A90F-F8BED06E7372", 
+            "label": "Defence", 
+            "type": "category", 
+            "scoring": {
+                "combined_score": 2, 
+                "combined_max_score": 7, 
+                "combined_score_percentage": 28.571
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }, 
+            "children": [
+                "6e5f9189-abe7-4401-8010-8bed2c454e3b", 
+                "da49dae1-83c8-486e-a9a5-e5a6a60a2f12", 
+                "de25abc5-3b4e-4299-a6af-c0330fbad96a", 
+                "c5717e58-7d6d-48fc-9725-0608bb2126a2", 
+                "ade933f8-0e14-413e-9f18-9620c7ee11a9", 
+                "48e33b7d-339a-465e-ba86-8372e7fe00e6", 
+                "8a3bbda9-5ebd-4b15-b6d9-902d60432b0c"
+            ]
+        }, 
+        {
+            "parent_id": "08A28A04-BA00-4866-A90F-F8BED06E7372", 
+            "item_id": "6e5f9189-abe7-4401-8010-8bed2c454e3b", 
+            "label": "Did you call out 'Guard', '9', '10' consistently? ", 
+            "type": "question", 
+            "scoring": {
+                "score": 0, 
+                "max_score": 1, 
+                "score_percentage": 0
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "response_set": "7bb1cb10-7020-11e2-bcfd-0800200c9a66", 
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": ""
+            }
+        }, 
+        {
+            "parent_id": "08A28A04-BA00-4866-A90F-F8BED06E7372", 
+            "item_id": "da49dae1-83c8-486e-a9a5-e5a6a60a2f12", 
+            "label": "Did you call out 'Blitz', 'Up & Out', and 'Soft'?", 
+            "type": "question", 
+            "scoring": {
+                "score": 0, 
+                "max_score": 1, 
+                "score_percentage": 0
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "response_set": "7bb1cb10-7020-11e2-bcfd-0800200c9a66", 
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": ""
+            }
+        }, 
+        {
+            "parent_id": "08A28A04-BA00-4866-A90F-F8BED06E7372", 
+            "item_id": "de25abc5-3b4e-4299-a6af-c0330fbad96a", 
+            "label": "Did you push the man outside you by shifting out and communicating that you were supporting his inside?", 
+            "type": "question", 
+            "scoring": {
+                "score": 0, 
+                "max_score": 1, 
+                "score_percentage": 0
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "response_set": "7bb1cb10-7020-11e2-bcfd-0800200c9a66", 
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": ""
+            }
+        }, 
+        {
+            "parent_id": "08A28A04-BA00-4866-A90F-F8BED06E7372", 
+            "item_id": "c5717e58-7d6d-48fc-9725-0608bb2126a2", 
+            "label": "Did you keep your feet moving when coming forward on defence?", 
+            "type": "question", 
+            "scoring": {
+                "score": 0, 
+                "max_score": 1, 
+                "score_percentage": 0
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "response_set": "7bb1cb10-7020-11e2-bcfd-0800200c9a66", 
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": ""
+            }
+        }, 
+        {
+            "parent_id": "08A28A04-BA00-4866-A90F-F8BED06E7372", 
+            "item_id": "ade933f8-0e14-413e-9f18-9620c7ee11a9", 
+            "label": "Did you stay low and explode into the tackle, going from low to high?", 
+            "type": "question", 
+            "scoring": {
+                "score": 0, 
+                "max_score": 1, 
+                "score_percentage": 0
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "response_set": "7bb1cb10-7020-11e2-bcfd-0800200c9a66", 
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": ""
+            }
+        }, 
+        {
+            "parent_id": "08A28A04-BA00-4866-A90F-F8BED06E7372", 
+            "item_id": "48e33b7d-339a-465e-ba86-8372e7fe00e6", 
+            "label": "Did you stay on your feet if possible, or pop back up to contest quickly?", 
+            "type": "question", 
+            "scoring": {
+                "score": 1, 
+                "max_score": 1, 
+                "score_percentage": 100
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "response_set": "7bb1cb10-7020-11e2-bcfd-0800200c9a66", 
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": "", 
+                "selected": [
+                    {
+                        "id": "8bcfbf00-e11b-11e1-9b23-0800200c9a66", 
+                        "type": "text", 
+                        "label": "Yes", 
+                        "short_label": "Y", 
+                        "colour": "162,182,58", 
+                        "image": "", 
+                        "enable_score": true, 
+                        "score": 1
+                    }
+                ]
+            }
+        }, 
+        {
+            "parent_id": "08A28A04-BA00-4866-A90F-F8BED06E7372", 
+            "item_id": "8a3bbda9-5ebd-4b15-b6d9-902d60432b0c", 
+            "label": "Did you steal any balls? ", 
+            "type": "question", 
+            "scoring": {
+                "score": 1, 
+                "max_score": 1, 
+                "score_percentage": 100
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "response_set": "7bb1cb10-7020-11e2-bcfd-0800200c9a66", 
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": "", 
+                "selected": [
+                    {
+                        "id": "8bcfbf00-e11b-11e1-9b23-0800200c9a66", 
+                        "type": "text", 
+                        "label": "Yes", 
+                        "short_label": "Y", 
+                        "colour": "162,182,58", 
+                        "image": "", 
+                        "enable_score": true, 
+                        "score": 1
+                    }
+                ]
+            }
+        }, 
+        {
+            "parent_id": "f67ee3a9-aa4e-4f39-94c5-38be26c7c8f5", 
+            "item_id": "61FCF6CB-04F0-469B-A7DD-7F25D8FD6DC7", 
+            "label": "Did you suffer any injury?", 
+            "type": "question", 
+            "scoring": {
+                "score": 0, 
+                "max_score": 1, 
+                "score_percentage": 0
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "response_set": "7bb1cb10-7020-11e2-bcfd-0800200c9a66", 
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": "", 
+                "selected": [
+                    {
+                        "id": "8bcfbf01-e11b-11e1-9b23-0800200c9a66", 
+                        "type": "text", 
+                        "label": "No", 
+                        "short_label": "N", 
+                        "colour": "223,77,77", 
+                        "image": "", 
+                        "enable_score": true, 
+                        "score": 0
+                    }
+                ]
+            }, 
+            "children": [
+                "40BAD390-1E31-4103-BD93-657D937C6F85"
+            ]
+        }, 
+        {
+            "parent_id": "61FCF6CB-04F0-469B-A7DD-7F25D8FD6DC7", 
+            "item_id": "40BAD390-1E31-4103-BD93-657D937C6F85", 
+            "label": "", 
+            "type": "smartfield", 
+            "reference_item_profile_ids": [], 
+            "evaluation": false, 
+            "options": {
+                "values": [
+                    "8bcfbf00-e11b-11e1-9b23-0800200c9a66"
+                ], 
+                "weighting": 1, 
+                "condition": "3f206182-e4f6-11e1-aff1-0800200c9a66", 
+                "is_mandatory": false
+            }, 
+            "children": [
+                "0D112267-E9D2-4C05-AB7E-45940DA44209"
+            ]
+        }, 
+        {
+            "parent_id": "40BAD390-1E31-4103-BD93-657D937C6F85", 
+            "item_id": "0D112267-E9D2-4C05-AB7E-45940DA44209", 
+            "label": "Please provide a picture of the injury.", 
+            "type": "media", 
+            "reference_item_profile_ids": [], 
+            "inactive": true, 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "parent_id": "f67ee3a9-aa4e-4f39-94c5-38be26c7c8f5", 
+            "item_id": "22FB791C-9166-4B02-AA63-719BD9A69125", 
+            "label": "Please provide any relevant additional commentary here.", 
+            "type": "text", 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "parent_id": "f67ee3a9-aa4e-4f39-94c5-38be26c7c8f5", 
+            "item_id": "EC3992CC-97EB-4C7F-8FF6-02E660C6BBC0", 
+            "label": "What penalties/infractions did you commit? Select all that apply", 
+            "type": "list", 
+            "scoring": {
+                "score": 0, 
+                "max_score": 0, 
+                "score_percentage": 0
+            }, 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 0, 
+                "response_set": "7492962B-61EF-4595-BF95-DCAE205D6AEB", 
+                "is_mandatory": false, 
+                "multiple_selection": true
+            }, 
+            "children": [
+                "E430E34B-6E50-417C-A597-0C2D90CF1FDD"
+            ]
+        }, 
+        {
+            "parent_id": "EC3992CC-97EB-4C7F-8FF6-02E660C6BBC0", 
+            "item_id": "E430E34B-6E50-417C-A597-0C2D90CF1FDD", 
+            "label": "", 
+            "type": "smartfield", 
+            "reference_item_profile_ids": [], 
+            "evaluation": false, 
+            "options": {
+                "values": [
+                    "B787ABF6-5E51-4180-B645-0C85F60E1F90"
+                ], 
+                "weighting": 1, 
+                "condition": "35f6c132-e500-11e1-aff1-0800200c9a66", 
+                "is_mandatory": false
+            }, 
+            "children": [
+                "89492DC1-84D1-4E85-9375-522E56028D84"
+            ]
+        }, 
+        {
+            "parent_id": "E430E34B-6E50-417C-A597-0C2D90CF1FDD", 
+            "item_id": "89492DC1-84D1-4E85-9375-522E56028D84", 
+            "label": "What infraction did you commit?", 
+            "type": "textsingle", 
+            "reference_item_profile_ids": [], 
+            "inactive": true, 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "parent_id": "f67ee3a9-aa4e-4f39-94c5-38be26c7c8f5", 
+            "item_id": "DFBDC247-631A-4182-9051-4B2099374A71", 
+            "label": "For each penalty you made, describe the events and mental state leading up to and ultimately resulting in the mistake.", 
+            "type": "dynamicfield", 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "element": "Mistake", 
+                "is_mandatory": false
+            }, 
+            "children": [
+                "40564e67-e9f1-4e87-b683-ad0e5ad67b08"
+            ]
+        }, 
+        {
+            "parent_id": "DFBDC247-631A-4182-9051-4B2099374A71", 
+            "item_id": "40564e67-e9f1-4e87-b683-ad0e5ad67b08", 
+            "label": "", 
+            "type": "primeelement", 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }, 
+            "children": [
+                "B7FBDDCB-FC8D-4178-9E94-0E9AAAEDB186"
+            ]
+        }, 
+        {
+            "parent_id": "40564e67-e9f1-4e87-b683-ad0e5ad67b08", 
+            "item_id": "B7FBDDCB-FC8D-4178-9E94-0E9AAAEDB186", 
+            "label": "Describe context of penalty here:", 
+            "type": "text", 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "parent_id": "f67ee3a9-aa4e-4f39-94c5-38be26c7c8f5", 
+            "item_id": "36995942-5C92-4989-9A61-38CD05E4658A", 
+            "label": "Please provide your signature", 
+            "type": "signature", 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": true, 
+                "enable_signature_timestamp": true
+            }, 
+            "responses": {
+                "name": "fgthh", 
+                "timestamp": "2016-06-02T22:46:52.000Z", 
+                "image": {
+                    "date_created": "2016-06-02T22:46:40.000Z", 
+                    "file_ext": "png", 
+                    "label": "c3dc25ed-4bee-4093-b74f-9fe06451ca80", 
+                    "media_id": "aa61b09d-550c-41d8-9905-bd216db9a552", 
+                    "href": "https://api.safetyculture.io/audits/audit_db47c084b11f468db0b96e7e0f60c3f5/media/aa61b09d-550c-41d8-9905-bd216db9a552"
+                }
+            }
+        }, 
+        {
+            "item_id": "2b6e7a8b-2947-46c9-8b1b-6d12ddb2150e", 
+            "label": "General", 
+            "type": "section", 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "item_id": "bdc838b7-1ec6-43b6-bb53-317b3f154237", 
+            "label": "Defence", 
+            "type": "section", 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "item_id": "27a048a5-bfcd-4d6b-915e-058c452c1dcf", 
+            "label": "Offense", 
+            "type": "section", 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }, 
+        {
+            "item_id": "9c5ca4e7-7756-4683-94d7-88b1c01ae2f3", 
+            "label": "Preparation", 
+            "type": "section", 
+            "reference_item_profile_ids": [], 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false
+            }
+        }
+    ]
+}

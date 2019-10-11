@@ -1,0 +1,192 @@
+{
+    "template_id": "template_f9b4606c4dcd4f2793fe4cbb262339c9", 
+    "audit_id": "audit_75B06D9AC2C64E5FAFB778EAA60E4991", 
+    "created_at": "2017-03-04T10:05:30.730Z", 
+    "modified_at": "2017-03-04T10:05:30.730Z", 
+    "audit_data": {
+        "score": 0, 
+        "total_score": 0, 
+        "score_percentage": 0, 
+        "name": "Drawing done in iOS device", 
+        "duration": 70, 
+        "authorship": {
+            "device_id": "E45DD9BB-B483-4731-B15D-C163A4E83F5E", 
+            "owner": "Tony Oreglia", 
+            "owner_id": "user_fdd054fbf4ef4a069dfc86ff004e7a67", 
+            "author": "Tony Oreglia", 
+            "author_id": "user_fdd054fbf4ef4a069dfc86ff004e7a67"
+        }, 
+        "date_completed": "2017-03-04T10:04:06.000Z", 
+        "date_modified": "2017-03-04T10:04:12.000Z", 
+        "date_started": "2017-03-04T10:02:55.000Z"
+    }, 
+    "template_data": {
+        "authorship": {
+            "device_id": "8a582619-95e9-43e8-b671-5f316745b254", 
+            "owner": "Tony Oreglia", 
+            "owner_id": "user_fdd054fbf4ef4a069dfc86ff004e7a67", 
+            "author": "Tony Oreglia", 
+            "author_id": "user_fdd054fbf4ef4a069dfc86ff004e7a67"
+        }, 
+        "metadata": {
+            "description": "", 
+            "name": "single drawing field"
+        }, 
+        "response_sets": {}
+    }, 
+    "header_items": [
+        {
+            "item_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Title Page", 
+            "type": "section", 
+            "children": [
+                "f3245d46-ea77-11e1-aff1-0800200c9a66", 
+                "f3245d40-ea77-11e1-aff1-0800200c9a66", 
+                "f3245d41-ea77-11e1-aff1-0800200c9a66", 
+                "f3245d42-ea77-11e1-aff1-0800200c9a66", 
+                "f3245d43-ea77-11e1-aff1-0800200c9a66", 
+                "f3245d44-ea77-11e1-aff1-0800200c9a66", 
+                "f3245d45-ea77-11e1-aff1-0800200c9a66"
+            ]
+        }, 
+        {
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d46-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Document No.", 
+            "type": "textsingle", 
+            "options": {
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": "000001"
+            }
+        }, 
+        {
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d40-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Audit Title", 
+            "type": "textsingle", 
+            "options": {
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": "Drawing done in iOS device"
+            }
+        }, 
+        {
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d41-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Client / Site", 
+            "type": "textsingle", 
+            "options": {
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": ""
+            }
+        }, 
+        {
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d42-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Conducted on", 
+            "type": "datetime", 
+            "options": {
+                "weighting": 1, 
+                "is_mandatory": false, 
+                "enable_date": true, 
+                "enable_time": true
+            }, 
+            "responses": {
+                "datetime": "2017-03-04T10:02:55.000Z"
+            }
+        }, 
+        {
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d43-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Prepared by", 
+            "type": "textsingle", 
+            "options": {
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": "Tony Oreglia"
+            }
+        }, 
+        {
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d44-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Location", 
+            "type": "address", 
+            "options": {
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "location_text": "11\u201315 Gilbert Street\nDover Heights NSW 2030\nAustralia\n(-33.871042, 151.278325)", 
+                "location": {
+                    "administrative_area": "NSW", 
+                    "country": "Australia", 
+                    "formatted_address": [
+                        "11\u201315 Gilbert Street", 
+                        "Dover Heights NSW 2030", 
+                        "Australia"
+                    ], 
+                    "geometry": {
+                        "coordinates": [
+                            151.278325, 
+                            -33.871042
+                        ], 
+                        "type": "Point"
+                    }, 
+                    "iso_country_code": "AU", 
+                    "locality": "Dover Heights", 
+                    "name": "11\u201315 Gilbert Street", 
+                    "postal_code": "2030", 
+                    "sub_administrative_area": "", 
+                    "sub_locality": "Sydney", 
+                    "sub_thoroughfare": "11\u201315", 
+                    "thoroughfare": "Gilbert Street"
+                }
+            }
+        }, 
+        {
+            "parent_id": "f3245d39-ea77-11e1-aff1-0800200c9a66", 
+            "item_id": "f3245d45-ea77-11e1-aff1-0800200c9a66", 
+            "label": "Personnel", 
+            "type": "text", 
+            "options": {
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "text": ""
+            }
+        }
+    ], 
+    "items": [
+        {
+            "item_id": "3f41a04d-5f13-48e2-b71c-d6123e14718a", 
+            "label": "Audit", 
+            "type": "section", 
+            "children": [
+                "d43f81d4-e7a5-47b1-977c-ec294527335a"
+            ]
+        }, 
+        {
+            "parent_id": "3f41a04d-5f13-48e2-b71c-d6123e14718a", 
+            "item_id": "d43f81d4-e7a5-47b1-977c-ec294527335a", 
+            "label": "draw me a dog! ", 
+            "type": "drawing", 
+            "options": {
+                "is_mandatory": false
+            }, 
+            "responses": {
+                "image": {
+                    "date_created": "2017-03-04T10:04:04.000Z", 
+                    "file_ext": "jpg", 
+                    "label": "no label", 
+                    "media_id": "A690731A-0E10-4BA0-AC25-691C34C6EC4B", 
+                    "href": "https://api.safetyculture.io/audits/audit_75B06D9AC2C64E5FAFB778EAA60E4991/media/A690731A-0E10-4BA0-AC25-691C34C6EC4B"
+                }
+            }
+        }
+    ]
+}
