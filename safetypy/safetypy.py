@@ -54,7 +54,7 @@ class SafetyCulture:
         self.get_my_groups_url = self.api_url + 'share/connections'
         self.all_groups_url = self.api_url + 'groups'
         self.add_users_url = self.api_url + 'users'
-        
+
         self.create_directory_if_not_exists(self.log_dir)
         self.configure_logging()
         logger = logging.getLogger('sp_logger')
@@ -179,9 +179,14 @@ class SafetyCulture:
         logger.info(log_string)
 
         if template_id is not None:
-            search_url += '&template=' + template_id
-        if completed is not False:
+            for specific_id in template_id:
+                search_url += '&template=' + specific_id
+        if completed is True:
             search_url += '&completed=true'
+        if completed is False:
+            search_url += '&completed=false'
+        if completed is 'both':
+            search_url += '&completed=both'
 
         response = self.authenticated_request_get(search_url)
         result = response.json() if response.status_code == requests.codes.ok else None
@@ -235,8 +240,8 @@ class SafetyCulture:
         :return:                   export job ID obtained from API
         """
         export_url = self.audit_url + audit_id + '/report'
-        if export_format == 'docx': # convert old command line format 
-            export_format = 'WORD' 
+        if export_format == 'docx': # convert old command line format
+            export_format = 'WORD'
         export_data = {'format': export_format.upper()}
 
         if preference_id is not None:

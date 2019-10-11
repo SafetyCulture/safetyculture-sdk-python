@@ -1111,17 +1111,6 @@ def export_audit_sql(logger, settings, audit_json, get_started):
         else:
             table.insert(dict(row))
     db.commit()
-    # try:
-    #     for row in df_dict:
-    #         table.insert(dict(row))
-    #     db.commit()
-    # except:
-    #     db.rollback()
-    # df.to_sql(settings[SQL_TABLE], con=get_started[1], if_exists='append', method='multi')
-    # try:
-    #     df.to_sql(settings[SQL_TABLE], con=get_started[1], if_exists='append', method='multi')
-    # except:
-    #     logger.error('Error Occured Writing to SQL')
 
 
 def export_audit_pandas(logger, settings, audit_json, get_started):
