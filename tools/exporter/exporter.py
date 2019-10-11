@@ -2,6 +2,19 @@
 # Author: SafetyCulture
 # Copyright: © SafetyCulture 2016
 
+from safetypy import safetypy as sp
+from tools import csvExporter
+from datetime import datetime
+from datetime import timedelta
+from sqlalchemy import *
+from shutil import copyfile
+from builtins import input
+from tzlocal import get_localzone
+from doc_creator import create_document
+from matplotlib import rcParams
+rcParams.update({'figure.autolayout': True})
+import pandas as pd
+import numpy as np
 import argparse
 import errno
 import json
@@ -16,10 +29,11 @@ import dateutil.parser
 import yaml
 import pytz
 import shutil
-# noinspection PyUnresolvedReferences
+import dataset
 from builtins import input
 from tzlocal import get_localzone
 import unicodecsv as csv
+import plotly.express as px
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 from safetypy import safetypy as sp
 from tools import csvExporter
@@ -51,8 +65,10 @@ DEFAULT_EXPORT_INACTIVE_ITEMS_TO_CSV = True
 # When exporting actions to CSV, if property is None, print this value to CSV
 EMPTY_RESPONSE = ''
 
-# Not all Audits will actually contain an Audit Title item. For examples, when Audit Title rules are set, the Audit Title item is not going to be included by default.
-# When this item ID is specified in the custom export filename configuration, the audit_data.name property will be used to populate the data as it covers all cases.
+# Not all Audits will actually contain an Audit Title item. For examples, when Audit Title rules are set, the Audit
+# Title item is not going to be included by default.
+# When this item ID is specified in the custom export filename configuration, the audit_data.name property will
+# be used to populate the data as it covers all cases.
 AUDIT_TITLE_ITEM_ID = 'f3245d40-ea77-11e1-aff1-0800200c9a66'
 
 # Properties kept in settings dictionary which takes its values from config.YAML
@@ -64,12 +80,21 @@ SYNC_DELAY_IN_SECONDS = 'sync_delay_in_seconds'
 EXPORT_INACTIVE_ITEMS_TO_CSV = 'export_inactive_items_to_csv'
 MEDIA_SYNC_OFFSET_IN_SECONDS = 'media_sync_offset_in_seconds'
 EXPORT_FORMATS = 'export_formats'
+TEMPLATE_IDS = 'template_ids'
+SQL_TABLE = 'sql_table'
+DB_TYPE = 'database_type'
+DB_USER = 'database_user'
+DB_PWD = 'database_pwd'
+DB_SERVER = 'database_server'
+DB_PORT = 'database_port'
+DB_NAME = 'database_name'
+USE_REAL_TEMPLATE_NAME = 'use_real_template_name'
 
 # Used to create a default config file for new users
 DEFAULT_CONFIG_FILE_YAML = [
     'API:',
     '\n    token: ',
-    '\nexport_options:',    
+    '\nexport_options:',
     '\n    export_path:',
     '\n    filename:',
     '\n    csv_options:',
@@ -77,6 +102,50 @@ DEFAULT_CONFIG_FILE_YAML = [
     '\n    preferences:',
     '\n    sync_delay_in_seconds:',
     '\n    media_sync_offset_in_seconds:',
+    '\n    use_real_template_name: false'
+]
+
+SQL_HEADER_ROW = [
+    'ItemType',
+    'Label',
+    'Response',
+    'Comment',
+    'MediaHypertextReference',
+    'Latitude',
+    'Longitude',
+    'ItemScore',
+    'ItemMaxScore',
+    'ItemScorePercentage',
+    'Mandatory',
+    'FailedResponse',
+    'Inactive',
+    'ItemID',
+    'ResponseID',
+    'ParentID',
+    'AuditOwner',
+    'AuditAuthor',
+    'AuditName',
+    'AuditScore',
+    'AuditMaxScore',
+    'AuditScorePercentage',
+    'AuditDuration',
+    'DateStarted',
+    'DateCompleted',
+    'DateModified',
+    'AuditID',
+    'TemplateID',
+    'TemplateName',
+    'TemplateAuthor',
+    'ItemCategory',
+    'DocumentNo',
+    'ConductedOn',
+    'PreparedBy',
+    'Location',
+    'Personnel',
+    'ClientSite',
+    'AuditSite',
+    'AuditArea',
+    'AuditRegion'
 ]
 
 
@@ -295,7 +364,7 @@ def save_web_report_link_to_file(logger, export_dir, web_report_data):
         try:
             with open(file_path, 'wb') as web_report_link_csv:
                 wr = csv.writer(web_report_link_csv, dialect='excel', quoting=csv.QUOTE_ALL)
-                wr.writerow(['Template ID', 'Template Name', 'Audit ID', 'Audit Name',  'Web Report Link'])
+                wr.writerow(['Template ID', 'Template Name', 'Audit ID', 'Audit Name', 'Web Report Link'])
                 wr.writerow(web_report_data)
                 web_report_link_csv.close()
         except Exception as ex:
@@ -358,7 +427,7 @@ def transform_action_object_to_list(action):
     return actions_list
 
 
-def save_exported_media_to_file(logger, export_dir, media_file, filename, extension):
+def save_exported_media_to_file(logger, export_dir, media_file, filename, extension, doc_creation_media_check):
     """
     Write exported media item to disk at specified location with specified file name.
     Any existing file with the same name will be overwritten.
@@ -479,9 +548,12 @@ def parse_export_filename(audit_json, filename_item_id):
     """
     if filename_item_id is None:
         return None
-    # Not all Audits will actually contain an Audit Title item. For examples, when Audit Title rules are set, the Audit Title item is not going to be included by default.
-    # When this item ID is specified in the custom export filename configuration, the audit_data.name property will be used to populate the data as it covers all cases.
-    if filename_item_id == AUDIT_TITLE_ITEM_ID and 'audit_data' in audit_json.keys() and 'name' in audit_json['audit_data'].keys():
+    # Not all Audits will actually contain an Audit Title item. For examples, when Audit Title rules are set,
+    # the Audit Title item is not going to be included by default.
+    # When this item ID is specified in the custom export filename configuration, the audit_data.name property
+    # will be used to populate the data as it covers all cases.
+    if filename_item_id == AUDIT_TITLE_ITEM_ID and 'audit_data' in audit_json.keys() \
+            and 'name' in audit_json['audit_data'].keys():
         return audit_json['audit_data']['name'].replace('/','_')
     for item in audit_json['header_items']:
         if item['item_id'] == filename_item_id:
@@ -542,9 +614,17 @@ def load_config_settings(logger, path_to_config_file):
         FILENAME_ITEM_ID: get_filename_item_id(logger, config_settings),
         SYNC_DELAY_IN_SECONDS: load_setting_sync_delay(logger, config_settings),
         EXPORT_INACTIVE_ITEMS_TO_CSV: load_export_inactive_items_to_csv(logger, config_settings),
-        MEDIA_SYNC_OFFSET_IN_SECONDS: load_setting_media_sync_offset(logger, config_settings)
+        MEDIA_SYNC_OFFSET_IN_SECONDS: load_setting_media_sync_offset(logger, config_settings),
+        TEMPLATE_IDS: config_settings['export_options']['template_ids'],
+        SQL_TABLE: config_settings['export_options']['sql_table'],
+        DB_TYPE: config_settings['export_options']['database_type'],
+        DB_USER: config_settings['export_options']['database_user'],
+        DB_PWD: config_settings['export_options']['database_pwd'],
+        DB_SERVER: config_settings['export_options']['database_server'],
+        DB_PORT: config_settings['export_options']['database_port'],
+        DB_NAME: config_settings['export_options']['database_name'],
+        USE_REAL_TEMPLATE_NAME: config_settings['export_options']['use_real_template_name']
     }
-
     return settings
 
 
@@ -579,19 +659,21 @@ def parse_command_line_arguments(logger):
     :param logger:  the logger
     :return:        config_filename passed as argument if any, else DEFAULT_CONFIG_FILENAME
                     export_formats passed as argument if any, else 'pdf'
-                    list_epreferences if passed as argument, else None
+                    list_preferences if passed as argument, else None
                     do_loop False if passed as argument, else True
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', help='config file to use, defaults to ' + DEFAULT_CONFIG_FILENAME)
     parser.add_argument('--format', nargs='*', help='formats to download, valid options are pdf, '
-                                                    'json, docx, csv, media, web-report-link, actions')
+                                                        'json, docx, csv, media, web-report-link, actions, pickle, sql, '
+                                                    'doc_creation, doc_template')
     parser.add_argument('--list_preferences', nargs='*', help='display all preferences, or restrict to specific'
                                                                   ' template_id if supplied as additional argument')
     parser.add_argument('--loop', nargs='*', help='execute continuously until interrupted')
     parser.add_argument('--setup', action='store_true', help='Automatically create new directory containing the '
                                                              'necessary config file.'
-                        'Directory will be named iAuditor Audit Exports, and will be placed in your current directory')
+                                                             'Directory will be named iAuditor Audit Exports, and will '
+                                                             'be placed in your current directory')
     args = parser.parse_args()
 
     config_filename = DEFAULT_CONFIG_FILENAME
@@ -610,12 +692,13 @@ def parse_command_line_arguments(logger):
 
     export_formats = ['pdf']
     if args.format is not None and len(args.format) > 0:
-        valid_export_formats = ['json', 'docx', 'pdf', 'csv', 'media', 'web-report-link', 'actions']
+        valid_export_formats = ['json', 'docx', 'pdf', 'csv', 'media', 'web-report-link', 'actions', 'sql', 'pickle',
+                                'hdfs', 'doc_creation', 'doc_template']
         export_formats = []
         for option in args.format:
             if option not in valid_export_formats:
                 print('{0} is not a valid export format.  Valid options are pdf, json, docx, csv, web-report-link, '
-                      'media, or actions'.format(option))
+                      'media, actions, pickle, hdfs, doc_creation, doc_template or sql'.format(option))
                 logger.info('invalid export format argument: {0}'.format(option))
             else:
                 export_formats.append(option)
@@ -711,6 +794,7 @@ def show_preferences_and_exit(list_preferences, sc_client):
             print(row_boundary)
         sys.exit(0)
 
+
 def export_actions(logger, settings, sc_client):
     """
     Export all actions created after date specified
@@ -738,17 +822,35 @@ def sync_exports(logger, settings, sc_client):
     """
     if 'actions' in settings[EXPORT_FORMATS]:
         export_actions(logger, settings, sc_client)
-    if not bool(set(settings[EXPORT_FORMATS]) & {'pdf', 'docx', 'csv', 'media', 'web-report-link', 'json'}):
+    if not bool(
+            set(settings[EXPORT_FORMATS]) & {'pdf', 'docx', 'csv', 'media', 'web-report-link', 'json', 'sql', 'pickle',
+                                             'hdfs', 'doc_creation', 'doc_template'}):
         return
     last_successful = get_last_successful(logger)
-    list_of_audits = sc_client.discover_audits(modified_after=last_successful)
+    if settings[TEMPLATE_IDS] is not None:
+        ids_to_search = settings[TEMPLATE_IDS].split(",")
+        list_of_audits = sc_client.discover_audits(modified_after=last_successful, template_id=ids_to_search)
+    else:
+        list_of_audits = sc_client.discover_audits(modified_after=last_successful,completed='both')
     if list_of_audits is not None:
         logger.info(str(list_of_audits['total']) + ' audits discovered')
         export_count = 1
         export_total = list_of_audits['total']
+        get_started = 'ignored'
+        for export_format in settings[EXPORT_FORMATS]:
+            if export_format == 'sql':
+                get_started = sql_setup(logger, settings)
+            elif export_format in ['hdfs', 'pickle']:
+                get_started = ['complete', 'complete']
+                if export_format == 'pickle' and os.path.isfile('{}.pkl'.format(settings[SQL_TABLE])):
+                    logger.error(
+                        'The Pickle file already exists. Appending to Pickles isn\'t currently possible, please '
+                        'remove {}.pkl and try again.'.format(
+                            settings[SQL_TABLE]))
+                    sys.exit(0)
         for audit in list_of_audits['audits']:
             logger.info('Processing audit (' + str(export_count) + '/' + str(export_total) + ')')
-            process_audit(logger, settings, sc_client, audit)
+            process_audit(logger, settings, sc_client, audit, get_started)
             export_count += 1
 
 
@@ -767,13 +869,15 @@ def check_if_media_sync_offset_satisfied(logger, settings, audit):
     elapsed_time_difference = (pytz.utc.localize(now) - modified_at)
     # if the media_sync_offset has been satisfied
     if not elapsed_time_difference > timedelta(seconds=settings[MEDIA_SYNC_OFFSET_IN_SECONDS]):
-        logger.info('Audit {0} modified too recently, some media may not have completed syncing. Skipping export until next sync cycle'.format(
-            audit['audit_id']))
+        logger.info(
+            'Audit {0} modified too recently, some media may not have completed syncing. '
+            'Skipping export until next sync cycle'.format(
+                audit['audit_id']))
         return False
     return True
 
 
-def process_audit(logger, settings, sc_client, audit):
+def process_audit(logger, settings, sc_client, audit, get_started):
     """
     Export audit in the format specified in settings. Formats include PDF, JSON, CSV, MS Word (docx), media, or
     web report link.
@@ -794,11 +898,25 @@ def process_audit(logger, settings, sc_client, audit):
     export_filename = parse_export_filename(audit_json, settings[FILENAME_ITEM_ID]) or audit_id
     for export_format in settings[EXPORT_FORMATS]:
         if export_format in ['pdf', 'docx']:
-            export_audit_pdf_word(logger, sc_client, settings, audit_id, preference_id, export_format, export_filename)
+             export_audit_pdf_word(logger, sc_client, settings, audit_id, preference_id, export_format, export_filename)
+
         elif export_format == 'json':
             export_audit_json(logger, settings, audit_json, export_filename)
         elif export_format == 'csv':
             export_audit_csv(settings, audit_json)
+        # elif export_format == 'doc_creation':
+        #     media_list = []
+        #     # media_list = export_audit_media(logger, sc_client, settings, audit_json, audit_id, export_filename)
+        #     export_audit_doc_creation(logger, settings, audit_json, media_list)
+        # elif export_format == 'doc_template':
+        #     export_template_creation(logger, settings, audit_json)
+        elif export_format in ['sql', 'pickle', 'hdfs']:
+            if get_started[0] == 'complete':
+                logger.info('Processing Audit')
+                export_audit_pandas(logger, settings, audit_json, get_started)
+            elif get_started[0] != 'complete':
+                logger.error('Something went wrong connecting to the database')
+                sys.exit(1)
         elif export_format == 'media':
             export_audit_media(logger, sc_client, settings, audit_json, audit_id, export_filename)
         elif export_format == 'web-report-link':
@@ -841,10 +959,193 @@ def export_audit_csv(settings, audit_json):
     :param settings:    Settings from command line and configuration file
     :param audit_json:  Audit JSON
     """
+
     csv_exporter = csvExporter.CsvExporter(audit_json, settings[EXPORT_INACTIVE_ITEMS_TO_CSV])
-    csv_export_filename = audit_json['template_id']
+    if settings[USE_REAL_TEMPLATE_NAME] != True:
+        csv_export_filename = audit_json['template_id']
+    else:
+        csv_export_filename = audit_json['template_data']['metadata']['name']
+        csv_export_filename = csv_export_filename.replace('/', ' ').replace('\\', ' ')
     csv_exporter.append_converted_audit_to_bulk_export_file(
         os.path.join(settings[EXPORT_PATH], csv_export_filename + '.csv'))
+
+
+def sql_setup(logger, settings):
+    connection_string = '{}://{}:{}@{}:{}/{}'.format(settings[DB_TYPE],
+                                                     settings[DB_USER],
+                                                     settings[DB_PWD],
+                                                     settings[DB_SERVER],
+                                                     settings[DB_PORT],
+                                                     settings[DB_NAME])
+    db = dataset.connect(connection_string)
+    engine = create_engine(connection_string)
+    meta = MetaData()
+    logger.debug('Making connection to ' + str(engine))
+
+    if settings[SQL_TABLE] not in db.tables:
+    # if not engine.dialect.has_table(engine, settings[SQL_TABLE]):
+        logger.info(settings[SQL_TABLE] + ' not Found. Creating table')
+        if settings[DB_TYPE] == 'mssql+pyodbc_mssql':
+            table = Table(
+                settings[SQL_TABLE], meta,
+                Column('ItemType', NVARCHAR(None)),
+                Column('Label', NVARCHAR(None)),
+                Column('Response', NVARCHAR(None)),
+                Column('Comment', NVARCHAR(None)),
+                Column('MediaHypertextReference', NVARCHAR(None)),
+                Column('Latitude', NVARCHAR(None)),
+                Column('Longitude', NVARCHAR(None)),
+                Column('ItemScore', Float),
+                Column('ItemMaxScore', Float),
+                Column('ItemScorePercentage', Float),
+                Column('Mandatory', Boolean),
+                Column('FailedResponse', Boolean),
+                Column('Inactive', Boolean),
+                Column('AuditID', String(100), primary_key=True),
+                Column('ItemID', String(100), primary_key=True),
+                Column('DatePK', String(100), primary_key=True),
+                Column('ResponseID', NVARCHAR(None)),
+                Column('ParentID', NVARCHAR(None)),
+                Column('AuditOwner', NVARCHAR(None)),
+                Column('AuditAuthor', NVARCHAR(None)),
+                Column('AuditName', NVARCHAR(None)),
+                Column('AuditScore', Float),
+                Column('AuditMaxScore', Float),
+                Column('AuditScorePercentage', Float),
+                Column('AuditDuration', Float),
+                Column('DateStarted', DateTime),
+                Column('DateCompleted', DateTime),
+                Column('DateModified', DateTime),
+                Column('TemplateID', NVARCHAR(None)),
+                Column('TemplateName', NVARCHAR(None)),
+                Column('TemplateAuthor', NVARCHAR(None)),
+                Column('ItemCategory', NVARCHAR(None)),
+                Column('DocumentNo', NVARCHAR(None)),
+                Column('ConductedOn', NVARCHAR(None)),
+                Column('PreparedBy', NVARCHAR(None)),
+                Column('Location', NVARCHAR(None)),
+                Column('Personnel', NVARCHAR(None)),
+                Column('ClientSite', NVARCHAR(None)),
+                Column('AuditSite', NVARCHAR(None)),
+                Column('AuditArea', NVARCHAR(None)),
+                Column('AuditRegion', NVARCHAR(None)),
+                schema="dbo"
+            )
+        else:
+            table = Table(
+                settings[SQL_TABLE], meta,
+                Column('ItemType', String(None)),
+                Column('Label', String(None)),
+                Column('Response', String(None)),
+                Column('Comment', String(None)),
+                Column('MediaHypertextReference', String(None)),
+                Column('Latitude', String(None)),
+                Column('Longitude', String(None)),
+                Column('ItemScore', Float),
+                Column('ItemMaxScore', Float),
+                Column('ItemScorePercentage', Float),
+                Column('Mandatory', Boolean),
+                Column('FailedResponse', Boolean),
+                Column('Inactive', Boolean),
+                Column('AuditID', String(100), primary_key=True),
+                Column('ItemID', String(100), primary_key=True),
+                Column('DatePK', String(100), primary_key=True),
+                Column('ResponseID', String(None)),
+                Column('ParentID', String(None)),
+                Column('AuditOwner', String(None)),
+                Column('AuditAuthor', String(None)),
+                Column('AuditName', String(None)),
+                Column('AuditScore', Float),
+                Column('AuditMaxScore', Float),
+                Column('AuditScorePercentage', Float),
+                Column('AuditDuration', Float),
+                Column('DateStarted', DateTime),
+                Column('DateCompleted', DateTime),
+                Column('DateModified', DateTime),
+                Column('TemplateID', String(None)),
+                Column('TemplateName', String(None)),
+                Column('TemplateAuthor', String(None)),
+                Column('ItemCategory', String(None)),
+                Column('DocumentNo', String(None)),
+                Column('ConductedOn', String(None)),
+                Column('PreparedBy', String(None)),
+                Column('Location', String(None)),
+                Column('Personnel', String(None)),
+                Column('ClientSite', String(None)),
+                Column('AuditSite', String(None)),
+                Column('AuditArea', String(None)),
+                Column('AuditRegion', String(None))
+            )
+        meta.create_all(engine)
+        logger.info('Table created successfully.')
+    setup = 'complete'
+    logger.info('Successfully setup Database and connection')
+
+    return setup, engine, connection_string
+
+
+def export_audit_sql(logger, settings, audit_json, get_started):
+    """
+    Save audit to a database.
+    :param logger:      The logger
+    :param settings:    Settings from command line and configuration file
+    :param audit_json:  Audit JSON
+    """
+    connection_string = get_started[2]
+    csv_exporter = csvExporter.CsvExporter(audit_json, settings[EXPORT_INACTIVE_ITEMS_TO_CSV])
+    df = csv_exporter.audit_table
+    df = pd.DataFrame.from_records(df, columns=SQL_HEADER_ROW)
+    df['DatePK'] = pd.to_datetime(df['DateModified']).values.astype(np.int64) // 10 ** 6
+    df.replace({'DateCompleted': ''}, '1900-01-01 00:00:00', inplace=True)
+    df.replace({'ItemScore': '', 'ItemMaxScore': '', 'ItemScorePercentage': ''}, np.nan, inplace=True)
+    # df.fillna(value={'Latitude': 0, 'Longitude': 0}, inplace=True)
+    df.fillna(0, inplace=True)
+    df_dict = df.to_dict(orient='records')
+    db = dataset.connect(connection_string)
+    table = db[settings[SQL_TABLE]]
+    upsert = true
+    db.begin()
+    for row in df_dict:
+        if upsert == true:
+            table.upsert(dict(row), ['AuditID', 'ItemID'])
+        else:
+            table.insert(dict(row))
+    db.commit()
+    # try:
+    #     for row in df_dict:
+    #         table.insert(dict(row))
+    #     db.commit()
+    # except:
+    #     db.rollback()
+    # df.to_sql(settings[SQL_TABLE], con=get_started[1], if_exists='append', method='multi')
+    # try:
+    #     df.to_sql(settings[SQL_TABLE], con=get_started[1], if_exists='append', method='multi')
+    # except:
+    #     logger.error('Error Occured Writing to SQL')
+
+
+def export_audit_pandas(logger, settings, audit_json, get_started):
+    """
+    Save audit to a database.
+    :param logger:      The logger
+    :param settings:    Settings from command line and configuration file
+    :param audit_json:  Audit JSON
+    """
+
+    csv_exporter = csvExporter.CsvExporter(audit_json, settings[EXPORT_INACTIVE_ITEMS_TO_CSV])
+    df = csv_exporter.audit_table
+    df = pd.DataFrame.from_records(df, columns=SQL_HEADER_ROW)
+    df.replace({'ItemScore': '', 'ItemMaxScore': '', 'ItemScorePercentage': ''}, np.nan, inplace=True)
+    df.fillna(value={'Latitude': 0, 'Longitude': 0}, inplace=True)
+    for export_format in settings[EXPORT_FORMATS]:
+        if export_format == 'sql':
+            export_audit_sql(logger, settings, audit_json, get_started)
+        elif export_format == 'pickle':
+            logger.info('Writing to Pickle')
+            df.to_pickle('{}.pkl'.format(settings[SQL_TABLE]))
+        elif export_format == 'hdfs':
+            print('Writing HDFS')
+            df.to_hdf('{}.h5'.format(settings[SQL_TABLE]), key='df', mode='a')
 
 
 def export_audit_media(logger, sc_client, settings, audit_json, audit_id, export_filename):
@@ -857,14 +1158,34 @@ def export_audit_media(logger, sc_client, settings, audit_json, audit_id, export
     :param audit_id:    Unique audit UUID
     :param export_filename:     String indicating what to name the exported audit file
     """
-    media_export_path = os.path.join(settings[EXPORT_PATH], 'media', export_filename)
+
+    media_id_list = get_media_from_audit(logger, audit_json, settings)
+    if len(media_id_list) > 0:
+        if type(media_id_list[0]) is tuple:
+            doc_creation_media_check = True
+            media_export_path = os.path.join('exports/doc_creation/{}/{}'.format(audit_json['template_id'],
+                                                                                 audit_id), 'media')
+    else:
+        media_export_path = os.path.join(settings[EXPORT_PATH], 'media', export_filename)
+        doc_creation_media_check = False
     extension = 'jpg'
-    media_id_list = get_media_from_audit(logger, audit_json)
+
+    media_id_list = get_media_from_audit(logger, audit_json, settings)
     for media_id in media_id_list:
+        if type(media_id) is tuple:
+            media_id = media_id[1]
         logger.info("Saving media_{0} to disc.".format(media_id))
         media_file = sc_client.get_media(audit_id, media_id)
         media_export_filename = media_id
-        save_exported_media_to_file(logger, media_export_path, media_file, media_export_filename, extension)
+        save_exported_media_to_file(logger,
+                                    media_export_path,
+                                    media_file,
+                                    media_export_filename,
+                                    extension,
+                                    doc_creation_media_check)
+
+    if doc_creation_media_check == True:
+        return media_id_list
 
 
 def export_audit_web_report_link(logger, settings, sc_client, audit_json, audit_id, template_id):
@@ -888,7 +1209,7 @@ def export_audit_web_report_link(logger, settings, sc_client, audit_json, audit_
     save_web_report_link_to_file(logger, settings[EXPORT_PATH], web_report_data)
 
 
-def get_media_from_audit(logger, audit_json):
+def get_media_from_audit(logger, audit_json, settings):
     """
     Retrieve media IDs from a audit JSON
     :param logger: the logger
@@ -897,16 +1218,33 @@ def get_media_from_audit(logger, audit_json):
     """
     media_id_list = []
     for item in audit_json['header_items'] + audit_json['items']:
-        # This condition checks for media attached to question and media type fields.
-        if 'media' in item.keys():
-            for media in item['media']:
-                media_id_list.append(media['media_id'])
-        # This condition checks for media attached to signature and drawing type fields.
-        if 'responses' in item.keys() and 'image' in item['responses'].keys():
-            media_id_list.append(item['responses']['image']['media_id'])
-        # This condition checks for media attached to information type fields.
-        if 'options' in item.keys() and 'media' in item['options'].keys():
-            media_id_list.append(item['options']['media']['media_id'])
+        itemid = ''.join(e for e in item['item_id'] if e.isalnum())
+        itemid = ''.join(e for e in itemid if not e.isdigit())
+        for export_format in settings[EXPORT_FORMATS]:
+            if export_format == 'doc_creation':
+                # If we are creating documents, we append the itemid to the media id, too
+
+                if 'media' in item.keys():
+                    for media in item['media']:
+                        media_id_list.append((itemid, media['media_id']))
+                # This condition checks for media attached to signature and drawing type fields.
+                if 'responses' in item.keys() and 'image' in item['responses'].keys():
+                    media_id_list.append((itemid, item['responses']['image']['media_id']))
+                # This condition checks for media attached to information type fields.
+                if 'options' in item.keys() and 'media' in item['options'].keys():
+                    media_id_list.append((itemid, item['options']['media']['media_id']))
+            else:
+                # This condition checks for media attached to question and media type fields.
+                if 'media' in item.keys():
+                    for media in item['media']:
+                        media_id_list.append(media['media_id'])
+                # This condition checks for media attached to signature and drawing type fields.
+                if 'responses' in item.keys() and 'image' in item['responses'].keys():
+                    media_id_list.append(item['responses']['image']['media_id'])
+                # This condition checks for media attached to information type fields.
+                if 'options' in item.keys() and 'media' in item['options'].keys():
+                    media_id_list.append(item['options']['media']['media_id'])
+
     logger.info("Discovered {0} media files associated with {1}.".format(len(media_id_list), audit_json['audit_id']))
     return media_id_list
 
@@ -926,11 +1264,17 @@ def loop(logger, sc_client, settings):
 
 
 def main():
+
     try:
         logger = configure_logger()
         path_to_config_file, export_formats, preferences_to_list, loop_enabled = parse_command_line_arguments(logger)
         sc_client, settings = configure(logger, path_to_config_file, export_formats)
-
+        print(settings[SQL_TABLE])
+        if settings[SQL_TABLE] is not None:
+            global ACTIONS_SYNC_MARKER_FILENAME
+            ACTIONS_SYNC_MARKER_FILENAME = 'last_successful_actions_export-{}.txt'.format(settings[SQL_TABLE])
+            global SYNC_MARKER_FILENAME
+            SYNC_MARKER_FILENAME = 'last_successful-{}.txt'.format(settings[SQL_TABLE])
         if preferences_to_list is not None:
             show_preferences_and_exit(preferences_to_list, sc_client)
 
