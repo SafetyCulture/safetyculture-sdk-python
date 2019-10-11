@@ -1,5 +1,19 @@
 # SafetyCulture Python SDK and iAuditor Tools
 
+# Beta Branch
+| WARNING: This branch contains beta features for the exporter tool as well as some tweaks to safetypy. We do not currently offer support on the additional features found here. |
+| --- |
+
+Features added:
+
+* Initial database support. This is provided by SQLAlchemy and has been tested with SQL and PostgresSQL
+* Exporting to a PKL/Pickle
+* Exporting only particular templates (Give them as a comma seperated list in the config file)
+* Name the template CSV files with the template name inside of the template ID
+* last_successful text files are appended with the sql_table parameter to make it easier to manage multiple configurations
+
+
+
 Contains:
 
 * The SafetyCulture Python SDK: core functions to interact with the iAuditor API
@@ -14,20 +28,20 @@ Contains:
 
 * Examples of how to import individual modules of the SDK into your own scripts.
 
-## iAuditor Export Tool 
+## iAuditor Export Tool
 
-### First Time Install and Run 
+### First Time Install and Run
 
 You will need to have [Python 2.7 or higher](https://www.python.org/downloads/) and [Pip](https://pip.pypa.io/en/stable/installing/) installed on your computer. If you are using Windows, make sure to select the option to "Add Python to PATH" during the installation process. Also, Windows users may need to prepend the following commands with
 ```
-python -m 
+python -m
 ```
-i.e. 
+i.e.
 ```
 python -m pip install safetyculture-sdk-python
 ```
 
-To install the Python SDK, run the following commands from your terminal: 
+To install the Python SDK, run the following commands from your terminal:
 
 1. Install the SDK and tools
 ```
@@ -39,7 +53,7 @@ pip install safetyculture-sdk-python
 iauditor_exporter --setup
 ```
 
-3. Navigate into to the newly created folder 
+3. Navigate into to the newly created folder
 ```
 cd iauditor_exports_folder
 ```
@@ -53,7 +67,7 @@ iauditor_exporter
 
 **Option 1 (re-use existing exports folder)**
 
-Install the latest version of the SDK and Export Tool (you may need to substitute pip with pip3 depending on your configuration): 
+Install the latest version of the SDK and Export Tool (you may need to substitute pip with pip3 depending on your configuration):
 ```
 pip install safetyculture-sdk-python
 ```
@@ -66,39 +80,39 @@ pip install safetyculture-sdk-python --force
 
 
 Then navigate into your existing exporter folder. This is located within the cloned repository at `safetyculture-sdk-python/tools/exporter`
-and run `iauditor_exporter` from there. Export data will be saved in the existing `exports` folder, and the existing `last_successful.txt` file will 
-be used to pick up where the last export left off. 
+and run `iauditor_exporter` from there. Export data will be saved in the existing `exports` folder, and the existing `last_successful.txt` file will
+be used to pick up where the last export left off.
 
 **Option 2 (re-use existing exports folder)**
 
-Get the latest version of the code by navigating into `safetyculture-sdk-python` and running 
+Get the latest version of the code by navigating into `safetyculture-sdk-python` and running
 ```
 git pull
 ```
 Navigate into `safetyculture-sdk-python/tools/exporter`
-Run the iAuditor export tool directly: 
+Run the iAuditor export tool directly:
 ```
-python exporter.py 
+python exporter.py
 ```
 
 **Option 3 (export audits in new folder)**
 
-Follow the instructions above to start exporting data to the new folder named `iauditor_exports_folder`. The setup script will give you the option to start your exports from the 
-current date and time, so that you do not have to re-export older audits. 
+Follow the instructions above to start exporting data to the new folder named `iauditor_exports_folder`. The setup script will give you the option to start your exports from the
+current date and time, so that you do not have to re-export older audits.
 
 
-### How to use the iAuditor Export Tool 
+### How to use the iAuditor Export Tool
 
 The API token saved in `config.yaml` provides access to data associated with a single account. Namely, the account used to generate the API token.
 Only audits that are accessible to the single iAuditor account associated with the iAuditor API token used are available for exporting.
- 
+
 All exported data is saved in a folder called `exports`. The folder will be created in the current working directory if it does not already exist.
 
 To export all completed audits in PDF format, run
 ```
 iauditor_exporter
 ```
-  
+
 To enable the exporter to run continuously until interrupted, use the loop command line argument
 
 ```
@@ -129,14 +143,14 @@ Note:
 
 For an overview of the CSV format used, see [here](https://support.safetyculture.com/integrations/safetyculture-csv-exporter-tool/#format)
 
-Audits built from the same template will be saved in the same CSV file which is named after the template's unique ID number. 
-i.e. `TEMPLATE_ID.csv` 
+Audits built from the same template will be saved in the same CSV file which is named after the template's unique ID number.
+i.e. `TEMPLATE_ID.csv`
 
-To export multiple audits in bulk to a CSV file, run the `iauditor_exporter` with the format option set to CSV: 
+To export multiple audits in bulk to a CSV file, run the `iauditor_exporter` with the format option set to CSV:
 ```
 iauditor_exporter --format csv
 ```
-#### The format of the following CSV values do not match the format used by the SafetyCulture API Audit JSON 
+#### The format of the following CSV values do not match the format used by the SafetyCulture API Audit JSON
 
 ##### Date/Time field
 * JSON: `2017-03-03T03:45:58.090Z`
@@ -159,48 +173,48 @@ iauditor_exporter --format csv
 ```
 iauditor_exporter --format media
 ```
-will export all audit media files for each audit (images, attachments, signature, and drawings) to a folder named after the audit ID. 
+will export all audit media files for each audit (images, attachments, signature, and drawings) to a folder named after the audit ID.
 
 ### Web Report Link Export
 * Running
 ```
 iauditor_exporter --format web-report-link
-``` 
+```
 will export your Web Report Links to a CSV file named `web-report-links.csv`.
 
-The CSV file includes five columns: Template ID, Template Name, Audit ID, Audit Name, and Web Report Link. 
+The CSV file includes five columns: Template ID, Template Name, Audit ID, Audit Name, and Web Report Link.
 
-### Actions Export 
+### Actions Export
 Running
 ```
 iauditor_exporter --format actions
 ```
 will export all actions to a file named `iauditor_actions.csv`
 
-The actions export tool reads and writes to a file named `last_successful_actions_export.txt` to keep track of what actions have already been exported. 
+The actions export tool reads and writes to a file named `last_successful_actions_export.txt` to keep track of what actions have already been exported.
 If it does not already exist, `last_successful_actions_export.txt` is created.
 
-Each time actions are exported, newly created actions are appended to `iauditor_actions.csv`. Additionally, any existing actions that have been modified since the last 
+Each time actions are exported, newly created actions are appended to `iauditor_actions.csv`. Additionally, any existing actions that have been modified since the last
 time actions were exported will be re-appended to the CSV file.  
 
-`iauditor_actions.csv` consists of the following columns 
-- actionId 
-- description 
+`iauditor_actions.csv` consists of the following columns
+- actionId
+- description
 - assignee
 - priority
-- priorityCode 
-- status 
-- statusCode 
-- due_datetime 
-- audit 
+- priorityCode
+- status
+- statusCode
+- due_datetime
+- audit
 - auditId
-- linkedToItem 
-- linkedToItemId 
-- creatorName 
-- creatorId 
-- createdDatetime 
-- modifiedDatetime 
-- completedDatetime 
+- linkedToItem
+- linkedToItemId
+- creatorName
+- creatorId
+- createdDatetime
+- modifiedDatetime
+- completedDatetime
 
 The fields `priorityCode` and `statusCode` are number values. All other fields are string values.  
 See [here](https://developer.safetyculture.io/#search-actions) for more information about the status codes and priority codes.
@@ -295,7 +309,7 @@ iauditor_exporter --config=/path/to/alternate_config.yaml
 ```
 Note that you can supply a relative or absolute path to an alternate_config.yaml if it is in another directory
 
-Arguments can be combined e.g. - 
+Arguments can be combined e.g. -
 ```
 iauditor_exporter --config=alternate_config.yaml --format pdf json
 ```
@@ -324,14 +338,14 @@ IMPORTANT: Exporting large numbers of audits in bulk over and over again may res
 
 This tool helps maintain Global Response Sets up to date by importing them automatically from a Microsoft Excel spreadsheet (xls or xlsx, version 2 or higher).
 
-To import response sets from a spreadsheet file: 
+To import response sets from a spreadsheet file:
 ```
 import_grs --token <YOUR_IAUDITOR_API_TOKEN> --file <FULL_PATH_TO_SPREADSHEET_FILE>
 ```
 Each sheet in the Excel file will correspond to one Global Response Set. Any Global Response Set that exists in your account which has a name that does not match a sheet in the Excel file will not be affected. The name of the sheet will correspond to the name of the Global Response Set.  Please note that if you name a sheet exactly the same as a currently existing Global Response Set, that Global Response Set will be modified - including deletion of any responses that don't exist in the Excel file.
 
 The tool is case-sensitive - if you have 'city names' and 'City Names' as separate sheet names, a new Global Response Set will be created for each. Similarly, if you want to manage an existing Global Response Set, ensure you name the sheet exactly as it appears in the response set, including capitalization.
-A single column per sheet is required, each cell in that column will correspond to the label of a response. 
+A single column per sheet is required, each cell in that column will correspond to the label of a response.
 
 To update your Global Response Set, add one or more rows to the spreadsheet. To delete from your Global Response Set, just delete the relevant rows from the spreadsheet. After your changes, save the spreadsheet and run the tool.
 
@@ -390,7 +404,7 @@ python sync_users.py --token <YOUR_IAUDITOR_API_TOKEN> --file <FULL_PATH_TO_CSV_
 ```
 If the user already exists in the organisation in iAuditor, then the user will be added to all the groups in the `groups` field. If the user is not in iAuditor, the user will be added to iAuditor first and then added to the groups listed in the `groups` field. If no groups are specified, the user is only added to the organisation. If the user is not in the CSV file but is present in iAuditor, the user will be deactivated in iAuditor. If a user already belongs to a group, when that group is removed from the list of groups in the relevant CSV field, the user is removed from that group in iAuditor after running the tool.
 
-### Importing SafetyCulture Python SDK Modules into your own scripts 
+### Importing SafetyCulture Python SDK Modules into your own scripts
 
 See example scripts in `./examples/`
 
@@ -400,16 +414,16 @@ See example scripts in `./examples/`
 3. Adding an already invited user will log an error and have no effect.
 
 ## SafetyCulture Python SDK
-1. Import `safetypy` into a Python module or Python interpreter: 
+1. Import `safetypy` into a Python module or Python interpreter:
 ```
 import safetypy
 ```
-2. Create an instance of the SafetyCulture class: 
+2. Create an instance of the SafetyCulture class:
 ```
 sc = safetypy.SafetyCulture(YOUR_IAUDITOR_API_TOKEN)
 ```
 ### For more information regarding the Python SDK functionality
-1. To open the Python interpreter, run 
+1. To open the Python interpreter, run
 ```
 python
 ```
