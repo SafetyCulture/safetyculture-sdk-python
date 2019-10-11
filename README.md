@@ -28,6 +28,17 @@ Contains:
 
 * Examples of how to import individual modules of the SDK into your own scripts.
 
+# How to use this Beta
+
+* Clone the repository
+* Navigate to the root of the cloned directory and run `pip3 install .`
+* Navigate to tools/exporter and open config.yaml
+* Updated the config file as required (Further guidance to follow)
+* Run `python exporter.py --format sql` (Or other format support by the exporter)
+
+
+---
+
 ## iAuditor Export Tool
 
 ### First Time Install and Run
