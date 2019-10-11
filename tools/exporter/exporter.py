@@ -2,17 +2,7 @@
 # Author: SafetyCulture
 # Copyright: © SafetyCulture 2016
 
-from safetypy import safetypy as sp
-from tools import csvExporter
-from datetime import datetime
-from datetime import timedelta
 from sqlalchemy import *
-from shutil import copyfile
-from builtins import input
-from tzlocal import get_localzone
-from doc_creator import create_document
-from matplotlib import rcParams
-rcParams.update({'figure.autolayout': True})
 import pandas as pd
 import numpy as np
 import argparse
@@ -31,9 +21,7 @@ import pytz
 import shutil
 import dataset
 from builtins import input
-from tzlocal import get_localzone
 import unicodecsv as csv
-import plotly.express as px
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 from safetypy import safetypy as sp
 from tools import csvExporter
@@ -692,13 +680,12 @@ def parse_command_line_arguments(logger):
 
     export_formats = ['pdf']
     if args.format is not None and len(args.format) > 0:
-        valid_export_formats = ['json', 'docx', 'pdf', 'csv', 'media', 'web-report-link', 'actions', 'sql', 'pickle',
-                                'hdfs', 'doc_creation', 'doc_template']
+        valid_export_formats = ['json', 'docx', 'pdf', 'csv', 'media', 'web-report-link', 'actions', 'sql', 'pickle', 'doc_creation']
         export_formats = []
         for option in args.format:
             if option not in valid_export_formats:
                 print('{0} is not a valid export format.  Valid options are pdf, json, docx, csv, web-report-link, '
-                      'media, actions, pickle, hdfs, doc_creation, doc_template or sql'.format(option))
+                      'media, actions, pickle, doc_creation, or sql'.format(option))
                 logger.info('invalid export format argument: {0}'.format(option))
             else:
                 export_formats.append(option)
@@ -824,7 +811,7 @@ def sync_exports(logger, settings, sc_client):
         export_actions(logger, settings, sc_client)
     if not bool(
             set(settings[EXPORT_FORMATS]) & {'pdf', 'docx', 'csv', 'media', 'web-report-link', 'json', 'sql', 'pickle',
-                                             'hdfs', 'doc_creation', 'doc_template'}):
+                                             'doc_creation'}):
         return
     last_successful = get_last_successful(logger)
     if settings[TEMPLATE_IDS] is not None:
@@ -840,7 +827,7 @@ def sync_exports(logger, settings, sc_client):
         for export_format in settings[EXPORT_FORMATS]:
             if export_format == 'sql':
                 get_started = sql_setup(logger, settings)
-            elif export_format in ['hdfs', 'pickle']:
+            elif export_format in ['pickle']:
                 get_started = ['complete', 'complete']
                 if export_format == 'pickle' and os.path.isfile('{}.pkl'.format(settings[SQL_TABLE])):
                     logger.error(
@@ -904,13 +891,15 @@ def process_audit(logger, settings, sc_client, audit, get_started):
             export_audit_json(logger, settings, audit_json, export_filename)
         elif export_format == 'csv':
             export_audit_csv(settings, audit_json)
-        # elif export_format == 'doc_creation':
+        elif export_format == 'doc_creation':
+            print('Not currently implemented')
+            sys.exit()
         #     media_list = []
         #     # media_list = export_audit_media(logger, sc_client, settings, audit_json, audit_id, export_filename)
         #     export_audit_doc_creation(logger, settings, audit_json, media_list)
         # elif export_format == 'doc_template':
         #     export_template_creation(logger, settings, audit_json)
-        elif export_format in ['sql', 'pickle', 'hdfs']:
+        elif export_format in ['sql', 'pickle']:
             if get_started[0] == 'complete':
                 logger.info('Processing Audit')
                 export_audit_pandas(logger, settings, audit_json, get_started)
@@ -1132,9 +1121,6 @@ def export_audit_pandas(logger, settings, audit_json, get_started):
         elif export_format == 'pickle':
             logger.info('Writing to Pickle')
             df.to_pickle('{}.pkl'.format(settings[SQL_TABLE]))
-        elif export_format == 'hdfs':
-            print('Writing HDFS')
-            df.to_hdf('{}.h5'.format(settings[SQL_TABLE]), key='df', mode='a')
 
 
 def export_audit_media(logger, sc_client, settings, audit_json, audit_id, export_filename):
