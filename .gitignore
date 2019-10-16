@@ -32,3 +32,9 @@ MANIFEST
 
 # Development Env
 .vscode/
+/tools/exporter/exports/
+/tools/exporter/configs/
+/tools/exporter/last_successful/
+/tools/exporter/.env
+/tools/exporter/docker/Dockerfile.rpi
+/tools/exporter/docker-compose-pi4.yml
