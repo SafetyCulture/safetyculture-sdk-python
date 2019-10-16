@@ -672,18 +672,18 @@ def parse_command_line_arguments(logger):
                                                              'be placed in your current directory')
     args = parser.parse_args()
 
-    config_filename = DEFAULT_CONFIG_FILENAME
+    config_filename = os.path.join('configs', DEFAULT_CONFIG_FILENAME)
 
     if args.setup:
         initial_setup(logger)
         exit()
 
     if args.config is not None:
-        if os.path.isfile(args.config):
-            config_filename = args.config
+        if os.path.isfile(config_filename):
+            config_filename = os.path.join('configs', args.config)
             logger.debug(config_filename + ' passed as config argument')
         else:
-            logger.error(config_filename + ' is not a valid config file')
+            logger.error(config_filename + ' is either missing or corrupt.')
             sys.exit(1)
 
     export_formats = ['pdf']
@@ -727,7 +727,7 @@ def initial_setup(logger):
     create_directory_if_not_exists(logger, exports_folder_name)
 
     # write config file
-    path_to_config_file = os.path.join(current_directoy_path, exports_folder_name, 'config.yaml')
+    path_to_config_file = os.path.join(current_directoy_path, exports_folder_name,'configs', 'config.yaml')
     if os.path.exists(path_to_config_file):
         logger.critical("Config file already exists at {0}".format(path_to_config_file))
         logger.info("Please remove or rename the existing config file, then retry this setup program.")

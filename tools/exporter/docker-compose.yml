@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server
+    environment:
+      - 'ACCEPT_EULA=Y'
+      - 'SA_PASSWORD=${SA_PASSWORD}'
+    restart: always
+    volumes:
+      - iauditor_data:/var/opt/mssql
+    ports:
+      - 1433:1433
+  adminer:
+    build: ./Adminer
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+    links:
+      - "db:database"
+  exporter:
+    container_name: sc-exporter-tool
+    build: ./docker
+    depends_on:
+      - db
+      - adminer
+    environment:
+      - PGID=1000
+      - PUID=1000
+      - 'format=sql'
+    volumes:
+      - ./config.yaml:/app/safetyculture-sdk-python/tools/exporter/config.yaml
+      - ./last_successful:/app/safetyculture-sdk-python/tools/exporter/last_successful
+      - iauditor_data:/app/safetyculture-sdk-python/tools/exporter/exports
+  portainer:
+    image: portainer/portainer
+    ports:
+      - "9000:9000"
+    command: -H unix:///var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - iauditor_portainer_data:/data
+volumes:
+  iauditor_portainer_data:
+  iauditor_data:
