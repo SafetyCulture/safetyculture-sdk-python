@@ -31,7 +31,7 @@ services:
       - PUID=1000
       - 'format=sql'
     volumes:
-      - ./config.yaml:/app/safetyculture-sdk-python/tools/exporter/config.yaml
+      - ./configs:/app/safetyculture-sdk-python/tools/exporter/configs
       - ./last_successful:/app/safetyculture-sdk-python/tools/exporter/last_successful
       - iauditor_data:/app/safetyculture-sdk-python/tools/exporter/exports
   portainer:

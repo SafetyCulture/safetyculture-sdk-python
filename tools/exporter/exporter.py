@@ -83,7 +83,9 @@ USE_REAL_TEMPLATE_NAME = 'use_real_template_name'
 DEFAULT_CONFIG_FILE_YAML = [
     'API:',
     '\n    token: ',
+    '\nconfig_name:'
     '\nexport_options:',
+    '\n    use_real_template_name:'
     '\n    export_path:',
     '\n    filename:',
     '\n    csv_options:',
@@ -91,7 +93,13 @@ DEFAULT_CONFIG_FILE_YAML = [
     '\n    preferences:',
     '\n    sync_delay_in_seconds:',
     '\n    media_sync_offset_in_seconds:',
-    '\n    use_real_template_name: false'
+    '\n    use_real_template_name: false',
+    '\n    sql_table:',
+    '\n    database_type:',
+    '\n    database_user:',
+    '\n    database_pwd:',
+    '\n    database_port:',
+    '\n    database_name:'
 ]
 
 SQL_HEADER_ROW = [
@@ -960,13 +968,13 @@ def export_audit_csv(settings, audit_json):
     csv_exporter = csvExporter.CsvExporter(audit_json, settings[EXPORT_INACTIVE_ITEMS_TO_CSV])
     if settings[USE_REAL_TEMPLATE_NAME] != True:
         csv_export_filename = audit_json['template_id']
-    if settings[USE_REAL_TEMPLATE_NAME].startswith('role_'):
+    elif settings[USE_REAL_TEMPLATE_NAME].startswith('role_'):
         csv_export_filename = settings[USE_REAL_TEMPLATE_NAME]
     else:
         csv_export_filename = audit_json['template_data']['metadata']['name']+' - '+audit_json['template_id']
         csv_export_filename = csv_export_filename.replace('/', ' ').replace('\\', ' ')
     csv_exporter.append_converted_audit_to_bulk_export_file(
-        os.path.join(settings[EXPORT_PATH],settings[CONFIG_NAME], csv_export_filename + '.csv'))
+        os.path.join(settings[EXPORT_PATH], settings[CONFIG_NAME], csv_export_filename + '.csv'))
 
 
 def sql_setup(logger, settings):
@@ -983,100 +991,108 @@ def sql_setup(logger, settings):
 
     if settings[SQL_TABLE] not in db.tables:
     # if not engine.dialect.has_table(engine, settings[SQL_TABLE]):
-        logger.info(settings[SQL_TABLE] + ' not Found. Creating table')
-        if settings[DB_TYPE] == 'mssql+pyodbc_mssql':
-            table = Table(
-                settings[SQL_TABLE], meta,
-                Column('ItemType', NVARCHAR(None)),
-                Column('Label', NVARCHAR(None)),
-                Column('Response', NVARCHAR(None)),
-                Column('Comment', NVARCHAR(None)),
-                Column('MediaHypertextReference', NVARCHAR(None)),
-                Column('Latitude', NVARCHAR(None)),
-                Column('Longitude', NVARCHAR(None)),
-                Column('ItemScore', Float),
-                Column('ItemMaxScore', Float),
-                Column('ItemScorePercentage', Float),
-                Column('Mandatory', Boolean),
-                Column('FailedResponse', Boolean),
-                Column('Inactive', Boolean),
-                Column('AuditID', String(100), primary_key=True),
-                Column('ItemID', String(100), primary_key=True),
-                Column('DatePK', String(100), primary_key=True),
-                Column('ResponseID', NVARCHAR(None)),
-                Column('ParentID', NVARCHAR(None)),
-                Column('AuditOwner', NVARCHAR(None)),
-                Column('AuditAuthor', NVARCHAR(None)),
-                Column('AuditName', NVARCHAR(None)),
-                Column('AuditScore', Float),
-                Column('AuditMaxScore', Float),
-                Column('AuditScorePercentage', Float),
-                Column('AuditDuration', Float),
-                Column('DateStarted', DateTime),
-                Column('DateCompleted', DateTime),
-                Column('DateModified', DateTime),
-                Column('TemplateID', NVARCHAR(None)),
-                Column('TemplateName', NVARCHAR(None)),
-                Column('TemplateAuthor', NVARCHAR(None)),
-                Column('ItemCategory', NVARCHAR(None)),
-                Column('DocumentNo', NVARCHAR(None)),
-                Column('ConductedOn', NVARCHAR(None)),
-                Column('PreparedBy', NVARCHAR(None)),
-                Column('Location', NVARCHAR(None)),
-                Column('Personnel', NVARCHAR(None)),
-                Column('ClientSite', NVARCHAR(None)),
-                Column('AuditSite', NVARCHAR(None)),
-                Column('AuditArea', NVARCHAR(None)),
-                Column('AuditRegion', NVARCHAR(None)),
-                schema="dbo"
-            )
+        logger.info(settings[SQL_TABLE] + ' not Found.')
+        validation = input('It doesn''t look like a table called {} exists on your server. '
+                           'Would you like the script to try and create the table '
+                           'for you now? (Y/N)'.format(settings[SQL_TABLE]))
+        validation = validation.lower()
+        if validation.startswith('y'):
+            if settings[DB_TYPE].startswith('mssql'):
+                table = Table(
+                    settings[SQL_TABLE], meta,
+                    Column('ItemType', NVARCHAR(None)),
+                    Column('Label', NVARCHAR(None)),
+                    Column('Response', NVARCHAR(None)),
+                    Column('Comment', NVARCHAR(None)),
+                    Column('MediaHypertextReference', NVARCHAR(None)),
+                    Column('Latitude', NVARCHAR(None)),
+                    Column('Longitude', NVARCHAR(None)),
+                    Column('ItemScore', Float),
+                    Column('ItemMaxScore', Float),
+                    Column('ItemScorePercentage', Float),
+                    Column('Mandatory', Boolean),
+                    Column('FailedResponse', Boolean),
+                    Column('Inactive', Boolean),
+                    Column('AuditID', String(100), primary_key=True),
+                    Column('ItemID', String(100), primary_key=True),
+                    Column('DatePK', String(100), primary_key=True),
+                    Column('ResponseID', NVARCHAR(None)),
+                    Column('ParentID', NVARCHAR(None)),
+                    Column('AuditOwner', NVARCHAR(None)),
+                    Column('AuditAuthor', NVARCHAR(None)),
+                    Column('AuditName', NVARCHAR(None)),
+                    Column('AuditScore', Float),
+                    Column('AuditMaxScore', Float),
+                    Column('AuditScorePercentage', Float),
+                    Column('AuditDuration', Float),
+                    Column('DateStarted', DateTime),
+                    Column('DateCompleted', DateTime),
+                    Column('DateModified', DateTime),
+                    Column('TemplateID', NVARCHAR(None)),
+                    Column('TemplateName', NVARCHAR(None)),
+                    Column('TemplateAuthor', NVARCHAR(None)),
+                    Column('ItemCategory', NVARCHAR(None)),
+                    Column('DocumentNo', NVARCHAR(None)),
+                    Column('ConductedOn', NVARCHAR(None)),
+                    Column('PreparedBy', NVARCHAR(None)),
+                    Column('Location', NVARCHAR(None)),
+                    Column('Personnel', NVARCHAR(None)),
+                    Column('ClientSite', NVARCHAR(None)),
+                    Column('AuditSite', NVARCHAR(None)),
+                    Column('AuditArea', NVARCHAR(None)),
+                    Column('AuditRegion', NVARCHAR(None)),
+                    schema="dbo"
+                )
+            else:
+                table = Table(
+                    settings[SQL_TABLE], meta,
+                    Column('ItemType', String(None)),
+                    Column('Label', String(None)),
+                    Column('Response', String(None)),
+                    Column('Comment', String(None)),
+                    Column('MediaHypertextReference', String(None)),
+                    Column('Latitude', String(None)),
+                    Column('Longitude', String(None)),
+                    Column('ItemScore', Float),
+                    Column('ItemMaxScore', Float),
+                    Column('ItemScorePercentage', Float),
+                    Column('Mandatory', Boolean),
+                    Column('FailedResponse', Boolean),
+                    Column('Inactive', Boolean),
+                    Column('AuditID', String(100), primary_key=True),
+                    Column('ItemID', String(100), primary_key=True),
+                    Column('DatePK', String(100), primary_key=True),
+                    Column('ResponseID', String(None)),
+                    Column('ParentID', String(None)),
+                    Column('AuditOwner', String(None)),
+                    Column('AuditAuthor', String(None)),
+                    Column('AuditName', String(None)),
+                    Column('AuditScore', Float),
+                    Column('AuditMaxScore', Float),
+                    Column('AuditScorePercentage', Float),
+                    Column('AuditDuration', Float),
+                    Column('DateStarted', DateTime),
+                    Column('DateCompleted', DateTime),
+                    Column('DateModified', DateTime),
+                    Column('TemplateID', String(None)),
+                    Column('TemplateName', String(None)),
+                    Column('TemplateAuthor', String(None)),
+                    Column('ItemCategory', String(None)),
+                    Column('DocumentNo', String(None)),
+                    Column('ConductedOn', String(None)),
+                    Column('PreparedBy', String(None)),
+                    Column('Location', String(None)),
+                    Column('Personnel', String(None)),
+                    Column('ClientSite', String(None)),
+                    Column('AuditSite', String(None)),
+                    Column('AuditArea', String(None)),
+                    Column('AuditRegion', String(None))
+                )
+            meta.create_all(engine)
+            logger.info('Table created successfully.')
         else:
-            table = Table(
-                settings[SQL_TABLE], meta,
-                Column('ItemType', String(None)),
-                Column('Label', String(None)),
-                Column('Response', String(None)),
-                Column('Comment', String(None)),
-                Column('MediaHypertextReference', String(None)),
-                Column('Latitude', String(None)),
-                Column('Longitude', String(None)),
-                Column('ItemScore', Float),
-                Column('ItemMaxScore', Float),
-                Column('ItemScorePercentage', Float),
-                Column('Mandatory', Boolean),
-                Column('FailedResponse', Boolean),
-                Column('Inactive', Boolean),
-                Column('AuditID', String(100), primary_key=True),
-                Column('ItemID', String(100), primary_key=True),
-                Column('DatePK', String(100), primary_key=True),
-                Column('ResponseID', String(None)),
-                Column('ParentID', String(None)),
-                Column('AuditOwner', String(None)),
-                Column('AuditAuthor', String(None)),
-                Column('AuditName', String(None)),
-                Column('AuditScore', Float),
-                Column('AuditMaxScore', Float),
-                Column('AuditScorePercentage', Float),
-                Column('AuditDuration', Float),
-                Column('DateStarted', DateTime),
-                Column('DateCompleted', DateTime),
-                Column('DateModified', DateTime),
-                Column('TemplateID', String(None)),
-                Column('TemplateName', String(None)),
-                Column('TemplateAuthor', String(None)),
-                Column('ItemCategory', String(None)),
-                Column('DocumentNo', String(None)),
-                Column('ConductedOn', String(None)),
-                Column('PreparedBy', String(None)),
-                Column('Location', String(None)),
-                Column('Personnel', String(None)),
-                Column('ClientSite', String(None)),
-                Column('AuditSite', String(None)),
-                Column('AuditArea', String(None)),
-                Column('AuditRegion', String(None))
-            )
-        meta.create_all(engine)
-        logger.info('Table created successfully.')
+            logger.info('Stopping the script. Please either re-run the script or create your table manually.')
+            sys.exit()
     setup = 'complete'
     logger.info('Successfully setup Database and connection')
 
@@ -1102,13 +1118,13 @@ def export_audit_sql(logger, settings, audit_json, get_started):
     df_dict = df.to_dict(orient='records')
     db = dataset.connect(connection_string)
     table = db[settings[SQL_TABLE]]
-    upsert = true
+    upsert = false
     db.begin()
     for row in df_dict:
         if upsert == true:
             table.upsert(dict(row), ['AuditID', 'ItemID'])
         else:
-            table.insert(dict(row))
+            table.upsert(dict(row), ['AuditID', 'ItemID', 'DatePK'])
     db.commit()
 
 
