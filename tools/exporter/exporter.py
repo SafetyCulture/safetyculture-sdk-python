@@ -39,10 +39,10 @@ DEFAULT_SYNC_DELAY_IN_SECONDS = 900
 DEFAULT_MEDIA_SYNC_OFFSET_IN_SECONDS = 600
 
 # The file that stores the "date modified" of the last successfully synced audit
-SYNC_MARKER_FILENAME = 'last_successful.txt'
+SYNC_MARKER_FILENAME = 'last_successful/last_successful.txt'
 
 # The file that stores the ISO date/time string of the last successful actions export
-ACTIONS_SYNC_MARKER_FILENAME = 'last_successful_actions_export.txt'
+ACTIONS_SYNC_MARKER_FILENAME = 'last_successful/last_successful_actions_export.txt'
 
 # the file that stores all exported actions in CSV format
 ACTIONS_EXPORT_FILENAME = 'iauditor_actions.csv'
@@ -61,6 +61,7 @@ AUDIT_TITLE_ITEM_ID = 'f3245d40-ea77-11e1-aff1-0800200c9a66'
 
 # Properties kept in settings dictionary which takes its values from config.YAML
 API_TOKEN = 'api_token'
+CONFIG_NAME = 'config_name'
 EXPORT_PATH = 'export_path'
 PREFERENCES = 'preferences'
 FILENAME_ITEM_ID = 'filename_item_id'
@@ -611,7 +612,8 @@ def load_config_settings(logger, path_to_config_file):
         DB_SERVER: config_settings['export_options']['database_server'],
         DB_PORT: config_settings['export_options']['database_port'],
         DB_NAME: config_settings['export_options']['database_name'],
-        USE_REAL_TEMPLATE_NAME: config_settings['export_options']['use_real_template_name']
+        USE_REAL_TEMPLATE_NAME: config_settings['export_options']['use_real_template_name'],
+        CONFIG_NAME: config_settings['config_name']
     }
     return settings
 
@@ -630,11 +632,17 @@ def configure(logger, path_to_config_file, export_formats):
     sc_client = sp.SafetyCulture(config_settings[API_TOKEN])
 
     if config_settings[EXPORT_PATH] is not None:
-        create_directory_if_not_exists(logger, config_settings[EXPORT_PATH])
+        if config_settings[CONFIG_NAME] is not None:
+            create_directory_if_not_exists(logger, os.path.join(config_settings[EXPORT_PATH], config_settings[CONFIG_NAME]))
+        else:
+            create_directory_if_not_exists(logger, config_settings[EXPORT_PATH])
     else:
         logger.info('Invalid export path was found in ' + path_to_config_file + ', defaulting to /exports')
         config_settings[EXPORT_PATH] = os.path.join(os.getcwd(), 'exports')
-        create_directory_if_not_exists(logger, config_settings[EXPORT_PATH])
+        if config_settings[CONFIG_NAME] is not None:
+            create_directory_if_not_exists(logger, os.path.join(config_settings[EXPORT_PATH], config_settings[CONFIG_NAME]))
+        else:
+            create_directory_if_not_exists(logger, config_settings[EXPORT_PATH])
 
     return sc_client, config_settings
 
@@ -952,11 +960,13 @@ def export_audit_csv(settings, audit_json):
     csv_exporter = csvExporter.CsvExporter(audit_json, settings[EXPORT_INACTIVE_ITEMS_TO_CSV])
     if settings[USE_REAL_TEMPLATE_NAME] != True:
         csv_export_filename = audit_json['template_id']
+    if settings[USE_REAL_TEMPLATE_NAME].startswith('role_'):
+        csv_export_filename = settings[USE_REAL_TEMPLATE_NAME]
     else:
-        csv_export_filename = audit_json['template_data']['metadata']['name']
+        csv_export_filename = audit_json['template_data']['metadata']['name']+' - '+audit_json['template_id']
         csv_export_filename = csv_export_filename.replace('/', ' ').replace('\\', ' ')
     csv_exporter.append_converted_audit_to_bulk_export_file(
-        os.path.join(settings[EXPORT_PATH], csv_export_filename + '.csv'))
+        os.path.join(settings[EXPORT_PATH],settings[CONFIG_NAME], csv_export_filename + '.csv'))
 
 
 def sql_setup(logger, settings):
@@ -1244,12 +1254,11 @@ def main():
         logger = configure_logger()
         path_to_config_file, export_formats, preferences_to_list, loop_enabled = parse_command_line_arguments(logger)
         sc_client, settings = configure(logger, path_to_config_file, export_formats)
-        print(settings[SQL_TABLE])
-        if settings[SQL_TABLE] is not None:
+        if settings[CONFIG_NAME] is not None:
             global ACTIONS_SYNC_MARKER_FILENAME
-            ACTIONS_SYNC_MARKER_FILENAME = 'last_successful_actions_export-{}.txt'.format(settings[SQL_TABLE])
+            ACTIONS_SYNC_MARKER_FILENAME = 'last_successful/last_successful_actions_export-{}.txt'.format(settings[CONFIG_NAME])
             global SYNC_MARKER_FILENAME
-            SYNC_MARKER_FILENAME = 'last_successful-{}.txt'.format(settings[SQL_TABLE])
+            SYNC_MARKER_FILENAME = 'last_successful/last_successful-{}.txt'.format(settings[CONFIG_NAME])
         if preferences_to_list is not None:
             show_preferences_and_exit(preferences_to_list, sc_client)
 
