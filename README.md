@@ -1,8 +1,7 @@
 # SafetyCulture Python SDK and iAuditor Tools
 
 # Beta Branch
-| WARNING: This branch contains beta features for the exporter tool as well as some tweaks to safetypy. We do not 
-currently offer support on the additional features found here and are used at your own risk. |
+| *WARNING*: This branch contains beta features for the exporter tool as well as some tweaks to safetypy. We do not currently offer support on the additional features found here and are used at your own risk. |
 | --- |
 
 Features added:
