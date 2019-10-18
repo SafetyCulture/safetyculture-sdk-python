@@ -1,6 +1,38 @@
 version: '3'
 
 services:
+  web:
+    ports:
+      - 4000:8000
+    volumes:
+      - .:/root
+    image: coderaiser/cloudcmd
+    restart: unless-stopped
+  postgres:
+    image: postgres:10
+    volumes:
+      - "./db_data:/var/lib/postgresql/data"
+    restart: always
+    environment:
+      POSTGRES_DB: metabase
+      POSTGRES_USER: metabase_usr
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  metabase:
+    depends_on:
+      - postgres
+    image: metabase/metabase
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    environment:
+      JAVA_TIMEZONE: Europe/London
+      MB_ENCRYPTION_SECRET_KEY: ${MB}
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: metabase
+      MB_DB_PORT: 5432
+      MB_DB_USER: metabase_usr
+      MB_DB_PASS: ${POSTGRES_PASSWORD}
+      MB_DB_HOST: postgres
   db:
     image: mcr.microsoft.com/mssql/server
     environment:
@@ -13,7 +45,7 @@ services:
       - 1433:1433
   adminer:
     build: ./Adminer
-    restart: always
+    restart: unless-stopped
     ports:
       - 8080:8080
     depends_on:
@@ -22,6 +54,7 @@ services:
       - "db:database"
   exporter:
     container_name: sc-exporter-tool
+    restart: unless-stopped
     build: ./docker
     depends_on:
       - db
@@ -36,6 +69,7 @@ services:
       - iauditor_data:/app/safetyculture-sdk-python/tools/exporter/exports
   portainer:
     image: portainer/portainer
+    restart: unless-stopped
     ports:
       - "9000:9000"
     command: -H unix:///var/run/docker.sock
