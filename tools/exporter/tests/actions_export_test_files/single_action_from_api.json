@@ -9,6 +9,8 @@
     "item_id": "f3245d43-ea77-11e1-aff1-0800200c9a66",
     "label": "Prepared by"
   },
+  "title": "test action",
+  "site": "site1",
   "description": "tonys sdk test action",
   "priority": 10,
   "status": 0,

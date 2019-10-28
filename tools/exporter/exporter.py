@@ -324,7 +324,7 @@ def save_exported_actions_to_csv_file(logger, export_path, actions_array):
         actions_csv_wr.writerow([
             'actionId', 'description', 'assignee', 'priority', 'priorityCode', 'status', 'statusCode', 'dueDatetime',
             'audit', 'auditId', 'linkedToItem', 'linkedToItemId', 'creatorName', 'creatorId', 'createdDatetime',
-            'modifiedDatetime', 'completedDatetime'
+            'modifiedDatetime', 'completedDatetime', 'site', 'title'
         ])
     for action in actions_array:
         actions_list = transform_action_object_to_list(action)
@@ -355,6 +355,8 @@ def transform_action_object_to_list(action):
     actions_list.append(get_json_property(action, 'created_at'))
     actions_list.append(get_json_property(action, 'modified_at'))
     actions_list.append(get_json_property(action, 'completed_at'))
+    actions_list.append(get_json_property(action, 'site'))
+    actions_list.append(get_json_property(action, 'title'))
     return actions_list
 
 
