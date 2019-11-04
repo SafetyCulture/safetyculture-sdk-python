@@ -201,8 +201,8 @@ time actions were exported will be re-appended to the CSV file.
 - createdDatetime 
 - modifiedDatetime 
 - completedDatetime
--site
--title
+- site
+- title
 
 The fields `priorityCode` and `statusCode` are number values. All other fields are string values.  
 See [here](https://developer.safetyculture.io/#search-actions) for more information about the status codes and priority codes.
