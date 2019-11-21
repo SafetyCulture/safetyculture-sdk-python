@@ -383,8 +383,8 @@ class CsvExporter:
             wr = csv.writer(csv_file, dialect='excel', quoting=csv.QUOTE_ALL)
             wr.writerows(self.audit_table)
             csv_file.close()
-        except Exception as ex:
-            csvExporter_logger.exception(('Error saving audit_table to ' + output_csv_path)
+        except Exception:
+            csvExporter_logger.exception('Error saving audit_table to ' + output_csv_path)
 
     def get_item_response(self, item):
         """
@@ -437,7 +437,7 @@ class CsvExporter:
             try:
                 csvExporter_logger.error('Unhandled item type: ' + str(item_type) + ' from ' +
                   self.audit_id() + ', ' + item.get(ID))
-            except Exception as ex:
+            except Exception:
                 csvExporter_logger.exception('Error parsing item, item likely malformed')
             
         return response
