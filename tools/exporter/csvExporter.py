@@ -203,7 +203,6 @@ class CsvExporter:
         sh.setLevel(log_level)
         sh.setFormatter(formatter)
         csvExporter_logger.addHandler(sh)
-        csvExporter_logger.error('log it!')
 
     def audit_id(self):
         """
