@@ -1,5 +1,6 @@
 import unicodecsv as csv
 import json
+import logging
 import sys
 import os
 import copy
@@ -174,12 +175,34 @@ class CsvExporter:
 
         :param audit_json:      audit in JSON format to be converted to CSV
         """
+        self.configure_logging()
         self.audit_json = audit_json
         self.export_inactive_items = export_inactive_items
         self.item_category = EMPTY_RESPONSE
         self.item_map = {}
         self.map_items()
         self.audit_table = self.convert_audit_to_table()
+
+    def configure_logging(self):
+        """
+        Configure logging to log to std output as well as to log file
+        """
+        log_level = logging.DEBUG
+
+        log_filename = datetime.now().strftime('%Y-%m-%d') + '.log'
+        csvExporter_logger = logging.getLogger('csvExporter_logger')
+        csvExporter_logger.setLevel(log_level)
+        formatter = logging.Formatter('%(asctime)s : %(levelname)s : %(message)s')
+
+        fh = logging.FileHandler(filename=os.getcwd() + log_filename)
+        fh.setLevel(log_level)
+        fh.setFormatter(formatter)
+        csvExporter_logger.addHandler(fh)
+
+        sh = logging.StreamHandler(sys.stdout)
+        sh.setLevel(log_level)
+        sh.setFormatter(formatter)
+        csvExporter_logger.addHandler(sh)
 
     def audit_id(self):
         """
@@ -353,13 +376,14 @@ class CsvExporter:
         :param output_csv_path: the full path to file to save
         :param mode:    write ('wb') or append ('ab') mode
         """
+        csvExporter_logger = logging.getLogger('csvExporter_logger')
         try:
             csv_file = open(output_csv_path, mode)
             wr = csv.writer(csv_file, dialect='excel', quoting=csv.QUOTE_ALL)
             wr.writerows(self.audit_table)
             csv_file.close()
-        except Exception as ex:
-            print(str(ex) + ': Error saving audit_table to ' + output_csv_path)
+        except Exception:
+            csvExporter_logger.exception('Error saving audit_table to ' + output_csv_path)
 
     def get_item_response(self, item):
         """
@@ -367,6 +391,7 @@ class CsvExporter:
         :param item:    single item in JSON format
         :return:        response property
         """
+        csvExporter_logger = logging.getLogger('csvExporter_logger')
         response = EMPTY_RESPONSE
         item_type = get_json_property(item, TYPE)
         if item_type == 'question':
@@ -407,8 +432,13 @@ class CsvExporter:
                            INFORMATION]:
             pass
         else:
-            print('Unhandled item type: ' + str(item_type) + ' from ' +
+            # No item type might mean malformed item object, catch and log error accessing item
+            try:
+                csvExporter_logger.error('Unhandled item type: ' + str(item_type) + ' from ' +
                   self.audit_id() + ', ' + item.get(ID))
+            except Exception:
+                csvExporter_logger.exception('Error parsing item, item likely malformed')
+            
         return response
 
     @staticmethod
