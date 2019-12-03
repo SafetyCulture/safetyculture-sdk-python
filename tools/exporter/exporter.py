@@ -1159,7 +1159,13 @@ def export_audit_pandas(logger, settings, audit_json, get_started):
 
     for export_format in settings[EXPORT_FORMATS]:
         if export_format == 'sql':
-            export_audit_sql(logger, settings, audit_json, get_started)
+            try:
+                export_audit_sql(logger, settings, audit_json, get_started)
+            except:
+                logger.error('Something went wrong processing this inspection - likely a connection issue. Retrying in 30 seconds.')
+                time.sleep(10)
+                export_audit_pandas(logger, settings, audit_json, get_started)
+
         elif export_format == 'pickle':
             logger.info('Writing to Pickle')
             csv_exporter = csvExporter.CsvExporter(audit_json, settings[EXPORT_INACTIVE_ITEMS_TO_CSV])
@@ -1309,11 +1315,6 @@ def main():
     except KeyboardInterrupt:
         print("Interrupted by user, exiting.")
         sys.exit(0)
-
-    except:
-        print('Something went wrong, restarting in 30 seconds.')
-        time.sleep(10)
-        os.execv(sys.executable, ['python'] + sys.argv)
 
 
 
