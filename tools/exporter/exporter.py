@@ -94,8 +94,10 @@ DEFAULT_CONFIG_FILE_YAML = [
     '\n    sync_delay_in_seconds:',
     '\n    media_sync_offset_in_seconds:',
     '\n    use_real_template_name: false',
+    '\n    template_ids:',
     '\n    sql_table:',
     '\n    database_type:',
+    '\n    database_server:',
     '\n    database_user:',
     '\n    database_pwd:',
     '\n    database_port:',
@@ -424,7 +426,7 @@ def transform_action_object_to_list(action):
     return actions_list
 
 
-def save_exported_media_to_file(logger, export_dir, media_file, filename, extension, doc_creation_media_check):
+def save_exported_media_to_file(logger, export_dir, media_file, filename, extension):
     """
     Write exported media item to disk at specified location with specified file name.
     Any existing file with the same name will be overwritten.
@@ -495,6 +497,7 @@ def get_last_successful(logger):
     else:
         beginning_of_time = '2000-01-01T00:00:00.000Z'
         last_successful = beginning_of_time
+        create_directory_if_not_exists(logger, 'last_successful')
         with open(SYNC_MARKER_FILENAME, 'w') as last_run:
             last_run.write(last_successful)
         logger.info('Searching for audits since the beginning of time: ' + beginning_of_time)
@@ -643,14 +646,16 @@ def configure(logger, path_to_config_file, export_formats):
         if config_settings[CONFIG_NAME] is not None:
             create_directory_if_not_exists(logger, os.path.join(config_settings[EXPORT_PATH], config_settings[CONFIG_NAME]))
         else:
-            create_directory_if_not_exists(logger, config_settings[EXPORT_PATH])
+            logger.error("You must set the config_name in your config file before continuing.")
+            sys.exit()
     else:
         logger.info('Invalid export path was found in ' + path_to_config_file + ', defaulting to /exports')
         config_settings[EXPORT_PATH] = os.path.join(os.getcwd(), 'exports')
         if config_settings[CONFIG_NAME] is not None:
             create_directory_if_not_exists(logger, os.path.join(config_settings[EXPORT_PATH], config_settings[CONFIG_NAME]))
         else:
-            create_directory_if_not_exists(logger, config_settings[EXPORT_PATH])
+            logger.error("You must set the config_name in your config file before continuing.")
+            sys.exit()
 
     return sc_client, config_settings
 
@@ -735,7 +740,8 @@ def initial_setup(logger):
     create_directory_if_not_exists(logger, exports_folder_name)
 
     # write config file
-    path_to_config_file = os.path.join(current_directoy_path, exports_folder_name,'configs', 'config.yaml')
+    path_to_config_file = os.path.join(current_directoy_path, exports_folder_name, 'configs', 'config.yaml')
+    create_directory_if_not_exists(logger, os.path.join(current_directoy_path, exports_folder_name,'configs'))
     if os.path.exists(path_to_config_file):
         logger.critical("Config file already exists at {0}".format(path_to_config_file))
         logger.info("Please remove or rename the existing config file, then retry this setup program.")
@@ -757,6 +763,7 @@ def initial_setup(logger):
         get_last_successful(logger)
     else:
         now = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.000Z')
+        create_directory_if_not_exists(logger, 'last_successful')
         update_sync_marker_file(now)
         logger.info('Audit exporting set to start from ' + now)
     exit()
@@ -831,10 +838,13 @@ def sync_exports(logger, settings, sc_client):
         return
     last_successful = get_last_successful(logger)
     if settings[TEMPLATE_IDS] is not None:
-        ids_to_search = settings[TEMPLATE_IDS].split(",")
-        list_of_audits = sc_client.discover_audits(modified_after=last_successful, template_id=ids_to_search)
+        if len(settings[TEMPLATE_IDS]) != 1:
+            ids_to_search = settings[TEMPLATE_IDS].split(",")
+        else:
+            ids_to_search = [settings[TEMPLATE_IDS][0]]
+        list_of_audits = sc_client.discover_audits(modified_after=last_successful, template_id=ids_to_search, completed=True)
     else:
-        list_of_audits = sc_client.discover_audits(modified_after=last_successful,completed='both')
+        list_of_audits = sc_client.discover_audits(modified_after=last_successful,completed=True)
     if list_of_audits is not None:
         logger.info(str(list_of_audits['total']) + ' audits discovered')
         export_count = 1
@@ -966,15 +976,20 @@ def export_audit_csv(settings, audit_json):
     """
 
     csv_exporter = csvExporter.CsvExporter(audit_json, settings[EXPORT_INACTIVE_ITEMS_TO_CSV])
-    if settings[USE_REAL_TEMPLATE_NAME] != True:
+    if settings[USE_REAL_TEMPLATE_NAME] == False:
         csv_export_filename = audit_json['template_id']
-    elif settings[USE_REAL_TEMPLATE_NAME].startswith('role_'):
-        csv_export_filename = settings[USE_REAL_TEMPLATE_NAME]
-    else:
+    elif settings[USE_REAL_TEMPLATE_NAME] == True:
         csv_export_filename = audit_json['template_data']['metadata']['name']+' - '+audit_json['template_id']
         csv_export_filename = csv_export_filename.replace('/', ' ').replace('\\', ' ')
-    csv_exporter.append_converted_audit_to_bulk_export_file(
-        os.path.join(settings[EXPORT_PATH], settings[CONFIG_NAME], csv_export_filename + '.csv'))
+    elif settings[USE_REAL_TEMPLATE_NAME].startswith('role_'):
+        csv_export_filename = settings[USE_REAL_TEMPLATE_NAME]
+
+    if settings[CONFIG_NAME] is not None:
+        csv_exporter.append_converted_audit_to_bulk_export_file(
+            os.path.join(settings[EXPORT_PATH], settings[CONFIG_NAME], csv_export_filename + '.csv'))
+    else:
+        csv_exporter.append_converted_audit_to_bulk_export_file(
+            os.path.join(settings[EXPORT_PATH], csv_export_filename + '.csv'))
 
 
 def sql_setup(logger, settings):
@@ -984,7 +999,14 @@ def sql_setup(logger, settings):
                                                      settings[DB_SERVER],
                                                      settings[DB_PORT],
                                                      settings[DB_NAME])
-    db = dataset.connect(connection_string)
+    try:
+        db = dataset.connect(connection_string)
+    except ValueError:
+        logger.error(
+            'There is a problem with your database configuration, likely it is blank. Check the config.yaml file found '
+            'in the configs folder to enter your settings.')
+        sys.exit()
+
     engine = create_engine(connection_string)
     meta = MetaData()
     logger.debug('Making connection to ' + str(engine))
@@ -1033,7 +1055,7 @@ def sql_setup(logger, settings):
                     Column('TemplateAuthor', NVARCHAR(None)),
                     Column('ItemCategory', NVARCHAR(None)),
                     Column('DocumentNo', NVARCHAR(None)),
-                    Column('ConductedOn', NVARCHAR(None)),
+                    Column('ConductedOn', DateTime),
                     Column('PreparedBy', NVARCHAR(None)),
                     Column('Location', NVARCHAR(None)),
                     Column('Personnel', NVARCHAR(None)),
@@ -1079,7 +1101,7 @@ def sql_setup(logger, settings):
                     Column('TemplateAuthor', String(None)),
                     Column('ItemCategory', String(None)),
                     Column('DocumentNo', String(None)),
-                    Column('ConductedOn', String(None)),
+                    Column('ConductedOn', DateTime),
                     Column('PreparedBy', String(None)),
                     Column('Location', String(None)),
                     Column('Personnel', String(None)),
@@ -1113,7 +1135,6 @@ def export_audit_sql(logger, settings, audit_json, get_started):
     df['DatePK'] = pd.to_datetime(df['DateModified']).values.astype(np.int64) // 10 ** 6
     df.replace({'DateCompleted': ''}, '1900-01-01 00:00:00', inplace=True)
     df.replace({'ItemScore': '', 'ItemMaxScore': '', 'ItemScorePercentage': ''}, np.nan, inplace=True)
-    # df.fillna(value={'Latitude': 0, 'Longitude': 0}, inplace=True)
     df.fillna(0, inplace=True)
     df_dict = df.to_dict(orient='records')
     db = dataset.connect(connection_string)
@@ -1136,16 +1157,16 @@ def export_audit_pandas(logger, settings, audit_json, get_started):
     :param audit_json:  Audit JSON
     """
 
-    csv_exporter = csvExporter.CsvExporter(audit_json, settings[EXPORT_INACTIVE_ITEMS_TO_CSV])
-    df = csv_exporter.audit_table
-    df = pd.DataFrame.from_records(df, columns=SQL_HEADER_ROW)
-    df.replace({'ItemScore': '', 'ItemMaxScore': '', 'ItemScorePercentage': ''}, np.nan, inplace=True)
-    df.fillna(value={'Latitude': 0, 'Longitude': 0}, inplace=True)
     for export_format in settings[EXPORT_FORMATS]:
         if export_format == 'sql':
             export_audit_sql(logger, settings, audit_json, get_started)
         elif export_format == 'pickle':
             logger.info('Writing to Pickle')
+            csv_exporter = csvExporter.CsvExporter(audit_json, settings[EXPORT_INACTIVE_ITEMS_TO_CSV])
+            df = csv_exporter.audit_table
+            df = pd.DataFrame.from_records(df, columns=SQL_HEADER_ROW)
+            df.replace({'ItemScore': '', 'ItemMaxScore': '', 'ItemScorePercentage': ''}, np.nan, inplace=True)
+            df.fillna(value={'Latitude': 0, 'Longitude': 0}, inplace=True)
             df.to_pickle('{}.pkl'.format(settings[SQL_TABLE]))
 
 
@@ -1161,16 +1182,18 @@ def export_audit_media(logger, sc_client, settings, audit_json, audit_id, export
     """
 
     media_id_list = get_media_from_audit(logger, audit_json, settings)
+    doc_creation_media_check = False
     if len(media_id_list) > 0:
         if type(media_id_list[0]) is tuple:
             doc_creation_media_check = True
             media_export_path = os.path.join('exports/doc_creation/{}/{}'.format(audit_json['template_id'],
                                                                                  audit_id), 'media')
+        else:
+            media_export_path = os.path.join(settings[EXPORT_PATH], 'media', export_filename)
     else:
         media_export_path = os.path.join(settings[EXPORT_PATH], 'media', export_filename)
         doc_creation_media_check = False
     extension = 'jpg'
-
     media_id_list = get_media_from_audit(logger, audit_json, settings)
     for media_id in media_id_list:
         if type(media_id) is tuple:
@@ -1182,8 +1205,8 @@ def export_audit_media(logger, sc_client, settings, audit_json, audit_id, export
                                     media_export_path,
                                     media_file,
                                     media_export_filename,
-                                    extension,
-                                    doc_creation_media_check)
+                                    extension
+                                    )
 
     if doc_creation_media_check == True:
         return media_id_list
@@ -1265,7 +1288,6 @@ def loop(logger, sc_client, settings):
 
 
 def main():
-
     try:
         logger = configure_logger()
         path_to_config_file, export_formats, preferences_to_list, loop_enabled = parse_command_line_arguments(logger)
@@ -1287,6 +1309,12 @@ def main():
     except KeyboardInterrupt:
         print("Interrupted by user, exiting.")
         sys.exit(0)
+
+    except:
+        print('Something went wrong, restarting in 30 seconds.')
+        time.sleep(10)
+        os.execv(sys.executable, ['python'] + sys.argv)
+
 
 
 if __name__ == '__main__':

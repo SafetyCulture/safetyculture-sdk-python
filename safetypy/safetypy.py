@@ -122,7 +122,7 @@ class SafetyCulture:
         """
         Configure logging to log to std output as well as to log file
         """
-        log_level = logging.DEBUG
+        log_level = logging.WARNING
 
         log_filename = datetime.now().strftime('%Y-%m-%d') + '.log'
         sp_logger = logging.getLogger('sp_logger')
@@ -179,8 +179,12 @@ class SafetyCulture:
         logger.info(log_string)
 
         if template_id is not None:
-            for specific_id in template_id:
-                search_url += '&template=' + specific_id
+            print(len(template_id))
+            if len(template_id) > 1:
+                for specific_id in template_id:
+                    search_url += '&template=' + specific_id
+            else:
+                search_url += '&template=' + template_id[0]
         if completed is True:
             search_url += '&completed=true'
         if completed is False:
