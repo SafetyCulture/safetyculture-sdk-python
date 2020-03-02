@@ -1,5 +1,7 @@
 # SafetyCulture Python SDK and iAuditor Tools
 
+## There is a newer version of the Exporter tool that forms part of this SDK. If you're looking to export data out of iAuditor, please check out the [iAuditor Exporter](https://github.com/SafetyCulture/iauditor-exporter) rather than following the instuctions below.
+
 Contains:
 
 * The SafetyCulture Python SDK: core functions to interact with the iAuditor API
