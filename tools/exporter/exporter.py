@@ -862,9 +862,12 @@ def export_audit_media(logger, sc_client, settings, audit_json, audit_id, export
     media_export_path = os.path.join(settings[EXPORT_PATH], 'media', export_filename)
     media_id_list = get_media_from_audit(logger, audit_json)
     for media_id in media_id_list.keys():
-        logger.info("Saving media_{0} to disc.".format(media_id))
         media_file = sc_client.get_media(audit_id, media_id)
+        if media_file is None:
+            logger.warn("Failed to save media object {0}".format(media_id))
+            continue
         media_export_filename = media_id
+        logger.info("Saving media_{0} to disc.".format(media_id))
         save_exported_media_to_file(logger, media_export_path, media_file, media_export_filename, media_id_list[media_id])
 
 
