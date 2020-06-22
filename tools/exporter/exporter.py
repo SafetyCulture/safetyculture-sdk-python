@@ -860,13 +860,15 @@ def export_audit_media(logger, sc_client, settings, audit_json, audit_id, export
     :param export_filename:     String indicating what to name the exported audit file
     """
     media_export_path = os.path.join(settings[EXPORT_PATH], 'media', export_filename)
-    extension = 'jpg'
     media_id_list = get_media_from_audit(logger, audit_json)
-    for media_id in media_id_list:
-        logger.info("Saving media_{0} to disc.".format(media_id))
+    for media_id in media_id_list.keys():
         media_file = sc_client.get_media(audit_id, media_id)
+        if media_file is None:
+            logger.warn("Failed to save media object {0}".format(media_id))
+            continue
         media_export_filename = media_id
-        save_exported_media_to_file(logger, media_export_path, media_file, media_export_filename, extension)
+        logger.info("Saving media_{0} to disc.".format(media_id))
+        save_exported_media_to_file(logger, media_export_path, media_file, media_export_filename, media_id_list[media_id])
 
 
 def export_audit_web_report_link(logger, settings, sc_client, audit_json, audit_id, template_id):
@@ -897,21 +899,39 @@ def get_media_from_audit(logger, audit_json):
     :param audit_json: single audit JSON
     :return: list of media IDs
     """
-    media_id_list = []
+    media_id_list = dict()
     for item in audit_json['header_items'] + audit_json['items']:
         # This condition checks for media attached to question and media type fields.
         if 'media' in item.keys():
             for media in item['media']:
-                media_id_list.append(media['media_id'])
+                name, ext = get_media_file_name_and_ext(logger, media)
+                media_id_list[name] = ext
+
         # This condition checks for media attached to signature and drawing type fields.
         if 'responses' in item.keys() and 'image' in item['responses'].keys():
-            media_id_list.append(item['responses']['image']['media_id'])
+            name, ext = get_media_file_name_and_ext(logger, item['responses']['image'])
+            media_id_list[name] = ext
+
         # This condition checks for media attached to information type fields.
         if 'options' in item.keys() and 'media' in item['options'].keys():
-            media_id_list.append(item['options']['media']['media_id'])
+            name, ext = get_media_file_name_and_ext(logger, item['options']['media'])
+            media_id_list[name] = ext
+
     logger.info("Discovered {0} media files associated with {1}.".format(len(media_id_list), audit_json['audit_id']))
     return media_id_list
 
+def get_media_file_name_and_ext(logger, media):
+    """
+    Retrive the media file extension from 'file_ext' of the media block.
+    If, the attribute is missing or is an empty string, default to .jpg
+    :param logger: the logger
+    :param media: the media block
+    :return: Tuple containing the media-id and its file extension
+    """
+    if 'file_ext' in media.keys() and len(media['file_ext']) > 0:
+        return media['media_id'], media['file_ext']
+    logger.info("Did not find valid file_ext for {0}. Defaulting to .jpg".format(media['media_id']))
+    return media['media_id'], 'jpg'
 
 def loop(logger, sc_client, settings):
     """

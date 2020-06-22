@@ -341,7 +341,11 @@ class SafetyCulture:
         """
         url = self.audit_url + audit_id + '/media/' + media_id
         response = requests.get(url, headers=self.custom_http_headers, stream=True)
-        return response
+        if response.status_code == requests.codes.ok:
+            return response
+        else:
+            self.log_http_status(response.status_code, "on GET for media {0}".format(response.text))
+            return None
 
     def get_web_report(self, audit_id):
         """
