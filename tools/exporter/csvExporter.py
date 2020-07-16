@@ -110,6 +110,15 @@ smartfield_conditional_id_to_statement_map = {
     # conditional statements for textsingle field
     '6ff300f0-e501-11e1-aff1-0800200c9a66': 'if text is',
     '6ff300f1-e501-11e1-aff1-0800200c9a66': 'if text is not',
+    #conditional statements for number (textsingle) field
+    'a73aae9f-6ff2-4aac-a79d-beaf444170f0': 'if the number is less than',
+    'f7029a02-befc-4b86-8eb5-aae824299dc6': 'if the number is less than or equal to',
+    '32ff3989-8d98-4154-af7f-fd7b0b955a18': 'if the number is equal to',
+    'f254d72f-2606-41dd-b3a5-61bddd22bfc2': 'if the number is not equal to',
+    'f8b5db76-1941-444f-b14e-6f22109bb234': 'if the number is greater than or equal to',
+    '2b4d02ea-087d-4853-a52f-84319df9c781': 'if the number is greater than',
+    '1eaa9ca9-21be-437e-ab69-ac7cc203939b': 'if the number is between',
+    '875d3438-353f-4ff9-8777-c1cc9dce6728': 'if the number is not between',
     # conditional statements for signature field
     '831f8ff0-e500-11e1-aff1-0800200c9a66': 'if signature exists',
     '831f8ff1-e500-11e1-aff1-0800200c9a66': 'if the signature does not exist',
