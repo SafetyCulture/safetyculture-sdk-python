@@ -2,6 +2,8 @@
 # Author: SafetyCulture
 # Copyright: © SafetyCulture 2016
 
+# virtualtime is imported to patch time.strftime and datetime.datetime.strftime to support pre-1900 and pre-1000 years
+import virtualtime
 import argparse
 import errno
 import json
@@ -69,7 +71,7 @@ EXPORT_FORMATS = 'export_formats'
 DEFAULT_CONFIG_FILE_YAML = [
     'API:',
     '\n    token: ',
-    '\nexport_options:',    
+    '\nexport_options:',
     '\n    export_path:',
     '\n    filename:',
     '\n    csv_options:',
