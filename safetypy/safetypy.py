@@ -34,7 +34,7 @@ def get_user_api_token(logger):
         'content-type': "application/x-www-form-urlencoded",
         'cache-control': "no-cache",
         'sc-integration-id': "safetyculture-sdk-python",
-        'sc-integration-version': __version__,
+        'sc-integration-version': "4.x",
     }
     response = requests.request("POST", generate_token_url, data=payload, headers=headers)
     if response.status_code == requests.codes.ok:
@@ -72,9 +72,9 @@ class SafetyCulture:
         if self.api_token:
             self.custom_http_headers = {
                 'User-Agent': HTTP_USER_AGENT_ID,
-                'Authorization': 'Bearer ' + self.api_token
+                'Authorization': 'Bearer ' + self.api_token,
                 'sc-integration-id': "safetyculture-sdk-python",
-                'sc-integration-version': __version__,
+                'sc-integration-version': "4.x",
             }
         else:
             logger.error('No valid API token parsed! Exiting.')
