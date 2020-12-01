@@ -4,6 +4,8 @@ import logging
 import sys
 import os
 import copy
+# virtualtime is imported to patch time.strftime and datetime.datetime.strftime to support pre-1900 and pre-1000 years
+import virtualtime
 from datetime import datetime
 
 CSV_HEADER_ROW = [
@@ -49,7 +51,7 @@ CSV_HEADER_ROW = [
     'AuditRegion'
 ]
 
-# audit item empty response 
+# audit item empty response
 EMPTY_RESPONSE = ''
 
 # audit item property constants
@@ -243,7 +245,7 @@ class CsvExporter:
         Recursively traverses the item Map, following parent IDs until it gets to a Section or Category.
         When a Section or Category is found, the item Category is set to the label of that Section or Category.
         :param item_id: item ID to find Category for
-        :return:        Category or Section label 
+        :return:        Category or Section label
         """
         if not item_id:
             return EMPTY_RESPONSE
@@ -447,7 +449,7 @@ class CsvExporter:
                   self.audit_id() + ', ' + item.get(ID))
             except Exception:
                 csvExporter_logger.exception('Error parsing item, item likely malformed')
-            
+
         return response
 
     @staticmethod

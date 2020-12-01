@@ -20,7 +20,6 @@ DEFAULT_EXPORT_FORMAT = 'PDF'
 GUID_PATTERN = '[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}$'
 HTTP_USER_AGENT_ID = 'safetyculture-python-sdk'
 
-
 def get_user_api_token(logger):
     """
     Generate iAuditor API Token
@@ -34,6 +33,8 @@ def get_user_api_token(logger):
     headers = {
         'content-type': "application/x-www-form-urlencoded",
         'cache-control': "no-cache",
+        'sc-integration-id': "safetyculture-sdk-python",
+        'sc-integration-version': __version__,
     }
     response = requests.request("POST", generate_token_url, data=payload, headers=headers)
     if response.status_code == requests.codes.ok:
@@ -54,7 +55,7 @@ class SafetyCulture:
         self.get_my_groups_url = self.api_url + 'share/connections'
         self.all_groups_url = self.api_url + 'groups'
         self.add_users_url = self.api_url + 'users'
-        
+
         self.create_directory_if_not_exists(self.log_dir)
         self.configure_logging()
         logger = logging.getLogger('sp_logger')
@@ -72,6 +73,8 @@ class SafetyCulture:
             self.custom_http_headers = {
                 'User-Agent': HTTP_USER_AGENT_ID,
                 'Authorization': 'Bearer ' + self.api_token
+                'sc-integration-id': "safetyculture-sdk-python",
+                'sc-integration-version': __version__,
             }
         else:
             logger.error('No valid API token parsed! Exiting.')
@@ -235,8 +238,8 @@ class SafetyCulture:
         :return:                   export job ID obtained from API
         """
         export_url = self.audit_url + audit_id + '/report'
-        if export_format == 'docx': # convert old command line format 
-            export_format = 'WORD' 
+        if export_format == 'docx': # convert old command line format
+            export_format = 'WORD'
         export_data = {'format': export_format.upper()}
 
         if preference_id is not None:
