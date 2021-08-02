@@ -560,7 +560,12 @@ class CsvExporter:
         elif item_type in ['drawing', SIGNATURE]:
             media_href = get_json_property(item, RESPONSES, 'image', HREF)
         else:
-            media_href = '\n'.join(image[HREF] for image in get_json_property(item, MEDIA))
+            media_list = []
+            for image in get_json_property(item, MEDIA):
+                if image:
+                    media_list.append(image[HREF])
+            media_href = '\n'.join(media_list)
+
         return media_href
 
     @staticmethod
