@@ -1,5 +1,9 @@
 # SafetyCulture Python SDK and iAuditor Tools
 
+# DEPRECATED
+
+The SafetyCultue Python SDK is no longer supported, it's recommend you connect to our APIs directly. You can find examples of doing this in our [developer documentation](https://developer.safetyculture.com/). 
+
 ## There is a newer version of the Exporter tool that forms part of this SDK. If you're looking to export data out of iAuditor, please check out the [iAuditor Exporter](https://github.com/SafetyCulture/iauditor-exporter) rather than following the instuctions below.
 
 Contains:
